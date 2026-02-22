@@ -54,3 +54,10 @@ func (s *UserService) GetUser(id int) (*models.User, error) {
 func (s *UserService) GetAllUsers() ([]*models.User, error) {
 	return s.db.GetAllUsers()
 }
+
+func (s *UserService) DeleteUser(id int) error {
+	if err := s.db.DeleteUserSessions(id); err != nil {
+		return err
+	}
+	return s.db.DeleteUser(id)
+}

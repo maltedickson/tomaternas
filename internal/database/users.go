@@ -1,6 +1,9 @@
 package database
 
-import "recipe-web-server/internal/models"
+import (
+	"errors"
+	"recipe-web-server/internal/models"
+)
 
 func (db *DB) CreateUser(user *models.User) error {
 	query := `
@@ -101,4 +104,23 @@ func (db *DB) GetAllUsers() ([]*models.User, error) {
 	}
 
 	return users, rows.Err()
+}
+
+func (db *DB) DeleteUser(id int) error {
+	query := `
+		DELETE FROM users
+		WHERE id = ?
+	`
+	result, err := db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rows == 0 {
+		return errors.New("user not found")
+	}
+	return nil
 }

@@ -10,9 +10,16 @@
 }
 
 .top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+}
+
+.top-bar .left {
+    margin-right: auto;
+}
+
+.top-bar .right {
+    margin-left: auto;
 }
 
 .error {

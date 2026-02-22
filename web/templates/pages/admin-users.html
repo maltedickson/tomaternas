@@ -1,0 +1,32 @@
+{{template "base" .}}
+
+{{define "content"}}
+
+<h1>Hantera användare</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Användarnamn</th>
+            <th>Visningsnamn</th>
+            <th>Admin?</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{range .Users}}
+        <tr>
+            <td>{{.ID}}</td>
+            <td>{{.Username}}</td>
+            <td>{{.DisplayName}}</td>
+            <td>{{if .IsAdmin}}Ja{{else}}Nej{{end}}</td>
+            <td>
+                <a href="/admin/users/delete/{{.ID}}">Ta bort</a>
+            </td>
+        </tr>
+        {{end}}
+    </tbody>
+</table>
+
+
+{{end}}

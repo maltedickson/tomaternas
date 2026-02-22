@@ -1,15 +1,11 @@
-<p>
-    <a href="/">Hem</a>
-</p>
+{{template "base" .}}
 
-{{if .IsAuthenticated}}
-{{template "logout-button" .}}
-{{else}}
-{{template "login-link" .}}
-{{end}}
+{{define "content"}}
 
 <h1>Annan sida</h1>
 
 {{if .IsAuthenticated}}
 <p>Du är inloggad!</p>
+{{end}}
+
 {{end}}

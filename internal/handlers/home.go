@@ -21,6 +21,10 @@ func (h *HomeHandler) HomePage(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
+	if r.Method != http.MethodGet {
+		http.Error(w, "Metoden är ej tillåten", http.StatusMethodNotAllowed)
+		return
+	}
 	data := map[string]any{
 		"Title":           "Home",
 		"IsAuthenticated": middleware.IsAuthenticated(r),

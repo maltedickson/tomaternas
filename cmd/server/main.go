@@ -33,11 +33,13 @@ func main() {
 	}
 
 	authService := services.NewAuthService(db)
+	userService := services.NewUserService(db)
 
 	authHandler := handlers.NewAuthHandler(authService, renderer)
 	homeHandler := handlers.NewHomeHandler(renderer)
+	adminHandler := handlers.NewAdminHandler(userService, renderer)
 
-	mux.HandleFunc("GET /", homeHandler.HomePage)
+	mux.HandleFunc("/", homeHandler.HomePage)
 	mux.HandleFunc("GET /other-page", homeHandler.OtherPage)
 
 	mux.HandleFunc("GET /login", authHandler.LoginPage)
@@ -48,6 +50,13 @@ func main() {
 	middlewareStack := middleware.CreateStack(
 		middleware.AuthMiddleware(authService),
 	)
+
+	adminMux := http.NewServeMux()
+	adminMux.HandleFunc("GET /admin/users", adminHandler.UsersPage)
+	adminMux.HandleFunc("GET /admin/users/delete/{id}", adminHandler.DeleteUserPage)
+	adminMux.HandleFunc("POST /admin/users/delete/{id}", adminHandler.DeleteUser)
+
+	mux.Handle("/admin/", middleware.RequireAdmin(adminMux))
 
 	fmt.Println("Server starting on :8080...")
 	err = http.ListenAndServe(":8080", middlewareStack(mux))

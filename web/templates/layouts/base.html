@@ -6,10 +6,29 @@
     <meta charset="UTF-8">
     <title>{{.Title}}</title>
     <link rel="stylesheet" href="/static/css/main.css">
+    {{block "head" .}}{{end}}
 </head>
 
 <body>
-    {{template "content" .}}
+    <div class="top-bar">
+        <div class="left">
+            {{block "top-left" .}}{{end}}
+        </div>
+        <a href="/">Receptsamlingen</a>
+        <div class="right">
+            {{block "top-right" .}}
+
+            {{if .IsAuthenticated}}
+            {{template "logout-button" .}}
+            {{else}}
+            {{template "login-link" .}}
+            {{end}}
+
+            {{end}}
+        </div>
+    </div>
+
+    {{block "content" .}}{{end}}
 </body>
 
 </html>

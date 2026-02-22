@@ -30,6 +30,15 @@ func (db *DB) GetSessionByToken(token string) (*models.Session, error) {
 	return &s, nil
 }
 
+func (db *DB) DeleteUserSessions(id int) error {
+	const query = `
+		DELETE FROM sessions
+		WHERE user_id = ?
+	`
+	_, err := db.Exec(query, id)
+	return err
+}
+
 func (db *DB) DeleteSession(token string) error {
 	const query = `
 		DELETE FROM sessions
@@ -38,24 +47,3 @@ func (db *DB) DeleteSession(token string) error {
 	_, err := db.Exec(query, token)
 	return err
 }
-
-// func (db *DB) CreateSession(userID int, ttl time.Duration) (string, error) {
-// 	b := make([]byte, 32)
-// 	if _, err := rand.Read(b); err != nil {
-// 		return "", err
-// 	}
-// 	token := base64.URLEncoding.EncodeToString(b)
-//
-// 	expiry := time.Now().Add(ttl)
-//
-// 	const query = `
-// 		INSERT INTO sessions (token, user_id, expiry)
-// 		VALUES (?, ?, ?)
-// 	`
-// 	_, err := db.Exec(query, token, userID, expiry)
-// 	if err != nil {
-// 		return "", err
-// 	}
-//
-// 	return token, nil
-// }

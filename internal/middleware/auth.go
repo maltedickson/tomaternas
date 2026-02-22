@@ -3,6 +3,7 @@ package middleware
 import (
 	"context"
 	"net/http"
+	"net/url"
 	"recipe-web-server/internal/models"
 	"recipe-web-server/internal/services"
 )
@@ -33,6 +34,28 @@ func AuthMiddleware(authService *services.AuthService) Middleware {
 	}
 }
 
+func RequireAuth(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		isAuth, ok := r.Context().Value(IsAuthContextKey).(bool)
+		if !ok || !isAuth {
+			http.Redirect(w, r, "/login?return="+url.QueryEscape(r.URL.RequestURI()), http.StatusSeeOther)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+func RequireAdmin(next http.Handler) http.Handler {
+	return RequireAuth(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user, ok := r.Context().Value(UserContextKey).(*models.User)
+		if !ok || !user.IsAdmin {
+			http.Error(w, "Förbjuden", http.StatusForbidden)
+			return
+		}
+		next.ServeHTTP(w, r)
+	}))
+}
+
 func GetUser(r *http.Request) (*models.User, bool) {
 	user, ok := r.Context().Value(UserContextKey).(*models.User)
 	return user, ok
@@ -41,4 +64,9 @@ func GetUser(r *http.Request) (*models.User, bool) {
 func IsAuthenticated(r *http.Request) bool {
 	isAuth, ok := r.Context().Value(IsAuthContextKey).(bool)
 	return ok && isAuth
+}
+
+func IsAdmin(r *http.Request) bool {
+	user, ok := GetUser(r)
+	return ok && user.IsAdmin
 }
