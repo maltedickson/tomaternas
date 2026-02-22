@@ -1,0 +1,44 @@
+{{template "base" .}}
+
+{{define "content"}}
+
+<h1>Skapa användare</h1>
+
+<form action="/admin/users/create" method="POST">
+    {{if .Error}}
+    <div class="error">
+        {{.Error}}
+    </div>
+    {{end}}
+
+    <div>
+        <label for="username">Användarnamn</label>
+        <input type="text" name="username" id="username" required>
+    </div>
+
+    <div>
+        <label for="display-name">Visningsnamn</label>
+        <input type="text" name="display-name" id="display-name">
+    </div>
+
+    <div>
+        <label for="password">Lösenord</label>
+        <input type="password" name="password" id="password" required>
+    </div>
+
+    <div>
+        <label for="confirm-password">Bekräfta lösenord</label>
+        <input type="password" name="confirm-password" id="confirm-password" required>
+    </div>
+
+    <div>
+        <label for="is-admin">Är admin?</label>
+        <input type="checkbox" name="is-admin" id="is-admin">
+    </div>
+
+    <div>
+        <button type="submit">Skapa användare</button>
+    </div>
+</form>
+
+{{end}}

@@ -53,6 +53,10 @@ func main() {
 
 	adminMux := http.NewServeMux()
 	adminMux.HandleFunc("GET /admin/users", adminHandler.UsersPage)
+
+	adminMux.HandleFunc("GET /admin/users/create", adminHandler.CreateUserPage)
+	adminMux.HandleFunc("POST /admin/users/create", adminHandler.CreateUser)
+
 	adminMux.HandleFunc("GET /admin/users/delete/{id}", adminHandler.DeleteUserPage)
 	adminMux.HandleFunc("POST /admin/users/delete/{id}", adminHandler.DeleteUser)
 

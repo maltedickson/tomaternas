@@ -67,3 +67,42 @@ func (h *AdminHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
 }
+
+func (h *AdminHandler) CreateUserPage(w http.ResponseWriter, r *http.Request) {
+	data := map[string]any{
+		"Title":           "Admin - Skapa användare",
+		"IsAuthenticated": middleware.IsAuthenticated(r),
+	}
+	h.renderer.Render(w, "admin-create-user", data)
+}
+
+func (h *AdminHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
+	username := r.FormValue("username")
+	if username == "" {
+		http.Redirect(w, r, "/admin/users/create?error=username_required", http.StatusBadRequest)
+	}
+
+	displayName := r.FormValue("display-name")
+	if displayName == "" {
+		displayName = username
+	}
+
+	password := r.FormValue("password")
+	if password == "" {
+		http.Redirect(w, r, "/admin/users/create?error=password_required", http.StatusBadRequest)
+	}
+
+	confirmPassword := r.FormValue("confirm-password")
+	if password != confirmPassword {
+		http.Redirect(w, r, "/admin/users/create?error=confirm_not_match", http.StatusBadRequest)
+	}
+
+	isAdmin := r.FormValue("is-admin") == "on"
+
+	_, err := h.userService.CreateUser(username, displayName, password, isAdmin)
+	if err != nil {
+		http.Error(w, "kunde inte skapa användare", http.StatusInternalServerError)
+	}
+
+	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
+}
