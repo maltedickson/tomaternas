@@ -1,0 +1,23 @@
+:root {
+    --color-error-bg: hsl(0 90% 85%);
+    --color-error-border: hsl(0 80% 60%);
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.error {
+    background-color: var(--color-error-bg);
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-error-border);
+    border-radius: 4px;
+}

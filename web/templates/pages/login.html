@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{.Title}}</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="/static/css/login.css">
+</head>
+
+<body>
+
+    <h1>Logga in</h1>
+
+    <form action="/login" method="POST">
+        {{if .Error}}
+        <div class="error">
+            {{.Error}}
+        </div>
+        {{end}}
+
+        {{if .ReturnPath}}
+        <input type="hidden" name="return" value="{{.ReturnPath}}">
+        {{end}}
+
+        <div>
+            <label for="username">Användarnamn</label>
+            <input type="text" name="username" id="username" required>
+        </div>
+
+        <div>
+            <label for="password">Lösenord</label>
+            <input type="password" name="password" id="password" required>
+        </div>
+
+        <button type="submit">Logga in</button>
+    </form>
+
+    <p>
+        <a href="/">Tillbaka till hem.</a>
+    </p>
+
+</body>
+
+</html>

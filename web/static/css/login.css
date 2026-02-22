@@ -1,0 +1,13 @@
+form {
+    width: fit-content;
+}
+
+form>*+* {
+    margin-block-start: 1rem;
+}
+
+form label,
+form input,
+form button {
+    display: block;
+}

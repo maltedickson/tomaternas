@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Recept</title>
+</head>
+
+<body>
+
+    {{if .IsAuthenticated}}
+    {{template "logout-button" .}}
+    {{else}}
+    {{template "login-link" .}}
+    {{end}}
+
+    <h1>Recept!!!</h1>
+
+    {{if .IsAuthenticated}}
+    <p>Du är inloggad!</p>
+    {{end}}
+
+    <p>
+        <a href="/other-page">Annan sida</a>
+    </p>
+</body>
+
+</html>
