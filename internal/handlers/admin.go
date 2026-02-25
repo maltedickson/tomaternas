@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"net/http"
+	"recipe-web-server/internal/config"
 	"recipe-web-server/internal/middleware"
 	"recipe-web-server/internal/services"
 	"recipe-web-server/internal/templates"
-	"strconv"
 )
 
 type AdminHandler struct {
@@ -34,40 +34,6 @@ func (h *AdminHandler) UsersPage(w http.ResponseWriter, r *http.Request) {
 	h.renderer.Render(w, "admin-users", data)
 }
 
-func (h *AdminHandler) DeleteUserPage(w http.ResponseWriter, r *http.Request) {
-	idStr := r.PathValue("id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		http.Error(w, "ogiltigt id", http.StatusBadRequest)
-		return
-	}
-	user, err := h.userService.GetUser(id)
-	if err != nil {
-		http.Error(w, "användaren kunde inte hittas", http.StatusNotFound)
-		return
-	}
-	data := map[string]any{
-		"Title":           "Admin - Ta bort användare",
-		"IsAuthenticated": middleware.IsAuthenticated(r),
-		"User":            *user,
-	}
-	h.renderer.Render(w, "admin-delete-user", data)
-}
-
-func (h *AdminHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
-	idStr := r.PathValue("id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		http.Error(w, "ogiltigt id", http.StatusBadRequest)
-		return
-	}
-	err = h.userService.DeleteUser(id)
-	if err != nil {
-		http.Error(w, "kunde inte ta bort användaren", http.StatusInternalServerError)
-	}
-	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
-}
-
 func (h *AdminHandler) CreateUserPage(w http.ResponseWriter, r *http.Request) {
 	data := map[string]any{
 		"Title":           "Admin - Skapa användare",
@@ -80,6 +46,7 @@ func (h *AdminHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	if username == "" {
 		http.Redirect(w, r, "/admin/users/create?error=username_required", http.StatusBadRequest)
+		return
 	}
 
 	displayName := r.FormValue("display-name")
@@ -90,16 +57,26 @@ func (h *AdminHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 	if password == "" {
 		http.Redirect(w, r, "/admin/users/create?error=password_required", http.StatusBadRequest)
+		return
+	}
+	if len(password) < config.MinPasswordLength {
+		http.Redirect(w, r, "/admin/users/create?error=password_too_short", http.StatusBadRequest)
+		return
 	}
 
 	confirmPassword := r.FormValue("confirm-password")
 	if password != confirmPassword {
 		http.Redirect(w, r, "/admin/users/create?error=confirm_not_match", http.StatusBadRequest)
+		return
 	}
 
-	isAdmin := r.FormValue("is-admin") == "on"
+	role, ok := services.GetRole(r.FormValue("role"))
+	if !ok {
+		http.Redirect(w, r, "/admin/users/create?error=invalid_role", http.StatusBadRequest)
+		return
+	}
 
-	_, err := h.userService.CreateUser(username, displayName, password, isAdmin)
+	_, err := h.userService.CreateUser(username, displayName, password, role)
 	if err != nil {
 		http.Error(w, "kunde inte skapa användare", http.StatusInternalServerError)
 	}

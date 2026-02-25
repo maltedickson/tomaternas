@@ -57,9 +57,6 @@ func main() {
 	adminMux.HandleFunc("GET /admin/users/create", adminHandler.CreateUserPage)
 	adminMux.HandleFunc("POST /admin/users/create", adminHandler.CreateUser)
 
-	adminMux.HandleFunc("GET /admin/users/delete/{id}", adminHandler.DeleteUserPage)
-	adminMux.HandleFunc("POST /admin/users/delete/{id}", adminHandler.DeleteUser)
-
 	mux.Handle("/admin/", middleware.RequireAdmin(adminMux))
 
 	fmt.Println("Server starting on :8080...")

@@ -10,7 +10,11 @@
             <th>ID</th>
             <th>Användarnamn</th>
             <th>Visningsnamn</th>
-            <th>Admin?</th>
+            <th>Lösenordshash</th>
+            <th>Roll</th>
+            <th>Aktiv</th>
+            <th>Ändrad</th>
+            <th>Skapad</th>
         </tr>
     </thead>
     <tbody>
@@ -19,14 +23,18 @@
             <td>{{.ID}}</td>
             <td>{{.Username}}</td>
             <td>{{.DisplayName}}</td>
-            <td>{{if .IsAdmin}}Ja{{else}}Nej{{end}}</td>
-            <td>
-                <a href="/admin/users/delete/{{.ID}}">Ta bort</a>
-            </td>
+            <td>{{.PasswordHash}}</td>
+            <td>{{.Role}}</td>
+            <td>{{if .IsActive}}Ja{{else}}Nej{{end}}</td>
+            <td>{{.UpdatedAt}}</td>
+            <td>{{.CreatedAt}}</td>
         </tr>
         {{end}}
     </tbody>
 </table>
 
+<p>
+    <a href="/admin/users/create">Skapa ny användare</a>
+</p>
 
 {{end}}

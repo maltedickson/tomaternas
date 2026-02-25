@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"recipe-web-server/internal/database"
+	"recipe-web-server/internal/models"
 	"recipe-web-server/internal/services"
 )
 
@@ -20,7 +21,7 @@ func main() {
 	}
 
 	userService := services.NewUserService(db)
-	user, err := userService.CreateUser("admin", "Administrator", "pwd", true)
+	user, err := userService.CreateUser("admin", "Administrator", "pwd", models.RoleAdmin)
 	if err != nil {
 		log.Fatal(err)
 	}

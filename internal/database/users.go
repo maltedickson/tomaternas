@@ -1,22 +1,20 @@
 package database
 
 import (
-	"errors"
 	"recipe-web-server/internal/models"
 )
 
 func (db *DB) CreateUser(user *models.User) error {
 	query := `
-		INSERT INTO users (username, display_name, hashed_password, is_admin, created_at)
-		VALUES (?, ?, ?, ?, ?)
+		INSERT INTO users (username, display_name, password_hash, role)
+		VALUES (?, ?, ?, ?)
 	`
 	result, err := db.Exec(
 		query,
 		user.Username,
 		user.DisplayName,
-		user.HashedPassword,
-		user.IsAdmin,
-		user.CreatedAt,
+		user.PasswordHash,
+		user.Role,
 	)
 	if err != nil {
 		return err
@@ -33,7 +31,7 @@ func (db *DB) CreateUser(user *models.User) error {
 
 func (db *DB) GetUserById(id int) (*models.User, error) {
 	query := `
-		SELECT id, username, display_name, hashed_password, is_admin, created_at
+		SELECT id, username, display_name, password_hash, role, is_active, updated_at, created_at
 		FROM users
 		WHERE id = ?
 	`
@@ -42,8 +40,10 @@ func (db *DB) GetUserById(id int) (*models.User, error) {
 		&user.ID,
 		&user.Username,
 		&user.DisplayName,
-		&user.HashedPassword,
-		&user.IsAdmin,
+		&user.PasswordHash,
+		&user.Role,
+		&user.IsActive,
+		&user.UpdatedAt,
 		&user.CreatedAt,
 	)
 	if err != nil {
@@ -54,7 +54,7 @@ func (db *DB) GetUserById(id int) (*models.User, error) {
 
 func (db *DB) GetUserByUsername(username string) (*models.User, error) {
 	query := `
-		SELECT id, username, display_name, hashed_password, is_admin, created_at
+		SELECT id, username, display_name, password_hash, role, is_active, updated_at, created_at
 		FROM users
 		WHERE username = ?
 	`
@@ -63,8 +63,10 @@ func (db *DB) GetUserByUsername(username string) (*models.User, error) {
 		&user.ID,
 		&user.Username,
 		&user.DisplayName,
-		&user.HashedPassword,
-		&user.IsAdmin,
+		&user.PasswordHash,
+		&user.Role,
+		&user.IsActive,
+		&user.UpdatedAt,
 		&user.CreatedAt,
 	)
 	if err != nil {
@@ -75,7 +77,7 @@ func (db *DB) GetUserByUsername(username string) (*models.User, error) {
 
 func (db *DB) GetAllUsers() ([]*models.User, error) {
 	query := `
-		SELECT id, username, display_name, hashed_password, is_admin, created_at
+		SELECT id, username, display_name, password_hash, role, is_active, updated_at, created_at
 		FROM users
 	`
 
@@ -93,8 +95,10 @@ func (db *DB) GetAllUsers() ([]*models.User, error) {
 			&user.ID,
 			&user.Username,
 			&user.DisplayName,
-			&user.HashedPassword,
-			&user.IsAdmin,
+			&user.PasswordHash,
+			&user.Role,
+			&user.IsActive,
+			&user.UpdatedAt,
 			&user.CreatedAt,
 		)
 		if err != nil {
@@ -106,21 +110,20 @@ func (db *DB) GetAllUsers() ([]*models.User, error) {
 	return users, rows.Err()
 }
 
-func (db *DB) DeleteUser(id int) error {
+func (db *DB) SetUserActive(id int, active bool) error {
+	var current bool
+	err := db.QueryRow("SELECT is_active FROM users WHERE id = ?", id).Scan(&current)
+	if err != nil {
+		return err
+	}
+	if current == active {
+		return nil
+	}
 	query := `
-		DELETE FROM users
+		UPDATE users
+		SET is_active = ?, updated_at = CURRENT_TIMESTAMP
 		WHERE id = ?
 	`
-	result, err := db.Exec(query, id)
-	if err != nil {
-		return err
-	}
-	rows, err := result.RowsAffected()
-	if err != nil {
-		return err
-	}
-	if rows == 0 {
-		return errors.New("user not found")
-	}
-	return nil
+	_, err = db.Exec(query, active, id)
+	return err
 }

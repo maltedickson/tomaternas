@@ -24,7 +24,7 @@ func (s *AuthService) Login(username, password string) (*models.Session, error) 
 	if err != nil {
 		return nil, errors.New("invalid credentials")
 	}
-	if err := bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
 		return nil, errors.New("invalid credentials")
 	}
 	token, err := generateSessionToken()

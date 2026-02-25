@@ -5,10 +5,12 @@ func (db *DB) RunMigrations() error {
 		`CREATE TABLE IF NOT EXISTS users (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			username TEXT UNIQUE NOT NULL,
-			display_name TEXT NOT NULL,
-			hashed_password BLOB NOT NULL,
-			is_admin BOOLEAN NOT NULL DEFAULT FALSE,
-			created_at DATETIME NOT NULL
+			display_name TEXT UNIQUE NOT NULL,
+			password_hash BLOB NOT NULL,
+			role TEXT NOT NULL,
+			is_active BOOLEAN NOT NULL DEFAULT TRUE,
+			updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 		)`,
 		`CREATE TABLE IF NOT EXISTS sessions (
 			token TEXT PRIMARY KEY,

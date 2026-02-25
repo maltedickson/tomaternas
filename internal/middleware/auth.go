@@ -48,7 +48,7 @@ func RequireAuth(next http.Handler) http.Handler {
 func RequireAdmin(next http.Handler) http.Handler {
 	return RequireAuth(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		user, ok := r.Context().Value(UserContextKey).(*models.User)
-		if !ok || !user.IsAdmin {
+		if !ok || user.Role != models.RoleAdmin {
 			http.Error(w, "Förbjuden", http.StatusForbidden)
 			return
 		}
@@ -68,5 +68,5 @@ func IsAuthenticated(r *http.Request) bool {
 
 func IsAdmin(r *http.Request) bool {
 	user, ok := GetUser(r)
-	return ok && user.IsAdmin
+	return ok && user.Role == models.RoleAdmin
 }
