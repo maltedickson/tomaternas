@@ -6,7 +6,7 @@ func (db *DB) RunMigrations() error {
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			username TEXT UNIQUE NOT NULL,
 			display_name TEXT UNIQUE NOT NULL,
-			password_hash BLOB NOT NULL,
+			password_hash TEXT NOT NULL,
 			role TEXT NOT NULL,
 			is_active BOOLEAN NOT NULL DEFAULT TRUE,
 			updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

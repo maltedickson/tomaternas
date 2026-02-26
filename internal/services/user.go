@@ -4,8 +4,6 @@ import (
 	"errors"
 	"recipe-web-server/internal/database"
 	"recipe-web-server/internal/models"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
 type UserService struct {
@@ -36,15 +34,20 @@ func (s *UserService) CreateUser(username, displayName, password string, role mo
 		return nil, errors.New("username already exists")
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		return nil, err
+	p := &params{
+		memory:      64 * 1024,
+		iterations:  3,
+		parallelism: 1,
+		saltLength:  16,
+		keyLength:   32,
 	}
+
+	passwordHash := generateFromPassword(password, p)
 
 	user := &models.User{
 		Username:     username,
 		DisplayName:  displayName,
-		PasswordHash: hashedPassword,
+		PasswordHash: passwordHash,
 		Role:         role,
 	}
 

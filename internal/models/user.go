@@ -15,7 +15,7 @@ type User struct {
 	ID           int
 	Username     string
 	DisplayName  string
-	PasswordHash []byte
+	PasswordHash string
 	Role         UserRole
 	IsActive     bool
 	UpdatedAt    time.Time

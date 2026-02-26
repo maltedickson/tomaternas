@@ -45,7 +45,7 @@ func (h *AdminHandler) CreateUserPage(w http.ResponseWriter, r *http.Request) {
 func (h *AdminHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	if username == "" {
-		http.Redirect(w, r, "/admin/users/create?error=username_required", http.StatusBadRequest)
+		http.Redirect(w, r, "/admin/users/create?error=username_required", http.StatusSeeOther)
 		return
 	}
 
@@ -56,29 +56,30 @@ func (h *AdminHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	password := r.FormValue("password")
 	if password == "" {
-		http.Redirect(w, r, "/admin/users/create?error=password_required", http.StatusBadRequest)
+		http.Redirect(w, r, "/admin/users/create?error=password_required", http.StatusSeeOther)
 		return
 	}
 	if len(password) < config.MinPasswordLength {
-		http.Redirect(w, r, "/admin/users/create?error=password_too_short", http.StatusBadRequest)
+		http.Redirect(w, r, "/admin/users/create?error=password_too_short", http.StatusSeeOther)
 		return
 	}
 
 	confirmPassword := r.FormValue("confirm-password")
 	if password != confirmPassword {
-		http.Redirect(w, r, "/admin/users/create?error=confirm_not_match", http.StatusBadRequest)
+		http.Redirect(w, r, "/admin/users/create?error=confirm_not_match", http.StatusSeeOther)
 		return
 	}
 
 	role, ok := services.GetRole(r.FormValue("role"))
 	if !ok {
-		http.Redirect(w, r, "/admin/users/create?error=invalid_role", http.StatusBadRequest)
+		http.Redirect(w, r, "/admin/users/create?error=invalid_role", http.StatusSeeOther)
 		return
 	}
 
 	_, err := h.userService.CreateUser(username, displayName, password, role)
 	if err != nil {
 		http.Error(w, "kunde inte skapa användare", http.StatusInternalServerError)
+		return
 	}
 
 	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
