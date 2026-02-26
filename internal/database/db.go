@@ -3,7 +3,7 @@ package database
 import (
 	"database/sql"
 
-	_ "modernc.org/sqlite" // Import the driver
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type DB struct {
@@ -11,7 +11,7 @@ type DB struct {
 }
 
 func New() (*DB, error) {
-	db, err := sql.Open("sqlite", "./data/recipes.db")
+	db, err := sql.Open("sqlite3", "./data/recipes.db")
 	if err != nil {
 		return nil, err
 	}
