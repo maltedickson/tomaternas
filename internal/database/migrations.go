@@ -8,7 +8,6 @@ func (db *DB) RunMigrations() error {
 			display_name TEXT UNIQUE NOT NULL,
 			password_hash TEXT NOT NULL,
 			role TEXT NOT NULL,
-			is_active BOOLEAN NOT NULL DEFAULT TRUE,
 			updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 		)`,

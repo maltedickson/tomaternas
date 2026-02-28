@@ -17,7 +17,6 @@ type User struct {
 	DisplayName  string
 	PasswordHash string
 	Role         UserRole
-	IsActive     bool
 	UpdatedAt    time.Time
 	CreatedAt    time.Time
 }

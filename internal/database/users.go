@@ -31,7 +31,7 @@ func (db *DB) CreateUser(user *models.User) error {
 
 func (db *DB) GetUserById(id int) (*models.User, error) {
 	query := `
-		SELECT id, username, display_name, password_hash, role, is_active, updated_at, created_at
+		SELECT *
 		FROM users
 		WHERE id = ?
 	`
@@ -42,7 +42,6 @@ func (db *DB) GetUserById(id int) (*models.User, error) {
 		&user.DisplayName,
 		&user.PasswordHash,
 		&user.Role,
-		&user.IsActive,
 		&user.UpdatedAt,
 		&user.CreatedAt,
 	)
@@ -54,7 +53,7 @@ func (db *DB) GetUserById(id int) (*models.User, error) {
 
 func (db *DB) GetUserByUsername(username string) (*models.User, error) {
 	query := `
-		SELECT id, username, display_name, password_hash, role, is_active, updated_at, created_at
+		SELECT *
 		FROM users
 		WHERE username = ?
 	`
@@ -65,7 +64,6 @@ func (db *DB) GetUserByUsername(username string) (*models.User, error) {
 		&user.DisplayName,
 		&user.PasswordHash,
 		&user.Role,
-		&user.IsActive,
 		&user.UpdatedAt,
 		&user.CreatedAt,
 	)
@@ -77,7 +75,7 @@ func (db *DB) GetUserByUsername(username string) (*models.User, error) {
 
 func (db *DB) GetAllUsers() ([]*models.User, error) {
 	query := `
-		SELECT id, username, display_name, password_hash, role, is_active, updated_at, created_at
+		SELECT *
 		FROM users
 	`
 
@@ -97,7 +95,6 @@ func (db *DB) GetAllUsers() ([]*models.User, error) {
 			&user.DisplayName,
 			&user.PasswordHash,
 			&user.Role,
-			&user.IsActive,
 			&user.UpdatedAt,
 			&user.CreatedAt,
 		)
@@ -108,24 +105,6 @@ func (db *DB) GetAllUsers() ([]*models.User, error) {
 	}
 
 	return users, rows.Err()
-}
-
-func (db *DB) SetUserActive(id int, active bool) error {
-	var current bool
-	err := db.QueryRow("SELECT is_active FROM users WHERE id = ?", id).Scan(&current)
-	if err != nil {
-		return err
-	}
-	if current == active {
-		return nil
-	}
-	query := `
-		UPDATE users
-		SET is_active = ?, updated_at = CURRENT_TIMESTAMP
-		WHERE id = ?
-	`
-	_, err = db.Exec(query, active, id)
-	return err
 }
 
 func (db *DB) UpdateUsername(id int, username string) error {

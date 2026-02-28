@@ -11,7 +11,6 @@
             <th>Användarnamn</th>
             <th>Visningsnamn</th>
             <th>Roll</th>
-            <th>Aktiv</th>
             <th>Ändrad</th>
             <th>Skapad</th>
         </tr>
@@ -23,7 +22,6 @@
             <td>{{.Username}}</td>
             <td>{{.DisplayName}}</td>
             <td>{{.Role}}</td>
-            <td>{{if .IsActive}}Ja{{else}}Nej{{end}}</td>
             <td>{{.UpdatedAt}}</td>
             <td>{{.CreatedAt}}</td>
             <td><a href="/admin/users/manage/{{.ID}}">Hantera</a></td>
