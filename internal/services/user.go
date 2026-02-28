@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"recipe-web-server/internal/config"
 	"recipe-web-server/internal/database"
 	"recipe-web-server/internal/models"
 )
@@ -34,15 +35,7 @@ func (s *UserService) CreateUser(username, displayName, password string, role mo
 		return nil, errors.New("username already exists")
 	}
 
-	p := &params{
-		memory:      64 * 1024,
-		iterations:  3,
-		parallelism: 1,
-		saltLength:  16,
-		keyLength:   32,
-	}
-
-	passwordHash := generateFromPassword(password, p)
+	passwordHash := generateFromPassword(password, defaultParams)
 
 	user := &models.User{
 		Username:     username,
@@ -64,4 +57,31 @@ func (s *UserService) GetUser(id int) (*models.User, error) {
 
 func (s *UserService) GetAllUsers() ([]*models.User, error) {
 	return s.db.GetAllUsers()
+}
+
+func (s *UserService) UpdateUsername(id int, newUsername string) error {
+	_, err := s.db.GetUserByUsername(newUsername)
+	if err == nil {
+		return errors.New("username already exists")
+	}
+	return s.db.UpdateUsername(id, newUsername)
+}
+
+func (s *UserService) UpdateDisplayName(id int, displayName string) error {
+	return s.db.UpdateDisplayName(id, displayName)
+}
+
+func (s *UserService) UpdatePassword(id int, password, confirmPassword string) error {
+	if password != confirmPassword {
+		return errors.New("confirm_not_match")
+	}
+	if len(password) < config.MinPasswordLength {
+		return errors.New("password_too_short")
+	}
+	hash := generateFromPassword(password, defaultParams)
+	return s.db.UpdatePasswordHash(id, hash)
+}
+
+func (s *UserService) UpdateRole(id int, role string) error {
+	return s.db.UpdateRole(id, role)
 }

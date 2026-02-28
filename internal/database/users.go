@@ -127,3 +127,59 @@ func (db *DB) SetUserActive(id int, active bool) error {
 	_, err = db.Exec(query, active, id)
 	return err
 }
+
+func (db *DB) UpdateUsername(id int, username string) error {
+	query := `
+		UPDATE users
+		SET username = ?, updated_at = CURRENT_TIMESTAMP
+		WHERE id = ?
+	`
+	_, err := db.Exec(query, username, id)
+	return err
+}
+
+func (db *DB) UpdateDisplayName(id int, displayName string) error {
+	var current string
+	err := db.QueryRow("SELECT display_name FROM users WHERE id = ?", id).Scan(&current)
+	if err != nil {
+		return err
+	}
+	if current == displayName {
+		return nil
+	}
+	query := `
+		UPDATE users
+		SET display_name = ?, updated_at = CURRENT_TIMESTAMP
+		WHERE id = ?
+	`
+	_, err = db.Exec(query, displayName, id)
+	return err
+}
+
+func (db *DB) UpdatePasswordHash(id int, passwordHash string) error {
+	query := `
+		UPDATE users
+		SET password_hash = ?, updated_at = CURRENT_TIMESTAMP
+		WHERE id = ?
+	`
+	_, err := db.Exec(query, passwordHash, id)
+	return err
+}
+
+func (db *DB) UpdateRole(id int, role string) error {
+	var current string
+	err := db.QueryRow("SELECT role FROM users WHERE id = ?", id).Scan(&current)
+	if err != nil {
+		return err
+	}
+	if current == role {
+		return nil
+	}
+	query := `
+		UPDATE users
+		SET role = ?, updated_at = CURRENT_TIMESTAMP
+		WHERE id = ?
+	`
+	_, err = db.Exec(query, role, id)
+	return err
+}

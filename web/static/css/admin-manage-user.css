@@ -1,0 +1,15 @@
+form>* {
+    display: block;
+}
+
+form>*+* {
+    margin-top: 0.5rem;
+}
+
+form>label::after {
+    content: ":";
+}
+
+fieldset {
+    width: fit-content;
+}

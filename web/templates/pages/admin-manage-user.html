@@ -1,0 +1,100 @@
+{{template "base" .}}
+
+{{define "head"}}
+<link rel="stylesheet" href="/static/css/admin-manage-user.css">
+{{end}}
+
+{{define "content"}}
+
+<p>
+    <a href="/admin/users">Tillbaka till alla användare</a>
+</p>
+
+<h1>Hantera användare <q>{{.User.Username}}</q></h1>
+
+<table class="overview">
+    <tr>
+        <td>ID</td>
+        <td>{{.User.ID}}</td>
+    </tr>
+
+    <tr>
+        <td>Skapad</td>
+        <td>
+            <time datetime="{{ .User.CreatedAt.UTC.Format " 2006-01-02T15:04:05Z" }}">
+                {{ .User.CreatedAt.UTC.Format "2006-01-02 15:04:05" }} (UTC)
+            </time>
+        </td>
+    </tr>
+
+    <tr>
+        <td>Uppdaterad senast</td>
+        <td>
+            <time datetime="{{ .User.UpdatedAt.UTC.Format " 2006-01-02T15:04:05Z" }}">
+                {{ .User.UpdatedAt.UTC.Format "2006-01-02 15:04:05" }} (UTC)
+            </time>
+        </td>
+    </tr>
+</table>
+
+<h2>Användarnamn</h2>
+
+<p>Nuvarande värde: {{.User.Username}}</p>
+
+<form action="/admin/users/manage/{{.User.ID}}/username" method="POST">
+    <label for="username">Nytt användarnamn</label>
+    <input type="text" name="username" id="username" autocomplete="off" required>
+    <button type="submit">Uppdatera</button>
+</form>
+
+<h2>Visningsnamn</h2>
+
+<p>Nuvarande värde: {{.User.DisplayName}}</p>
+
+<form action="/admin/users/manage/{{.User.ID}}/display-name" method="POST">
+    <label for="display-name">Nytt visningsnamn</label>
+    <input type="text" name="display-name" id="display-name" autocomplete="off" required>
+    <button type="submit">Uppdatera</button>
+</form>
+
+<h2>Lösenord</h2>
+
+<p>
+    Nuvarande lösenordshash:
+    <code>{{.User.PasswordHash}}</code>
+</p>
+
+<form action="/admin/users/manage/{{.User.ID}}/password" method="POST">
+    <label for="password">Nytt lösenord</label>
+    <input type="password" name="password" id="password" autocomplete="off" minlength="15" required>
+
+    <label for="confirm-password">Bekräfta nytt lösenord</label>
+    <input type="password" name="confirm-password" id="confirm-password" autocomplete="off" minlength="15" required>
+
+    <button type="submit">Uppdatera</button>
+</form>
+
+<h2>Roll</h2>
+
+<p>
+    Nuvarande roll: {{.User.Role}}
+</p>
+
+<form action="/admin/users/manage/{{.User.ID}}/role" method="POST">
+    <label for="password">Ny roll</label>
+
+    <fieldset>
+        <label>
+            <input type="radio" name="role" value="user">
+            Användare
+        </label>
+        <label>
+            <input type="radio" name="role" value="admin">
+            Admin
+        </label>
+    </fieldset>
+
+    <button type="submit">Uppdatera</button>
+</form>
+
+{{end}}

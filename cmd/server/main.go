@@ -57,6 +57,12 @@ func main() {
 	adminMux.HandleFunc("GET /admin/users/create", adminHandler.CreateUserPage)
 	adminMux.HandleFunc("POST /admin/users/create", adminHandler.CreateUser)
 
+	adminMux.HandleFunc("GET /admin/users/manage/{id}", adminHandler.ManageUserPage)
+	adminMux.HandleFunc("POST /admin/users/manage/{id}/username", adminHandler.UpdateUsername)
+	adminMux.HandleFunc("POST /admin/users/manage/{id}/display-name", adminHandler.UpdateDisplayName)
+	adminMux.HandleFunc("POST /admin/users/manage/{id}/password", adminHandler.UpdatePassword)
+	adminMux.HandleFunc("POST /admin/users/manage/{id}/role", adminHandler.UpdateRole)
+
 	mux.Handle("/admin/", middleware.RequireAdmin(adminMux))
 
 	fmt.Println("Server starting on :8080...")

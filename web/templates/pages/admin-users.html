@@ -2,7 +2,7 @@
 
 {{define "content"}}
 
-<h1>Hantera användare</h1>
+<h1>Alla användare</h1>
 
 <table>
     <thead>
@@ -10,7 +10,6 @@
             <th>ID</th>
             <th>Användarnamn</th>
             <th>Visningsnamn</th>
-            <th>Lösenordshash</th>
             <th>Roll</th>
             <th>Aktiv</th>
             <th>Ändrad</th>
@@ -23,11 +22,11 @@
             <td>{{.ID}}</td>
             <td>{{.Username}}</td>
             <td>{{.DisplayName}}</td>
-            <td>{{.PasswordHash}}</td>
             <td>{{.Role}}</td>
             <td>{{if .IsActive}}Ja{{else}}Nej{{end}}</td>
             <td>{{.UpdatedAt}}</td>
             <td>{{.CreatedAt}}</td>
+            <td><a href="/admin/users/manage/{{.ID}}">Hantera</a></td>
         </tr>
         {{end}}
     </tbody>

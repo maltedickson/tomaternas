@@ -1,11 +1,16 @@
 package handlers
 
 import (
+	"database/sql"
+	"errors"
+	"fmt"
 	"net/http"
+	"net/url"
 	"recipe-web-server/internal/config"
 	"recipe-web-server/internal/middleware"
 	"recipe-web-server/internal/services"
 	"recipe-web-server/internal/templates"
+	"strconv"
 )
 
 type AdminHandler struct {
@@ -83,4 +88,94 @@ func (h *AdminHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
+}
+
+func (h *AdminHandler) ManageUserPage(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "ogiltigt id", http.StatusBadRequest)
+		return
+	}
+	user, err := h.userService.GetUser(id)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			http.Error(w, "användaren kunde inte hittas", http.StatusNotFound)
+			return
+		} else {
+			http.Error(w, "internet serverfel", http.StatusInternalServerError)
+			return
+		}
+	}
+	data := map[string]any{
+		"Title":           "Admin - Hantera användare",
+		"IsAuthenticated": middleware.IsAuthenticated(r),
+		"User":            user,
+	}
+	h.renderer.Render(w, "admin-manage-user", data)
+}
+
+func (h *AdminHandler) UpdateUsername(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "ogiltigt id", http.StatusBadRequest)
+		return
+	}
+	newUsername := r.FormValue("username")
+	err = h.userService.UpdateUsername(id, newUsername)
+	if err != nil {
+		http.Redirect(w, r, fmt.Sprintf("/admin/users/manage/%d?error=%s", id, url.QueryEscape(err.Error())), http.StatusSeeOther)
+		return
+	}
+	http.Redirect(w, r, fmt.Sprintf("/admin/users/manage/%d", id), http.StatusSeeOther)
+}
+
+func (h *AdminHandler) UpdateDisplayName(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "ogiltigt id", http.StatusBadRequest)
+		return
+	}
+	displayName := r.FormValue("display-name")
+	err = h.userService.UpdateDisplayName(id, displayName)
+	if err != nil {
+		http.Redirect(w, r, fmt.Sprintf("/admin/users/manage/%d?error=%s", id, url.QueryEscape(err.Error())), http.StatusSeeOther)
+		return
+	}
+	http.Redirect(w, r, fmt.Sprintf("/admin/users/manage/%d", id), http.StatusSeeOther)
+}
+
+func (h *AdminHandler) UpdatePassword(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "ogiltigt id", http.StatusBadRequest)
+		return
+	}
+	password := r.FormValue("password")
+	confirmPassword := r.FormValue("confirm-password")
+	err = h.userService.UpdatePassword(id, password, confirmPassword)
+	if err != nil {
+		http.Redirect(w, r, fmt.Sprintf("/admin/users/manage/%d?error=%s", id, url.QueryEscape(err.Error())), http.StatusSeeOther)
+		return
+	}
+	http.Redirect(w, r, fmt.Sprintf("/admin/users/manage/%d", id), http.StatusSeeOther)
+}
+
+func (h *AdminHandler) UpdateRole(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "ogiltigt id", http.StatusBadRequest)
+		return
+	}
+	role := r.FormValue("role")
+	err = h.userService.UpdateRole(id, role)
+	if err != nil {
+		http.Redirect(w, r, fmt.Sprintf("/admin/users/manage/%d?error=%s", id, url.QueryEscape(err.Error())), http.StatusSeeOther)
+		return
+	}
+	http.Redirect(w, r, fmt.Sprintf("/admin/users/manage/%d", id), http.StatusSeeOther)
 }

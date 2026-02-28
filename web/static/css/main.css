@@ -28,3 +28,12 @@
     border: 1px solid var(--color-error-border);
     border-radius: 4px;
 }
+
+table {
+    border-collapse: collapse;
+}
+
+table td {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid currentColor;
+}
