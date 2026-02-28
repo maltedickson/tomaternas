@@ -25,24 +25,35 @@ func NewAdminHandler(userService *services.UserService, renderer *templates.Rend
 	}
 }
 
+func (h *AdminHandler) DashboardPage(w http.ResponseWriter, r *http.Request) {
+	user, _ := middleware.GetUser(r)
+	data := map[string]any{
+		"Title": "Admin - Panel",
+		"User":  user,
+	}
+	h.renderer.Render(w, "admin-dashboard", data)
+}
+
 func (h *AdminHandler) UsersPage(w http.ResponseWriter, r *http.Request) {
 	users, err := h.userService.GetAllUsers()
 	if err != nil {
 		http.Error(w, "Kunde inte läsa användare", http.StatusInternalServerError)
 		return
 	}
+	user, _ := middleware.GetUser(r)
 	data := map[string]any{
-		"Title":           "Admin - Hantera användare",
-		"IsAuthenticated": middleware.IsAuthenticated(r),
-		"Users":           users,
+		"Title": "Admin - Hantera användare",
+		"User":  user,
+		"Users": users,
 	}
 	h.renderer.Render(w, "admin-users", data)
 }
 
 func (h *AdminHandler) CreateUserPage(w http.ResponseWriter, r *http.Request) {
+	user, _ := middleware.GetUser(r)
 	data := map[string]any{
-		"Title":           "Admin - Skapa användare",
-		"IsAuthenticated": middleware.IsAuthenticated(r),
+		"Title": "Admin - Skapa användare",
+		"User":  user,
 	}
 	h.renderer.Render(w, "admin-create-user", data)
 }
@@ -97,7 +108,7 @@ func (h *AdminHandler) ManageUserPage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "ogiltigt id", http.StatusBadRequest)
 		return
 	}
-	user, err := h.userService.GetUser(id)
+	managedUser, err := h.userService.GetUser(id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			http.Error(w, "användaren kunde inte hittas", http.StatusNotFound)
@@ -107,10 +118,11 @@ func (h *AdminHandler) ManageUserPage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	user, _ := middleware.GetUser(r)
 	data := map[string]any{
-		"Title":           "Admin - Hantera användare",
-		"IsAuthenticated": middleware.IsAuthenticated(r),
-		"User":            user,
+		"Title":       "Admin - Hantera användare",
+		"User":        user,
+		"ManagedUser": managedUser,
 	}
 	h.renderer.Render(w, "admin-manage-user", data)
 }

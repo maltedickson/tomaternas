@@ -38,20 +38,27 @@ func main() {
 	authHandler := handlers.NewAuthHandler(authService, renderer)
 	homeHandler := handlers.NewHomeHandler(renderer)
 	adminHandler := handlers.NewAdminHandler(userService, renderer)
+	loggedInHandler := handlers.NewLoggedInHandler(userService, renderer)
 
 	mux.HandleFunc("/", homeHandler.HomePage)
-	mux.HandleFunc("GET /other-page", homeHandler.OtherPage)
 
 	mux.HandleFunc("GET /login", authHandler.LoginPage)
 	mux.HandleFunc("POST /login", authHandler.Login)
 
 	mux.HandleFunc("POST /logout", authHandler.Logout)
 
+	loggedInMux := http.NewServeMux()
+
+	loggedInMux.HandleFunc("GET /settings", loggedInHandler.SettingsPage)
+
 	middlewareStack := middleware.CreateStack(
 		middleware.AuthMiddleware(authService),
 	)
 
 	adminMux := http.NewServeMux()
+
+	adminMux.HandleFunc("GET /admin/dashboard", adminHandler.DashboardPage)
+
 	adminMux.HandleFunc("GET /admin/users", adminHandler.UsersPage)
 
 	adminMux.HandleFunc("GET /admin/users/create", adminHandler.CreateUserPage)
@@ -63,6 +70,7 @@ func main() {
 	adminMux.HandleFunc("POST /admin/users/manage/{id}/password", adminHandler.UpdatePassword)
 	adminMux.HandleFunc("POST /admin/users/manage/{id}/role", adminHandler.UpdateRole)
 
+	mux.Handle("GET /settings", middleware.RequireAuth(loggedInMux))
 	mux.Handle("/admin/", middleware.RequireAdmin(adminMux))
 
 	fmt.Println("Server starting on :8080...")

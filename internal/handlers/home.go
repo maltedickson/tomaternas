@@ -25,19 +25,11 @@ func (h *HomeHandler) HomePage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Metoden är ej tillåten", http.StatusMethodNotAllowed)
 		return
 	}
+	user, _ := middleware.GetUser(r)
 	data := map[string]any{
-		"Title":           "Home",
-		"IsAuthenticated": middleware.IsAuthenticated(r),
-		"Path":            r.URL.Path,
+		"Title": "Home",
+		"Path":  r.URL.Path,
+		"User":  user,
 	}
 	h.renderer.Render(w, "home", data)
-}
-
-func (h *HomeHandler) OtherPage(w http.ResponseWriter, r *http.Request) {
-	data := map[string]any{
-		"Title":           "Annan sida",
-		"IsAuthenticated": middleware.IsAuthenticated(r),
-		"Path":            r.URL.Path,
-	}
-	h.renderer.Render(w, "other-page", data)
 }

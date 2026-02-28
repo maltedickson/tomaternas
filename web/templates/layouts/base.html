@@ -18,11 +18,7 @@
         <div class="right">
             {{block "top-right" .}}
 
-            {{if .IsAuthenticated}}
-            {{template "logout-button" .}}
-            {{else}}
-            {{template "login-link" .}}
-            {{end}}
+            {{template "auth-menu" .}}
 
             {{end}}
         </div>
