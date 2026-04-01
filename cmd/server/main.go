@@ -50,10 +50,7 @@ func main() {
 	loggedInMux := http.NewServeMux()
 
 	loggedInMux.HandleFunc("GET /settings", loggedInHandler.SettingsPage)
-
-	middlewareStack := middleware.CreateStack(
-		middleware.AuthMiddleware(authService),
-	)
+	loggedInMux.HandleFunc("GET /manage/new", loggedInHandler.NewRecipePage)
 
 	adminMux := http.NewServeMux()
 
@@ -71,8 +68,12 @@ func main() {
 	adminMux.HandleFunc("POST /admin/users/manage/{id}/role", adminHandler.UpdateRole)
 
 	mux.Handle("GET /settings", middleware.RequireAuth(loggedInMux))
+	mux.Handle("/manage/", middleware.RequireAuth(loggedInMux))
 	mux.Handle("/admin/", middleware.RequireAdmin(adminMux))
 
+	middlewareStack := middleware.CreateStack(
+		middleware.AuthMiddleware(authService),
+	)
 	fmt.Println("Server starting on :8080...")
 	err = http.ListenAndServe(":8080", middlewareStack(mux))
 	if err != nil {

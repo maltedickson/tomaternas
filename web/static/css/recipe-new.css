@@ -1,0 +1,54 @@
+/* form { */
+/*     >*+* { */
+/*         margin-top: 2rem; */
+/*     } */
+/**/
+/*     label { */
+/*         margin-bottom: 0.5rem; */
+/*         display: block; */
+/*     } */
+/**/
+/*     input[type="text"] { */
+/*         display: block; */
+/*         height: 2rem; */
+/*         width: 100%; */
+/*         font: inherit; */
+/*     } */
+/**/
+/*     textarea { */
+/*         width: 100%; */
+/*         font: inherit; */
+/*         resize: vertical; */
+/*         min-height: 2rem; */
+/*     } */
+/**/
+/*     .ingredient-input-parent { */
+/*         display: flex; */
+/*         column-gap: 0.5rem; */
+/*         align-items: stretch; */
+/*         height: 2rem; */
+/**/
+/*         >input { */
+/*             height: 100%; */
+/*         } */
+/**/
+/*         button { */
+/*             flex-shrink: 0; */
+/*         } */
+/**/
+/*         > :first-child { */
+/*             flex-grow: 3; */
+/*         } */
+/*     } */
+/* } */
+
+/* .new-section { */
+/*     display: flex; */
+/*     margin-inline: 2rem; */
+/**/
+/*     >:first-child { */
+/*         flex-grow: 1; */
+/*     } */
+/**/
+/*     button {} */
+/* } */

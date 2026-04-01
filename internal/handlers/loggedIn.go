@@ -22,9 +22,19 @@ func NewLoggedInHandler(userService *services.UserService, renderer *templates.R
 func (h *LoggedInHandler) SettingsPage(w http.ResponseWriter, r *http.Request) {
 	user, _ := middleware.GetUser(r)
 	data := map[string]any{
-		"Title": "Home",
+		"Title": "Inställningar",
 		"Path":  r.URL.Path,
 		"User":  user,
 	}
 	h.renderer.Render(w, "settings", data)
+}
+
+func (h *LoggedInHandler) NewRecipePage(w http.ResponseWriter, r *http.Request) {
+	user, _ := middleware.GetUser(r)
+	data := map[string]any{
+		"Title": "Skapa nytt recept",
+		"Path":  r.URL.Path,
+		"User":  user,
+	}
+	h.renderer.Render(w, "recipe-new", data)
 }
