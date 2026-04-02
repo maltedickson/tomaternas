@@ -8,7 +8,26 @@ function addIngredient(ingredientsContainer) {
     removeButton.addEventListener("click", function() {
         ingredient.remove();
     });
+
+    const ingredientInput = ingredient.querySelector("[data-ingredient-input]");
+    const amountInput = ingredient.querySelector("[data-amount-input]");
+
+    amountInput.addEventListener('keydown', e => {
+        if (e.key !== 'Enter') return;
+        e.preventDefault();
+        addIngredient(ingredientsContainer);
+    });
+    ingredientInput.addEventListener('keydown', e => {
+        if (e.key !== 'Enter') return;
+        e.preventDefault();
+        addIngredient(ingredientsContainer);
+    });
+
     ingredientsContainer.appendChild(clone);
+
+    ingredientInput.focus();
+
+    return ingredient;
 }
 
 function addSection() {
@@ -25,8 +44,16 @@ function addSection() {
     newIngredientButton.addEventListener("click", function() {
         addIngredient(ingredientsContainer);
     });
-    addIngredient(ingredientsContainer);
+    const firstIngredient = addIngredient(ingredientsContainer);
+    const firstIngredientInput = firstIngredient.querySelector("[data-ingredient-input]");
     container.appendChild(clone);
+    const sectionHeadingInput = section.querySelector("[data-section-heading-input]");
+    sectionHeadingInput.focus();
+    sectionHeadingInput.addEventListener('keydown', e => {
+        if (e.key !== 'Enter') return;
+        e.preventDefault();
+        firstIngredientInput.focus();
+    });
 }
 
 addSection()

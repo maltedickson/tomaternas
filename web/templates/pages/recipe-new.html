@@ -13,126 +13,102 @@
     <div class="card page">
 
         <form action="/manage/new" method="POST">
-            <div class="row flex-wrap col-gap-1">
-                <div class="grow-1">
-                    <label>Receptets namn</label>
-                    <input type="text" name="title" placeholder="Vad vill du kalla receptet?" required>
-
-                    <label for="time-slider">Tillagningstid</label>
-                    <div class="slider-wrapper">
-                        <div class="slider-ticks" id="slider-ticks" aria-hidden="true">
-                            <!-- <div style="--m: 0;">|</div> -->
-                            <!-- <div style="--m: 5;">|</div> -->
-                            <!-- <div style="--m: 10;">|</div> -->
-                            <!-- <div style="--m: 15;">|</div> -->
-                            <!-- <div style="--m: 20;">|</div> -->
-                            <!-- <div style="--m: 25;">|</div> -->
-
-                            <div style="--m: 15;">15m</div>
-                            <div style="--m: 30;">30m</div>
-                            <div style="--m: 45;">45m</div>
-                            <div style="--m: 60;">1h</div>
-                            <div style="--m: 90;">1h30</div>
-                            <div style="--m: 120;">2h+</div>
-
-                            <!-- <div style="--m: 15;">15</div> -->
-                            <!-- <div style="--m: 30;">30</div> -->
-                            <!-- <div style="--m: 45;">45</div> -->
-                            <!-- <div style="--m: 60;">60</div> -->
-                            <!-- <div style="--m: 90;">90</div> -->
-                            <!-- <div style="--m: 120;">120+</div> -->
-                        </div>
-                        <input type="range" id="time-slider" name="cook_time" min="0" max="120" step="5" value="0">
-                    </div>
-
-                    <label for="">Förberedelsetid</label>
-                    <input type="number">
-
-                </div>
+            <h2>Receptets namn</h2>
+            <input type="text" name="title" placeholder="Vad vill du kalla receptet?" required>
 
 
-                <div class="photo-upload">
-                    <label>
-                        Ladda upp foto
-                    </label>
-                    <div>
-                        <i class="photo-upload__icon ph ph-image"></i>
-                        Ingen bild vald
-                        <input type="file" name="image" accept="image/*">
-                        <img alt="Foto på resultat">
-                    </div>
-                </div>
-            </div>
 
-            <label>Beskrivning</label>
-            <textarea name="description" rows="2"
-                placeholder="Valfri beskrivning av receptet. Berätta gärna varifrån det kommer!"></textarea>
 
             <div class="tags-editor">
                 <div>
-                    <label>Måltidstyp</label>
-                    <div>
-                        <label><input type="checkbox" name="meal-types[]">Frukost</label>
-                        <label><input type="checkbox" name="meal-types[]">Förrätt</label>
-                        <label><input type="checkbox" name="meal-types[]">Huvudrätt</label>
-                        <label><input type="checkbox" name="meal-types[]">Tillbehör</label>
-                        <label><input type="checkbox" name="meal-types[]">Fika/efterrätt</label>
-                        <label><input type="checkbox" name="meal-types[]">Dryck</label>
+                    <h2>Måltidstyp</h2>
+                    <div class="chips">
+                        <label class="chip"><input type="checkbox" name="meal-types[]">Frukost</label>
+                        <label class="chip"><input type="checkbox" name="meal-types[]">Förrätt</label>
+                        <label class="chip"> <input type="checkbox" name="meal-types[]">Huvudrätt</label>
+                        <label class="chip"> <input type="checkbox" name="meal-types[]">Tillbehör</label>
+                        <label class="chip"> <input type="checkbox" name="meal-types[]">Fika/efterrätt</label>
+                        <label class="chip"> <input type="checkbox" name="meal-types[]">Dryck</label>
                     </div>
                 </div>
                 <div>
-                    <label>Specialkost</label>
-                    <div>
-                        <label><input type="checkbox" name="diets[]">Vegansk</label>
-                        <label><input type="checkbox" name="diets[]">Vegetarisk</label>
-                        <label><input type="checkbox" name="diets[]">Glutenfri</label>
-                        <label><input type="checkbox" name="diets[]">Mjölkfri</label>
+                    <h2>Specialkost</h2>
+                    <div class="chips">
+                        <label class="chip"> <input type="checkbox" name="diets[]">Vegansk</label>
+                        <label class="chip"> <input type="checkbox" name="diets[]">Vegetarisk</label>
+                        <label class="chip"> <input type="checkbox" name="diets[]">Glutenfri</label>
+                        <label class="chip"> <input type="checkbox" name="diets[]">Mjölkfri</label>
                     </div>
                 </div>
                 <div>
-                    <label>Etiketter</label>
-                    <div>
-                        <label><input type="checkbox" name="tags[]">Festlig</label>
-                        <label><input type="checkbox" name="tags[]">Matlåda</label>
-                        <label><input type="checkbox" name="tags[]">Storkok</label>
+                    <h2>Etiketter</h2>
+                    <div class="chips">
+                        <label class="chip"> <input type="checkbox" name="tags[]">Festlig</label>
+                        <label class="chip"> <input type="checkbox" name="tags[]">Matlåda</label>
+                        <label class="chip"> <input type="checkbox" name="tags[]">Storkok</label>
                     </div>
                 </div>
             </div>
 
-            <label>Antal portioner</label>
-            <input type="text" name="servings" placeholder="T.ex. 4. Skriv enhet om det inte är portioner.">
+            <h2 for="time-slider">Tillagningstid</h2>
+            <div class="time-slider">
+                <div class="time-slider__ticks" id="slider-ticks" aria-hidden="true">
+                    Tid:
+                    <div style="--m: 15;">15m</div>
+                    <div style="--m: 30;">30m</div>
+                    <div style="--m: 45;">45m</div>
+                    <div style="--m: 60;">1h</div>
+                    <div style="--m: 90;">1h30</div>
+                    <div style="--m: 120;">2h+</div>
+                </div>
+                <input class="time-slider__input" type="range" id="time-slider" name="cook_time" min="0" max="120"
+                    step="5" value="0">
+            </div>
+
+            <h2 for="">Förberedelsetid</h2>
+            <p>Ange antal timmar.</p>
+            <input type="number" value="0" min="0">
+
+            <h2>Beskrivning</h2>
+            <textarea name="description" rows="3"
+                placeholder="Valfri beskrivning av receptet. Berätta gärna varifrån det kommer!"></textarea>
+
+            <h2>Antal portioner</h2>
+            <p>Hur många portioner är mängderna i ingredienslistan anpassade för?</p>
+            <input type="text" name="servings" placeholder="T.ex. 4">
 
             <h2>Ingredienser</h2>
 
             <section>
                 <template id="tmpl-ingredients-section">
                     <div data-section class="spacing">
-                        <div role="group">
-                            <label for="">
-                                Sektion
-                                <input type="text" id="">
+                        <div class="ingredients-section-heading">
+                            <label class="ingredients-section-heading__label">
+                                <span class="ingredients-section-heading__label-text">Sektion:</span>
+                                <input type="text" id="" class="ingredients-section-heading__input"
+                                    data-section-heading-input>
                             </label>
-                            <button type="button" data-action="remove-section">x</button>
+                            <button type="button" data-action="remove-section"><i class="las la-trash-alt"></i></button>
                         </div>
                         <div data-ingredients-container class="spacing-small"></div>
                         <button type="button" data-action="new-ingredient">
-                            <i class="ph ph-plus"></i>
+                            <i class="las la-plus"></i>
                             Ny ingrediens
                         </button>
                     </div>
                 </template>
                 <template id="tmpl-ingredient">
-                    <div role="group" data-ingredient>
-                        <input type="text" placeholder="Ingrediens" class="grow-2">
-                        <input type="text" placeholder="Mängd">
+                    <div data-ingredient class="ingredient">
+                        <input type="text" placeholder="Ingrediens" required data-ingredient-input>
+                        <input type="text" placeholder="Mängd" data-amount-input>
                         <button type="button">
-                            <i class="ph ph-trash"></i>
+                            <i class="las la-trash-alt"></i>
                         </button>
                     </div>
                 </template>
-                <div id="ingredients-sections-container" class="spacing"></div>
-                <button onclick="addSection()" type="button" class="mt-lg">
-                    <i class="ph ph-plus"></i>
+                <div id="ingredients-sections-container" class="spacing-large"></div>
+                <button onclick="addSection()" type="button" class="new-ingredients-section-button">
+                    <i class="las la-plus"></i>
                     Ny sektion
                 </button>
             </section>
@@ -141,8 +117,18 @@
 
             <section>
                 <h2>Instruktioner</h2>
-                <textarea type="text" name="instructions" id="input-instructions" rows="5"></textarea>
+                <textarea type="text" name="instructions" id="input-instructions" rows="10"></textarea>
             </section>
+
+            <div class="photo-upload">
+                <h2>
+                    Ladda upp foto
+                </h2>
+                <div>
+                    <input type="file" name="image" accept="image/*">
+                    <!-- <img alt="Foto på resultat"> -->
+                </div>
+            </div>
 
         </form>
 

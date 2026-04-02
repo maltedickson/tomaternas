@@ -1,11 +1,11 @@
-const textareas = document.querySelectorAll('textarea');
-
-textareas.forEach(textarea => {
-    textarea.addEventListener('input', function() {
-        this.style.height = 'auto';
-        this.style.height = this.scrollHeight + 2 + 'px';
-    });
-})
+// const textareas = document.querySelectorAll('textarea');
+//
+// textareas.forEach(textarea => {
+//     textarea.addEventListener('input', function() {
+//         this.style.height = 'auto';
+//         this.style.height = this.scrollHeight + 2 + 'px';
+//     });
+// })
 
 const fileUploads = document.querySelectorAll('input[type="file"]');
 
