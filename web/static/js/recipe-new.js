@@ -1,6 +1,6 @@
 sectionContainer = document.getElementById("ingredients-sections-container")
 
-function addIngredient(ingredientsContainer) {
+function addIngredient(ingredientsContainer, isInit = false) {
     const template = document.getElementById("tmpl-ingredient");
     const clone = document.importNode(template.content, true);
     const removeButton = clone.querySelector("button");
@@ -25,12 +25,14 @@ function addIngredient(ingredientsContainer) {
 
     ingredientsContainer.appendChild(clone);
 
-    ingredientInput.focus();
+    if (!isInit) {
+        ingredientInput.focus();
+    }
 
     return ingredient;
 }
 
-function addSection() {
+function addSection(isInit = false) {
     const template = document.getElementById("tmpl-ingredients-section");
     const clone = document.importNode(template.content, true);
     const container = document.getElementById("ingredients-sections-container");
@@ -44,11 +46,13 @@ function addSection() {
     newIngredientButton.addEventListener("click", function() {
         addIngredient(ingredientsContainer);
     });
-    const firstIngredient = addIngredient(ingredientsContainer);
+    const firstIngredient = addIngredient(ingredientsContainer, isInit);
     const firstIngredientInput = firstIngredient.querySelector("[data-ingredient-input]");
     container.appendChild(clone);
     const sectionHeadingInput = section.querySelector("[data-section-heading-input]");
-    sectionHeadingInput.focus();
+    if (!isInit) {
+        sectionHeadingInput.focus();
+    }
     sectionHeadingInput.addEventListener('keydown', e => {
         if (e.key !== 'Enter') return;
         e.preventDefault();
@@ -56,4 +60,4 @@ function addSection() {
     });
 }
 
-addSection()
+addSection(true)

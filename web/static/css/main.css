@@ -239,3 +239,7 @@ textarea {
 .spacing-large>*+* {
     margin-top: 2rem;
 }
+
+.mt-large {
+    margin-top: 2rem;
+}

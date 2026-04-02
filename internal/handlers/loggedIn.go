@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"recipe-web-server/internal/middleware"
 	"recipe-web-server/internal/services"
@@ -37,4 +38,37 @@ func (h *LoggedInHandler) NewRecipePage(w http.ResponseWriter, r *http.Request) 
 		"User":  user,
 	}
 	h.renderer.Render(w, "recipe-new", data)
+}
+
+func (h *LoggedInHandler) NewRecipe(w http.ResponseWriter, r *http.Request) {
+	user, _ := middleware.GetUser(r)
+
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, "Kunde inte läsa formulär", http.StatusBadRequest)
+		return
+	}
+
+	title := r.FormValue("title")
+	mealTypes := r.Form["meal-types[]"]
+	diets := r.Form["diets[]"]
+	tags := r.Form["tags[]"]
+	cookTime := r.FormValue("cook-time")
+	prepTime := r.FormValue("prep-time")
+	description := r.FormValue("description")
+	image := r.FormValue("image")
+	servings := r.FormValue("servings")
+	instructions := r.FormValue("instructions")
+
+	fmt.Println("user:", user)
+	fmt.Println("title:", title)
+	fmt.Println("meal types:", mealTypes)
+	fmt.Println("diets:", diets)
+	fmt.Println("tags:", tags)
+	fmt.Println("cook time:", cookTime)
+	fmt.Println("prep time", prepTime)
+	fmt.Println("desc", description)
+	fmt.Println("image", image)
+	fmt.Println("servings", servings)
+	fmt.Println("instructiosn", instructions)
 }

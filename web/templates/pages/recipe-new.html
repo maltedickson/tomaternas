@@ -16,36 +16,36 @@
             <h2>Receptets namn</h2>
             <input type="text" name="title" placeholder="Vad vill du kalla receptet?" required>
 
-
-
-
             <div class="tags-editor">
                 <div>
                     <h2>Måltidstyp</h2>
                     <div class="chips">
-                        <label class="chip"><input type="checkbox" name="meal-types[]">Frukost</label>
-                        <label class="chip"><input type="checkbox" name="meal-types[]">Förrätt</label>
-                        <label class="chip"> <input type="checkbox" name="meal-types[]">Huvudrätt</label>
-                        <label class="chip"> <input type="checkbox" name="meal-types[]">Tillbehör</label>
-                        <label class="chip"> <input type="checkbox" name="meal-types[]">Fika/efterrätt</label>
-                        <label class="chip"> <input type="checkbox" name="meal-types[]">Dryck</label>
+                        <label class="chip"><input type="checkbox" name="meal-types[]" value="Frukost">Frukost</label>
+                        <label class="chip"><input type="checkbox" name="meal-types[]" value="Förrätt">Förrätt</label>
+                        <label class="chip"> <input type="checkbox" name="meal-types[]"
+                                value="Huvudrätt">Huvudrätt</label>
+                        <label class="chip"> <input type="checkbox" name="meal-types[]"
+                                value="Tillbehör">Tillbehör</label>
+                        <label class="chip"> <input type="checkbox" name="meal-types[]"
+                                value="Fika/efterrätt">Fika/efterrätt</label>
+                        <label class="chip"> <input type="checkbox" name="meal-types[]" value="Dryck">Dryck</label>
                     </div>
                 </div>
                 <div>
                     <h2>Specialkost</h2>
                     <div class="chips">
-                        <label class="chip"> <input type="checkbox" name="diets[]">Vegansk</label>
-                        <label class="chip"> <input type="checkbox" name="diets[]">Vegetarisk</label>
-                        <label class="chip"> <input type="checkbox" name="diets[]">Glutenfri</label>
-                        <label class="chip"> <input type="checkbox" name="diets[]">Mjölkfri</label>
+                        <label class="chip"> <input type="checkbox" name="diets[]" value="Vegansk">Vegansk</label>
+                        <label class="chip"> <input type="checkbox" name="diets[]" value="Vegetarisk">Vegetarisk</label>
+                        <label class="chip"> <input type="checkbox" name="diets[]" value="Glutenfri">Glutenfri</label>
+                        <label class="chip"> <input type="checkbox" name="diets[]" value="Mjölkfri">Mjölkfri</label>
                     </div>
                 </div>
                 <div>
                     <h2>Etiketter</h2>
                     <div class="chips">
-                        <label class="chip"> <input type="checkbox" name="tags[]">Festlig</label>
-                        <label class="chip"> <input type="checkbox" name="tags[]">Matlåda</label>
-                        <label class="chip"> <input type="checkbox" name="tags[]">Storkok</label>
+                        <label class="chip"> <input type="checkbox" name="tags[]" value="Festlig">Festlig</label>
+                        <label class="chip"> <input type="checkbox" name="tags[]" value="Matlåda">Matlåda</label>
+                        <label class="chip"> <input type="checkbox" name="tags[]" value="Storkok">Storkok</label>
                     </div>
                 </div>
             </div>
@@ -61,17 +61,27 @@
                     <div style="--m: 90;">1h30</div>
                     <div style="--m: 120;">2h+</div>
                 </div>
-                <input class="time-slider__input" type="range" id="time-slider" name="cook_time" min="0" max="120"
+                <input class="time-slider__input" type="range" id="time-slider" name="cook-time" min="0" max="120"
                     step="5" value="0">
             </div>
 
             <h2 for="">Förberedelsetid</h2>
             <p>Ange antal timmar.</p>
-            <input type="number" value="0" min="0">
+            <input type="number" value="0" min="0" name="prep-time">
 
             <h2>Beskrivning</h2>
             <textarea name="description" rows="3"
                 placeholder="Valfri beskrivning av receptet. Berätta gärna varifrån det kommer!"></textarea>
+
+            <div class="photo-upload">
+                <h2>
+                    Ladda upp foto
+                </h2>
+                <div>
+                    <input type="file" name="image" accept="image/*">
+                    <!-- <img alt="Foto på resultat"> -->
+                </div>
+            </div>
 
             <h2>Antal portioner</h2>
             <p>Hur många portioner är mängderna i ingredienslistan anpassade för?</p>
@@ -120,15 +130,8 @@
                 <textarea type="text" name="instructions" id="input-instructions" rows="10"></textarea>
             </section>
 
-            <div class="photo-upload">
-                <h2>
-                    Ladda upp foto
-                </h2>
-                <div>
-                    <input type="file" name="image" accept="image/*">
-                    <!-- <img alt="Foto på resultat"> -->
-                </div>
-            </div>
+
+            <button type="submit" class="mt-large">Ladda upp</button>
 
         </form>
 

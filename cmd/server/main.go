@@ -51,6 +51,7 @@ func main() {
 
 	loggedInMux.HandleFunc("GET /settings", loggedInHandler.SettingsPage)
 	loggedInMux.HandleFunc("GET /manage/new", loggedInHandler.NewRecipePage)
+	loggedInMux.HandleFunc("POST /manage/new", loggedInHandler.NewRecipe)
 
 	adminMux := http.NewServeMux()
 
