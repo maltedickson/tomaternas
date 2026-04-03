@@ -12,7 +12,7 @@
 
     <div class="card page">
 
-        <form action="/manage/new" method="POST">
+        <form action="/manage/new" method="POST" enctype="multipart/form-data" data-new-recipe-form>
             <h2>Receptets namn</h2>
             <input type="text" name="title" placeholder="Vad vill du kalla receptet?" required>
 
@@ -88,6 +88,8 @@
             <input type="text" name="servings" placeholder="T.ex. 4">
 
             <h2>Ingredienser</h2>
+
+            <input type="hidden" name="ingredients" data-ingredients-input>
 
             <section>
                 <template id="tmpl-ingredients-section">

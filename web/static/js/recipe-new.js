@@ -60,4 +60,19 @@ function addSection(isInit = false) {
     });
 }
 
-addSection(true)
+addSection(true);
+
+document.querySelector("[data-new-recipe-form]").addEventListener("submit", (e) => {
+    // TODO: add client side check to make sure form data is valid
+
+    const sections = Array.from(document.querySelectorAll("[data-section]")).map(section => ({
+        heading: section.querySelector("[data-section-heading-input]").value.trim(),
+        ingredients: Array.from(section.querySelectorAll("[data-ingredient]")).map(ingredient => ({
+            name: ingredient.querySelector("[data-ingredient-input]").value.trim(),
+            amount: ingredient.querySelector("[data-amount-input]").value.trim(),
+        }))
+    }));
+    const ingredientsInput = document.querySelector("[data-ingredients-input]");
+    console.log(JSON.stringify(sections));
+    ingredientsInput.value = JSON.stringify(sections);
+});

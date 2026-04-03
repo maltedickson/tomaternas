@@ -43,7 +43,7 @@ func (h *LoggedInHandler) NewRecipePage(w http.ResponseWriter, r *http.Request) 
 func (h *LoggedInHandler) NewRecipe(w http.ResponseWriter, r *http.Request) {
 	user, _ := middleware.GetUser(r)
 
-	err := r.ParseForm()
+	err := r.ParseMultipartForm(0)
 	if err != nil {
 		http.Error(w, "Kunde inte läsa formulär", http.StatusBadRequest)
 		return
@@ -56,9 +56,14 @@ func (h *LoggedInHandler) NewRecipe(w http.ResponseWriter, r *http.Request) {
 	cookTime := r.FormValue("cook-time")
 	prepTime := r.FormValue("prep-time")
 	description := r.FormValue("description")
-	image := r.FormValue("image")
+	image, _, err := r.FormFile("image")
 	servings := r.FormValue("servings")
+	ingredients := r.FormValue("ingredients")
 	instructions := r.FormValue("instructions")
+	if err != nil {
+		http.Error(w, "Kunde inte läsa bilden", http.StatusBadRequest)
+		return
+	}
 
 	fmt.Println("user:", user)
 	fmt.Println("title:", title)
@@ -70,5 +75,6 @@ func (h *LoggedInHandler) NewRecipe(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("desc", description)
 	fmt.Println("image", image)
 	fmt.Println("servings", servings)
+	fmt.Println("ingredients", ingredients)
 	fmt.Println("instructiosn", instructions)
 }
