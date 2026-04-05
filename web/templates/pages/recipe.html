@@ -1,0 +1,23 @@
+{{template "base" .}}
+
+{{define "content"}}
+
+<h1>{{.Recipe.Title}}</h1>
+
+<!-- Bild -->
+
+<p>
+    Skapat {{.Recipe.CreatedAt}} av {{.RecipeOwner.DisplayName}}
+    <br>
+    Redigerat {{.Recipe.UpdatedAt}}
+</p>
+
+<p class="keep-line-breaks">{{.Recipe.Description}}</p>
+
+<h2>Ingredienser</h2>
+
+<h2>Instruktioner</h2>
+
+<p class="keep-line-breaks">{{.Recipe.Instructions}}</p>
+
+{{end}}

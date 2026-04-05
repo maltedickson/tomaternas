@@ -31,8 +31,8 @@ func (db *DB) RunMigrations() error {
 			dietary_tags TEXT NOT NULL,
 			other_tags TEXT NOT NULL,
 			owner_id INTEGER NOT NULL,
-			created_at DATETIME NOT NULL,
-			updated_at DATETIME NOT NULL,
+			created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			FOREIGN KEY (owner_id) REFERENCES users(id)
 		)`,
 	}

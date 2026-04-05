@@ -243,3 +243,7 @@ textarea {
 .mt-large {
     margin-top: 2rem;
 }
+
+.keep-line-breaks {
+    white-space: pre-wrap;
+}

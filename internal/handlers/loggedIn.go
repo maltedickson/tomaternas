@@ -1,22 +1,27 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"recipe-web-server/internal/middleware"
+	"recipe-web-server/internal/models"
 	"recipe-web-server/internal/services"
 	"recipe-web-server/internal/templates"
+	"strconv"
 )
 
 type LoggedInHandler struct {
-	userService *services.UserService
-	renderer    *templates.Renderer
+	userService   *services.UserService
+	recipeService *services.RecipeService
+	renderer      *templates.Renderer
 }
 
-func NewLoggedInHandler(userService *services.UserService, renderer *templates.Renderer) *LoggedInHandler {
+func NewLoggedInHandler(userService *services.UserService, recipeService *services.RecipeService, renderer *templates.Renderer) *LoggedInHandler {
 	return &LoggedInHandler{
-		userService: userService,
-		renderer:    renderer,
+		userService:   userService,
+		recipeService: recipeService,
+		renderer:      renderer,
 	}
 }
 
@@ -53,28 +58,58 @@ func (h *LoggedInHandler) NewRecipe(w http.ResponseWriter, r *http.Request) {
 	mealTypes := r.Form["meal-types[]"]
 	diets := r.Form["diets[]"]
 	tags := r.Form["tags[]"]
-	cookTime := r.FormValue("cook-time")
-	prepTime := r.FormValue("prep-time")
 	description := r.FormValue("description")
-	image, _, err := r.FormFile("image")
 	servings := r.FormValue("servings")
-	ingredients := r.FormValue("ingredients")
 	instructions := r.FormValue("instructions")
+
+	cookTimeString := r.FormValue("cook-time")
+	cookTime, err := strconv.Atoi(cookTimeString)
 	if err != nil {
-		http.Error(w, "Kunde inte läsa bilden", http.StatusBadRequest)
+		http.Error(w, "Kunde inte läsa tid", http.StatusBadRequest)
 		return
 	}
 
-	fmt.Println("user:", user)
-	fmt.Println("title:", title)
-	fmt.Println("meal types:", mealTypes)
-	fmt.Println("diets:", diets)
-	fmt.Println("tags:", tags)
-	fmt.Println("cook time:", cookTime)
-	fmt.Println("prep time", prepTime)
-	fmt.Println("desc", description)
-	fmt.Println("image", image)
-	fmt.Println("servings", servings)
-	fmt.Println("ingredients", ingredients)
-	fmt.Println("instructiosn", instructions)
+	prepTimeString := r.FormValue("prep-time")
+	prepTime, err := strconv.Atoi(prepTimeString)
+	if err != nil {
+		http.Error(w, "Kunde inte läsa förberedelsetid", http.StatusBadRequest)
+		return
+	}
+
+	ingredientsString := r.FormValue("ingredients")
+	var ingredientSections []models.IngredientSection
+	err = json.Unmarshal([]byte(ingredientsString), &ingredientSections)
+	if err != nil {
+		http.Error(w, "Kunde inte läsa ingredienser", http.StatusBadRequest)
+		return
+	}
+
+	// image, _, err := r.FormFile("image")
+	// if err != nil {
+	// 	http.Error(w, "Kunde inte läsa bilden", http.StatusBadRequest)
+	// 	return
+	// }
+
+	recipe := &models.Recipe{
+		Title:              title,
+		Description:        description,
+		IngredientSections: ingredientSections,
+		Instructions:       instructions,
+		Servings:           servings,
+		PrepTimeSeconds:    prepTime,
+		CookTimeSeconds:    cookTime,
+		MealTypes:          mealTypes,
+		DietaryTags:        diets,
+		OtherTags:          tags,
+		OwnerID:            user.ID,
+	}
+
+	id, err := h.recipeService.CreateRecipe(recipe)
+
+	if err != nil {
+		http.Error(w, "Kunde inte skapa receptet", http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/r/%d", id), http.StatusSeeOther)
 }

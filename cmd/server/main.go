@@ -34,13 +34,16 @@ func main() {
 
 	authService := services.NewAuthService(db)
 	userService := services.NewUserService(db)
+	recipeService := services.NewRecipeService(db)
 
 	authHandler := handlers.NewAuthHandler(authService, renderer)
-	homeHandler := handlers.NewHomeHandler(renderer)
+	homeHandler := handlers.NewHomeHandler(userService, recipeService, renderer)
 	adminHandler := handlers.NewAdminHandler(userService, renderer)
-	loggedInHandler := handlers.NewLoggedInHandler(userService, renderer)
+	loggedInHandler := handlers.NewLoggedInHandler(userService, recipeService, renderer)
 
 	mux.HandleFunc("/", homeHandler.HomePage)
+
+	mux.HandleFunc("GET /r/{id}", homeHandler.ViewRecipePage)
 
 	mux.HandleFunc("GET /login", authHandler.LoginPage)
 	mux.HandleFunc("POST /login", authHandler.Login)
