@@ -111,6 +111,67 @@ func (db *DB) GetRecipeById(id int) (*models.Recipe, error) {
 	return &recipe, nil
 }
 
+func (db *DB) GetAllRecipeOverviews() ([]models.RecipeOverview, error) {
+	query := `
+		SELECT id, title, prep_time_seconds, cook_time_seconds, meal_types, dietary_tags, other_tags, owner_id, created_at, updated_at
+		FROM recipes
+		ORDER BY created_at DESC
+	`
+
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var overviews []models.RecipeOverview
+
+	for rows.Next() {
+		var ro models.RecipeOverview
+		var mealTypesString, dietaryTagsString, otherTagsString []byte
+
+		err := rows.Scan(
+			&ro.ID,
+			&ro.Title,
+			&ro.PrepTimeSeconds,
+			&ro.CookTimeSeconds,
+			&mealTypesString,
+			&dietaryTagsString,
+			&otherTagsString,
+			&ro.OwnerID,
+			&ro.CreatedAt,
+			&ro.UpdatedAt,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		err = json.Unmarshal(mealTypesString, &ro.MealTypes)
+		if err != nil {
+			return nil, err
+		}
+
+		err = json.Unmarshal(dietaryTagsString, &ro.DietaryTags)
+		if err != nil {
+			return nil, err
+		}
+
+		err = json.Unmarshal(dietaryTagsString, &ro.DietaryTags)
+		if err != nil {
+			return nil, err
+		}
+
+		overviews = append(overviews, ro)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return overviews, nil
+}
+
 func (db *DB) DeleteRecipeById(id int) error {
 	query := `
 		DELETE FROM recipes

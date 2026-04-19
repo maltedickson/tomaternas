@@ -25,6 +25,10 @@ func (s *RecipeService) GetRecipeById(id int) (*models.Recipe, error) {
 	return s.db.GetRecipeById(id)
 }
 
+func (s *RecipeService) GetAllRecipeOverviews() ([]models.RecipeOverview, error) {
+	return s.db.GetAllRecipeOverviews()
+}
+
 func (s *RecipeService) DeleteRecipeById(id int) error {
 	return s.db.DeleteRecipeById(id)
 }

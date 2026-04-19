@@ -8,6 +8,14 @@
 <p>Du är inloggad!</p>
 {{end}}
 
+{{range .RecipeOverviews}}
+<div>
+
+    <a href="/r/{{.ID}}">{{.Title}}</a>
+
+</div>
+{{end}}
+
 <p>
     Här kommer det finnas massa fina recept.
 </p>

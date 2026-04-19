@@ -30,3 +30,16 @@ type Ingredient struct {
 	Name   string
 	Amount string
 }
+
+type RecipeOverview struct {
+	ID              int
+	Title           string
+	PrepTimeSeconds int
+	CookTimeSeconds int
+	MealTypes       []string
+	DietaryTags     []string
+	OtherTags       []string
+	OwnerID         int
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
+}

@@ -34,10 +34,18 @@ func (h *HomeHandler) HomePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	user, _ := middleware.GetUser(r)
+
+	recipeOverviews, err := h.recipeService.GetAllRecipeOverviews()
+	if err != nil {
+		http.Error(w, "Kunde inte hämta recept", http.StatusInternalServerError)
+		return
+	}
+
 	data := map[string]any{
-		"Title": "Home",
-		"Path":  r.URL.Path,
-		"User":  user,
+		"Title":           "Home",
+		"Path":            r.URL.Path,
+		"User":            user,
+		"RecipeOverviews": recipeOverviews,
 	}
 	h.renderer.Render(w, "home", data)
 }
