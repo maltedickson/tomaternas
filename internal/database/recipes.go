@@ -7,8 +7,8 @@ import (
 
 func (db *DB) CreateRecipe(recipe *models.Recipe) (int, error) {
 	query := `
-		INSERT INTO recipes (id, title, description, ingredient_sections, instructions, servings, prep_time_seconds, cook_time_seconds, meal_types, dietary_tags, other_tags, owner_id)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		INSERT INTO recipes (title, description, ingredient_sections, instructions, servings, prep_time_seconds, cook_time_seconds, meal_types, dietary_tags, other_tags, owner_id)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
 
 	ingredient_sections_string, err := json.Marshal(recipe.IngredientSections)
@@ -30,7 +30,6 @@ func (db *DB) CreateRecipe(recipe *models.Recipe) (int, error) {
 
 	result, err := db.Exec(
 		query,
-		recipe.ID,
 		recipe.Title,
 		recipe.Description,
 		ingredient_sections_string,
@@ -110,4 +109,14 @@ func (db *DB) GetRecipeById(id int) (*models.Recipe, error) {
 	}
 
 	return &recipe, nil
+}
+
+func (db *DB) DeleteRecipeById(id int) error {
+	query := `
+		DELETE FROM recipes
+		WHERE id = ?
+	`
+
+	_, err := db.Exec(query, id)
+	return err
 }

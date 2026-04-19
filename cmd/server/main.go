@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"recipe-web-server/internal/database"
 	"recipe-web-server/internal/handlers"
 	"recipe-web-server/internal/middleware"
@@ -26,6 +27,11 @@ func main() {
 
 	fileServer := http.FileServer(http.Dir("./web/static/"))
 	mux.Handle("GET /static/", http.StripPrefix("/static", fileServer))
+
+	uploadsFileServer := http.FileServer(http.Dir("./data/uploads/"))
+	mux.Handle("GET /uploads/", http.StripPrefix("/uploads", uploadsFileServer))
+
+	os.MkdirAll("data/uploads/recipes", 0755)
 
 	renderer, err := templates.NewRenderer()
 	if err != nil {

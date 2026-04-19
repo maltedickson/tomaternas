@@ -175,7 +175,8 @@ h2 {
     font-size: 1.25rem;
 }
 
-p {
+p,
+ul {
     margin-top: 1rem;
     margin-bottom: 1rem;
 }

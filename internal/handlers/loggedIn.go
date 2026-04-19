@@ -3,7 +3,10 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 	"recipe-web-server/internal/middleware"
 	"recipe-web-server/internal/models"
 	"recipe-web-server/internal/services"
@@ -48,7 +51,7 @@ func (h *LoggedInHandler) NewRecipePage(w http.ResponseWriter, r *http.Request) 
 func (h *LoggedInHandler) NewRecipe(w http.ResponseWriter, r *http.Request) {
 	user, _ := middleware.GetUser(r)
 
-	err := r.ParseMultipartForm(0)
+	err := r.ParseMultipartForm(5 << 20)
 	if err != nil {
 		http.Error(w, "Kunde inte läsa formulär", http.StatusBadRequest)
 		return
@@ -84,11 +87,32 @@ func (h *LoggedInHandler) NewRecipe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// image, _, err := r.FormFile("image")
-	// if err != nil {
-	// 	http.Error(w, "Kunde inte läsa bilden", http.StatusBadRequest)
-	// 	return
-	// }
+	imageFile, _, err := r.FormFile("image")
+	if err != nil {
+		http.Error(w, "Bild krävs", http.StatusBadRequest)
+		return
+	}
+	defer imageFile.Close()
+
+	imageBuff := make([]byte, 512)
+	if _, err := imageFile.Read(imageBuff); err != nil {
+		http.Error(w, "Kunde inte läsa bilden", http.StatusInternalServerError)
+		return
+	}
+	imageFileType := http.DetectContentType(imageBuff)
+
+	var imageFileExt string
+	switch imageFileType {
+	case "image/jpeg":
+		imageFileExt = "jpg"
+	case "image/png":
+		imageFileExt = "png"
+	default:
+		http.Error(w, "Bara JPG och PNG är tillåtna", http.StatusUnsupportedMediaType)
+		return
+	}
+
+	imageFile.Seek(0, 0)
 
 	recipe := &models.Recipe{
 		Title:              title,
@@ -107,7 +131,25 @@ func (h *LoggedInHandler) NewRecipe(w http.ResponseWriter, r *http.Request) {
 	id, err := h.recipeService.CreateRecipe(recipe)
 
 	if err != nil {
-		http.Error(w, "Kunde inte skapa receptet", http.StatusInternalServerError)
+		http.Error(w, "Kunde inte skapa receptet"+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	imageFileName := fmt.Sprintf("%d.%s", id, imageFileExt)
+	imageFilePath := filepath.Join("data", "uploads", "recipes", imageFileName)
+
+	imageDestinationFile, err := os.Create(imageFilePath)
+	if err != nil {
+		http.Error(w, "Kunde inte spara filen", http.StatusInternalServerError)
+		return
+	}
+	defer imageDestinationFile.Close()
+
+	if _, err := io.Copy(imageDestinationFile, imageFile); err != nil {
+		h.recipeService.DeleteRecipeById(id)
+		os.Remove(imageFilePath)
+
+		http.Error(w, "Kunde inte spara bilden", http.StatusInternalServerError)
 		return
 	}
 

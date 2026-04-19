@@ -6,18 +6,69 @@
 
 <!-- Bild -->
 
+<img src="/{{.RecipeImageSrc}}" alt="Bild på färdigt resultat">
+
 <p>
-    Skapat {{.Recipe.CreatedAt}} av {{.RecipeOwner.DisplayName}}
+    Skapad {{.RecipeCreatedAtFormatted}} av {{.RecipeOwner.DisplayName}}
     <br>
-    Redigerat {{.Recipe.UpdatedAt}}
+    Redigerad senast {{.RecipeUpdatedAtFormatted}}
 </p>
 
-<p class="keep-line-breaks">{{.Recipe.Description}}</p>
+{{if .RecipePrepTimeFormatted}}
+<p>
+    Förberedelsetid: {{.RecipePrepTimeFormatted}}
+</p>
+{{end}}
+
+<p>
+    Tillagningstid (för en person): {{.RecipeCookTimeFormatted}}
+</p>
+
+<ul>
+    {{range .Recipe.MealTypes}}
+    <li>{{.}}</li>
+    {{end}}
+</ul>
+
+<ul>
+    {{range .Recipe.DietaryTags}}
+    <li>{{.}}</li>
+    {{end}}
+</ul>
+
+<ul>
+    {{range .Recipe.OtherTags}}
+    <li>{{.}}</li>
+    {{end}}
+</ul>
+
+{{.RecipeDescriptionParsed}}
 
 <h2>Ingredienser</h2>
 
+<p>Mängder för {{.Recipe.Servings}}</p>
+
+{{range .Recipe.IngredientSections}}
+
+{{if .Heading}} <h3>{{.Heading}}</h3> {{end}}
+
+<table>
+    <tbody>
+        {{range .Ingredients}}
+
+        <tr>
+            <td>{{.Name}}</td>
+            <td>{{.Amount}}</td>
+        </tr>
+
+        {{end}}
+    </tbody>
+</table>
+
+{{end}}
+
 <h2>Instruktioner</h2>
 
-<p class="keep-line-breaks">{{.Recipe.Instructions}}</p>
+{{.RecipeInstructionsParsed}}
 
 {{end}}

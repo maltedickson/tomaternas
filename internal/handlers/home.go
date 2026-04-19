@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
+	"path/filepath"
 	"recipe-web-server/internal/middleware"
 	"recipe-web-server/internal/services"
 	"recipe-web-server/internal/templates"
@@ -59,13 +61,40 @@ func (h *HomeHandler) ViewRecipePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	dataDirectory := "data"
+	imageMatches, err := filepath.Glob(filepath.Join(dataDirectory, "uploads", "recipes", fmt.Sprintf("%d.*", id)))
+	if err != nil || len(imageMatches) == 0 {
+		http.Error(w, "kunde inte läsa bilden", http.StatusInternalServerError)
+		return
+	}
+	imagePath := imageMatches[0]
+	imageSrc, err := filepath.Rel(dataDirectory, imagePath)
+	if err != nil {
+		http.Error(w, "kunde inte läsa bilden", http.StatusInternalServerError)
+		return
+	}
+
+	prepTimeFormatted := ""
+	if recipe.PrepTimeSeconds > 0 {
+		prepTimeFormatted = fmt.Sprintf("%d h", recipe.PrepTimeSeconds/3600)
+	}
+
+	cookTimeFormatted := fmt.Sprintf("%d min", recipe.CookTimeSeconds/60)
+
 	user, _ := middleware.GetUser(r)
 	data := map[string]any{
-		"Title":       recipe.Title,
-		"Path":        r.URL.Path,
-		"User":        user,
-		"Recipe":      recipe,
-		"RecipeOwner": recipeOwner,
+		"Title":                    recipe.Title,
+		"Path":                     r.URL.Path,
+		"User":                     user,
+		"Recipe":                   recipe,
+		"RecipePrepTimeFormatted":  prepTimeFormatted,
+		"RecipeCookTimeFormatted":  cookTimeFormatted,
+		"RecipeDescriptionParsed":  services.ParseMarkup(recipe.Description),
+		"RecipeInstructionsParsed": services.ParseMarkup(recipe.Instructions),
+		"RecipeCreatedAtFormatted": services.FormatDate(recipe.CreatedAt),
+		"RecipeUpdatedAtFormatted": services.FormatDate(recipe.UpdatedAt),
+		"RecipeImageSrc":           imageSrc,
+		"RecipeOwner":              recipeOwner,
 	}
 	h.renderer.Render(w, "recipe", data)
 }

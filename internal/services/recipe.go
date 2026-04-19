@@ -1,8 +1,12 @@
 package services
 
 import (
+	"html/template"
 	"recipe-web-server/internal/database"
 	"recipe-web-server/internal/models"
+	"regexp"
+	"strings"
+	"time"
 )
 
 type RecipeService struct {
@@ -19,4 +23,40 @@ func (s *RecipeService) CreateRecipe(recipe *models.Recipe) (int, error) {
 
 func (s *RecipeService) GetRecipeById(id int) (*models.Recipe, error) {
 	return s.db.GetRecipeById(id)
+}
+
+func (s *RecipeService) DeleteRecipeById(id int) error {
+	return s.db.DeleteRecipeById(id)
+}
+
+func ParseMarkup(markup string) template.HTML {
+	if markup == "" {
+		return ""
+	}
+
+	markup = strings.ReplaceAll(markup, "\r\n", "\n")
+	markup = strings.ReplaceAll(markup, "\r", "\n")
+
+	paragraphs := regexp.MustCompile("\n\n+").Split(markup, -1)
+
+	var result strings.Builder
+	for _, p := range paragraphs {
+		if p == "" {
+			continue
+		}
+		result.WriteString("<p>")
+		lines := strings.Split(p, "\n")
+		for j, line := range lines {
+			if j > 0 {
+				result.WriteString("<br>")
+			}
+			result.WriteString(template.HTMLEscapeString(line))
+		}
+		result.WriteString("</p>")
+	}
+	return template.HTML(result.String())
+}
+
+func FormatDate(date time.Time) string {
+	return date.Format("2006-01-02")
 }
