@@ -42,40 +42,37 @@ func main() {
 	userService := services.NewUserService(db)
 	recipeService := services.NewRecipeService(db)
 
-	authHandler := handlers.NewAuthHandler(authService, renderer)
-	homeHandler := handlers.NewHomeHandler(userService, recipeService, renderer)
-	adminHandler := handlers.NewAdminHandler(userService, renderer)
-	loggedInHandler := handlers.NewLoggedInHandler(userService, recipeService, renderer)
+	handler := handlers.NewHandler(authService, userService, recipeService, renderer)
 
-	mux.HandleFunc("/", homeHandler.HomePage)
+	mux.HandleFunc("/", handler.HomePage)
 
-	mux.HandleFunc("GET /r/{id}", homeHandler.ViewRecipePage)
+	mux.HandleFunc("GET /r/{id}", handler.ViewRecipePage)
 
-	mux.HandleFunc("GET /login", authHandler.LoginPage)
-	mux.HandleFunc("POST /login", authHandler.Login)
+	mux.HandleFunc("GET /login", handler.LoginPage)
+	mux.HandleFunc("POST /login", handler.Login)
 
-	mux.HandleFunc("POST /logout", authHandler.Logout)
+	mux.HandleFunc("POST /logout", handler.Logout)
 
 	loggedInMux := http.NewServeMux()
 
-	loggedInMux.HandleFunc("GET /settings", loggedInHandler.SettingsPage)
-	loggedInMux.HandleFunc("GET /manage/new", loggedInHandler.NewRecipePage)
-	loggedInMux.HandleFunc("POST /manage/new", loggedInHandler.NewRecipe)
+	loggedInMux.HandleFunc("GET /settings", handler.SettingsPage)
+	loggedInMux.HandleFunc("GET /manage/new", handler.NewRecipePage)
+	loggedInMux.HandleFunc("POST /manage/new", handler.NewRecipe)
 
 	adminMux := http.NewServeMux()
 
-	adminMux.HandleFunc("GET /admin/dashboard", adminHandler.DashboardPage)
+	adminMux.HandleFunc("GET /admin/dashboard", handler.DashboardPage)
 
-	adminMux.HandleFunc("GET /admin/users", adminHandler.UsersPage)
+	adminMux.HandleFunc("GET /admin/users", handler.UsersPage)
 
-	adminMux.HandleFunc("GET /admin/users/create", adminHandler.CreateUserPage)
-	adminMux.HandleFunc("POST /admin/users/create", adminHandler.CreateUser)
+	adminMux.HandleFunc("GET /admin/users/create", handler.CreateUserPage)
+	adminMux.HandleFunc("POST /admin/users/create", handler.CreateUser)
 
-	adminMux.HandleFunc("GET /admin/users/manage/{id}", adminHandler.ManageUserPage)
-	adminMux.HandleFunc("POST /admin/users/manage/{id}/username", adminHandler.UpdateUsername)
-	adminMux.HandleFunc("POST /admin/users/manage/{id}/display-name", adminHandler.UpdateDisplayName)
-	adminMux.HandleFunc("POST /admin/users/manage/{id}/password", adminHandler.UpdatePassword)
-	adminMux.HandleFunc("POST /admin/users/manage/{id}/role", adminHandler.UpdateRole)
+	adminMux.HandleFunc("GET /admin/users/manage/{id}", handler.ManageUserPage)
+	adminMux.HandleFunc("POST /admin/users/manage/{id}/username", handler.UpdateUsername)
+	adminMux.HandleFunc("POST /admin/users/manage/{id}/display-name", handler.UpdateDisplayName)
+	adminMux.HandleFunc("POST /admin/users/manage/{id}/password", handler.UpdatePassword)
+	adminMux.HandleFunc("POST /admin/users/manage/{id}/role", handler.UpdateRole)
 
 	mux.Handle("GET /settings", middleware.RequireAuth(loggedInMux))
 	mux.Handle("/manage/", middleware.RequireAuth(loggedInMux))
