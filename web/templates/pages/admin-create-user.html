@@ -5,9 +5,9 @@
 <h1>Skapa användare</h1>
 
 <form action="/admin/users/create" method="POST">
-    {{if .Error}}
+    {{if .L.Error}}
     <div class="error">
-        {{.Error}}
+        {{.L.Error}}
     </div>
     {{end}}
 

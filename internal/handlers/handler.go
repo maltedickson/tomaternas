@@ -45,7 +45,6 @@ func (h *Handler) HomePage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Metoden är ej tillåten", http.StatusMethodNotAllowed)
 		return
 	}
-	user, _ := middleware.GetUser(r)
 
 	recipeOverviews, err := h.recipeService.GetAllRecipeOverviews()
 	if err != nil {
@@ -54,12 +53,9 @@ func (h *Handler) HomePage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := map[string]any{
-		"Title":           "Home",
-		"Path":            r.URL.Path,
-		"User":            user,
 		"RecipeOverviews": recipeOverviews,
 	}
-	h.renderer.Render(w, "home", data)
+	h.renderer.Render(w, r, "home", "Hem", data)
 }
 
 func (h *Handler) ViewRecipePage(w http.ResponseWriter, r *http.Request) {
@@ -101,11 +97,7 @@ func (h *Handler) ViewRecipePage(w http.ResponseWriter, r *http.Request) {
 
 	cookTimeFormatted := fmt.Sprintf("%d min", recipe.CookTimeSeconds/60)
 
-	user, _ := middleware.GetUser(r)
 	data := map[string]any{
-		"Title":                    recipe.Title,
-		"Path":                     r.URL.Path,
-		"User":                     user,
 		"Recipe":                   recipe,
 		"RecipePrepTimeFormatted":  prepTimeFormatted,
 		"RecipeCookTimeFormatted":  cookTimeFormatted,
@@ -116,7 +108,7 @@ func (h *Handler) ViewRecipePage(w http.ResponseWriter, r *http.Request) {
 		"RecipeImageSrc":           imageSrc,
 		"RecipeOwner":              recipeOwner,
 	}
-	h.renderer.Render(w, "recipe", data)
+	h.renderer.Render(w, r, "recipe", recipe.Title, data)
 }
 
 func (h *Handler) LoginPage(w http.ResponseWriter, r *http.Request) {
@@ -135,11 +127,10 @@ func (h *Handler) LoginPage(w http.ResponseWriter, r *http.Request) {
 	}
 	returnPath := r.URL.Query().Get("return")
 	data := map[string]any{
-		"Title":      "Logga in",
 		"Error":      errMsg,
 		"ReturnPath": returnPath,
 	}
-	h.renderer.Render(w, "login", data)
+	h.renderer.Render(w, r, "login", "Logga in", data)
 }
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
@@ -211,23 +202,13 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) SettingsPage(w http.ResponseWriter, r *http.Request) {
-	user, _ := middleware.GetUser(r)
-	data := map[string]any{
-		"Title": "Inställningar",
-		"Path":  r.URL.Path,
-		"User":  user,
-	}
-	h.renderer.Render(w, "settings", data)
+	data := map[string]any{}
+	h.renderer.Render(w, r, "settings", "Inställningar", data)
 }
 
 func (h *Handler) NewRecipePage(w http.ResponseWriter, r *http.Request) {
-	user, _ := middleware.GetUser(r)
-	data := map[string]any{
-		"Title": "Skapa nytt recept",
-		"Path":  r.URL.Path,
-		"User":  user,
-	}
-	h.renderer.Render(w, "recipe-new", data)
+	data := map[string]any{}
+	h.renderer.Render(w, r, "recipe-new", "Skapa nytt recept", data)
 }
 
 func (h *Handler) NewRecipe(w http.ResponseWriter, r *http.Request) {
@@ -339,12 +320,8 @@ func (h *Handler) NewRecipe(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) DashboardPage(w http.ResponseWriter, r *http.Request) {
-	user, _ := middleware.GetUser(r)
-	data := map[string]any{
-		"Title": "Admin - Panel",
-		"User":  user,
-	}
-	h.renderer.Render(w, "admin-dashboard", data)
+	data := map[string]any{}
+	h.renderer.Render(w, r, "admin-dashboard", "Admin - Panel", data)
 }
 
 func (h *Handler) UsersPage(w http.ResponseWriter, r *http.Request) {
@@ -353,22 +330,15 @@ func (h *Handler) UsersPage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Kunde inte läsa användare", http.StatusInternalServerError)
 		return
 	}
-	user, _ := middleware.GetUser(r)
 	data := map[string]any{
-		"Title": "Admin - Hantera användare",
-		"User":  user,
 		"Users": users,
 	}
-	h.renderer.Render(w, "admin-users", data)
+	h.renderer.Render(w, r, "admin-users", "Admin - Hantera användare", data)
 }
 
 func (h *Handler) CreateUserPage(w http.ResponseWriter, r *http.Request) {
-	user, _ := middleware.GetUser(r)
-	data := map[string]any{
-		"Title": "Admin - Skapa användare",
-		"User":  user,
-	}
-	h.renderer.Render(w, "admin-create-user", data)
+	data := map[string]any{}
+	h.renderer.Render(w, r, "admin-create-user", "Admin - Skapa användare", data)
 }
 
 func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -431,13 +401,10 @@ func (h *Handler) ManageUserPage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	user, _ := middleware.GetUser(r)
 	data := map[string]any{
-		"Title":       "Admin - Hantera användare",
-		"User":        user,
 		"ManagedUser": managedUser,
 	}
-	h.renderer.Render(w, "admin-manage-user", data)
+	h.renderer.Render(w, r, "admin-manage-user", "Admin - Hantera användare", data)
 }
 
 func (h *Handler) UpdateUsername(w http.ResponseWriter, r *http.Request) {

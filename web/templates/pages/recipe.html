@@ -2,53 +2,53 @@
 
 {{define "content"}}
 
-<h1>{{.Recipe.Title}}</h1>
+<h1>{{.L.Recipe.Title}}</h1>
 
 <!-- Bild -->
 
-<img src="/{{.RecipeImageSrc}}" alt="Bild på färdigt resultat">
+<img src="/{{.L.RecipeImageSrc}}" alt="Bild på färdigt resultat">
 
 <p>
-    Skapad {{.RecipeCreatedAtFormatted}} av {{.RecipeOwner.DisplayName}}
+    Skapad {{.L.RecipeCreatedAtFormatted}} av {{.L.RecipeOwner.DisplayName}}
     <br>
-    Redigerad senast {{.RecipeUpdatedAtFormatted}}
+    Redigerad senast {{.L.RecipeUpdatedAtFormatted}}
 </p>
 
 {{if .RecipePrepTimeFormatted}}
 <p>
-    Förberedelsetid: {{.RecipePrepTimeFormatted}}
+    Förberedelsetid: {{.L.RecipePrepTimeFormatted}}
 </p>
 {{end}}
 
 <p>
-    Tillagningstid (för en person): {{.RecipeCookTimeFormatted}}
+    Tillagningstid (för en person): {{.L.RecipeCookTimeFormatted}}
 </p>
 
 <ul>
-    {{range .Recipe.MealTypes}}
+    {{range .L.Recipe.MealTypes}}
     <li>{{.}}</li>
     {{end}}
 </ul>
 
 <ul>
-    {{range .Recipe.DietaryTags}}
+    {{range .L.Recipe.DietaryTags}}
     <li>{{.}}</li>
     {{end}}
 </ul>
 
 <ul>
-    {{range .Recipe.OtherTags}}
+    {{range .L.Recipe.OtherTags}}
     <li>{{.}}</li>
     {{end}}
 </ul>
 
-{{.RecipeDescriptionParsed}}
+{{.L.RecipeDescriptionParsed}}
 
 <h2>Ingredienser</h2>
 
-<p>Mängder för {{.Recipe.Servings}}</p>
+<p>Mängder för {{.L.Recipe.Servings}}</p>
 
-{{range .Recipe.IngredientSections}}
+{{range .L.Recipe.IngredientSections}}
 
 {{if .Heading}} <h3>{{.Heading}}</h3> {{end}}
 
@@ -69,6 +69,6 @@
 
 <h2>Instruktioner</h2>
 
-{{.RecipeInstructionsParsed}}
+{{.L.RecipeInstructionsParsed}}
 
 {{end}}

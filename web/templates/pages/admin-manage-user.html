@@ -10,19 +10,19 @@
     <a href="/admin/users">Tillbaka till alla användare</a>
 </p>
 
-<h1>Hantera användare <q>{{.ManagedUser.Username}}</q></h1>
+<h1>Hantera användare <q>{{ .L.ManagedUser.Username}}</q></h1>
 
 <table class="overview">
     <tr>
         <td>ID</td>
-        <td>{{.ManagedUser.ID}}</td>
+        <td>{{ .L.ManagedUser.ID}}</td>
     </tr>
 
     <tr>
         <td>Skapad</td>
         <td>
-            <time datetime="{{ .ManagedUser.CreatedAt.UTC.Format " 2006-01-02T15:04:05Z" }}">
-                {{ .ManagedUser.CreatedAt.UTC.Format "2006-01-02 15:04:05" }} (UTC)
+            <time datetime="{{ .L.ManagedUser.CreatedAt.UTC.Format " 2006-01-02T15:04:05Z" }}">
+                {{ .L.ManagedUser.CreatedAt.UTC.Format "2006-01-02 15:04:05" }} (UTC)
             </time>
         </td>
     </tr>
@@ -30,8 +30,8 @@
     <tr>
         <td>Uppdaterad senast</td>
         <td>
-            <time datetime="{{ .ManagedUser.UpdatedAt.UTC.Format " 2006-01-02T15:04:05Z" }}">
-                {{ .ManagedUser.UpdatedAt.UTC.Format "2006-01-02 15:04:05" }} (UTC)
+            <time datetime="{{ .L.ManagedUser.UpdatedAt.UTC.Format " 2006-01-02T15:04:05Z" }}">
+                {{ .L.ManagedUser.UpdatedAt.UTC.Format "2006-01-02 15:04:05" }} (UTC)
             </time>
         </td>
     </tr>
@@ -39,9 +39,9 @@
 
 <h2>Användarnamn</h2>
 
-<p>Nuvarande värde: {{.ManagedUser.Username}}</p>
+<p>Nuvarande värde: {{ .L.ManagedUser.Username}}</p>
 
-<form action="/admin/users/manage/{{.ManagedUser.ID}}/username" method="POST">
+<form action="/admin/users/manage/{{ .L.ManagedUser.ID}}/username" method="POST">
     <label for="username">Nytt användarnamn</label>
     <input type="text" name="username" id="username" autocomplete="off" required>
     <button type="submit">Uppdatera</button>
@@ -49,9 +49,9 @@
 
 <h2>Visningsnamn</h2>
 
-<p>Nuvarande värde: {{.ManagedUser.DisplayName}}</p>
+<p>Nuvarande värde: {{ .L.ManagedUser.DisplayName}}</p>
 
-<form action="/admin/users/manage/{{.ManagedUser.ID}}/display-name" method="POST">
+<form action="/admin/users/manage/{{ .L.ManagedUser.ID}}/display-name" method="POST">
     <label for="display-name">Nytt visningsnamn</label>
     <input type="text" name="display-name" id="display-name" autocomplete="off" required>
     <button type="submit">Uppdatera</button>
@@ -61,10 +61,10 @@
 
 <p>
     Nuvarande lösenordshash:
-    <code>{{.ManagedUser.PasswordHash}}</code>
+    <code>{{ .L.ManagedUser.PasswordHash}}</code>
 </p>
 
-<form action="/admin/users/manage/{{.ManagedUser.ID}}/password" method="POST">
+<form action="/admin/users/manage/{{ .L.ManagedUser.ID}}/password" method="POST">
     <label for="password">Nytt lösenord</label>
     <input type="password" name="password" id="password" autocomplete="off" minlength="15" required>
 
@@ -77,10 +77,10 @@
 <h2>Roll</h2>
 
 <p>
-    Nuvarande roll: {{.ManagedUser.Role}}
+    Nuvarande roll: {{ .L.ManagedUser.Role}}
 </p>
 
-<form action="/admin/users/manage/{{.ManagedUser.ID}}/role" method="POST">
+<form action="/admin/users/manage/{{ .L.ManagedUser.ID}}/role" method="POST">
     <label for="password">Ny roll</label>
 
     <fieldset>

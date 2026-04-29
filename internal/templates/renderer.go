@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"net/http"
 	"path/filepath"
+	"recipe-web-server/internal/middleware"
 	"strings"
 )
 
@@ -76,7 +78,7 @@ func (r *Renderer) funcMap() template.FuncMap {
 	}
 }
 
-func (r *Renderer) Render(w io.Writer, name string, data any) error {
+func (r *Renderer) Render(w io.Writer, req *http.Request, templateName string, pageTitle string, localData any) error {
 	devMode := true // TODO: set to false in production
 	if devMode {
 		if err := r.loadTemplates(); err != nil {
@@ -84,10 +86,21 @@ func (r *Renderer) Render(w io.Writer, name string, data any) error {
 		}
 	}
 
-	tmpl, ok := r.templates[name]
+	tmpl, ok := r.templates[templateName]
 	if !ok {
-		return fmt.Errorf("template %s not found", name)
+		return fmt.Errorf("template %s not found", templateName)
 	}
 
-	return tmpl.ExecuteTemplate(w, name+".html", data)
+	user, _ := middleware.GetUser(req)
+
+	templateData := map[string]any{
+		"G": map[string]any{
+			"User":  user,
+			"Path":  req.URL.Path,
+			"Title": pageTitle,
+		},
+		"L": localData,
+	}
+
+	return tmpl.ExecuteTemplate(w, templateName+".html", templateData)
 }

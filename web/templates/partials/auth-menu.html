@@ -1,11 +1,11 @@
 {{define "auth-menu"}}
 
-{{if .User}}
+{{if .G.User}}
 
 <div class="auth-menu" id="auth-menu">
 
     <button class="profile-button" id="auth-menu-profile-button">
-        {{slice .User.DisplayName 0 2}}
+        {{slice .G.User.DisplayName 0 2}}
     </button>
 
     <div class="dropdown" id="auth-menu-dropdown">
@@ -13,7 +13,7 @@
 
         <a href="/manage/new" role="menuitem">Nytt recept</a>
 
-        {{if eq .User.Role "admin"}}
+        {{if eq .G.User.Role "admin"}}
         <a href="/admin/dashboard" role="menuitem">Adminpanel</a>
         {{end}}
 
@@ -29,7 +29,7 @@
 
 {{else}}
 
-<a href="/login?return={{.Path}}">Logga in</a>
+<a href="/login?return={{.G.Path}}">Logga in</a>
 
 {{end}}
 

@@ -4,11 +4,7 @@
 
 <h1>Recept!!!</h1>
 
-{{if .User}}
-<p>Du är inloggad!</p>
-{{end}}
-
-{{range .RecipeOverviews}}
+{{range .L.RecipeOverviews}}
 <div>
 
     <a href="/r/{{.ID}}">{{.Title}}</a>
