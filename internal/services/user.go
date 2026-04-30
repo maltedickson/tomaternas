@@ -1,7 +1,9 @@
 package services
 
 import (
+	"database/sql"
 	"errors"
+	"fmt"
 	"recipe-web-server/internal/config"
 	"recipe-web-server/internal/database"
 	"recipe-web-server/internal/models"
@@ -52,7 +54,14 @@ func (s *UserService) CreateUser(username, displayName, password string, role mo
 }
 
 func (s *UserService) GetUser(id int) (*models.User, error) {
-	return s.db.GetUserById(id)
+	user, err := s.db.GetUserById(id)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrNotFound
+		}
+		return nil, fmt.Errorf("database error: %w", err)
+	}
+	return user, nil
 }
 
 func (s *UserService) GetAllUsers() ([]*models.User, error) {

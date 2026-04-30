@@ -3,7 +3,7 @@ package templates
 import (
 	"fmt"
 	"html/template"
-	"io"
+	"log"
 	"net/http"
 	"path/filepath"
 	"recipe-web-server/internal/middleware"
@@ -78,7 +78,7 @@ func (r *Renderer) funcMap() template.FuncMap {
 	}
 }
 
-func (r *Renderer) Render(w io.Writer, req *http.Request, templateName string, pageTitle string, localData any) error {
+func (r *Renderer) Render(w http.ResponseWriter, req *http.Request, templateName string, pageTitle string, localData any) error {
 	devMode := true // TODO: set to false in production
 	if devMode {
 		if err := r.loadTemplates(); err != nil {
@@ -88,7 +88,9 @@ func (r *Renderer) Render(w io.Writer, req *http.Request, templateName string, p
 
 	tmpl, ok := r.templates[templateName]
 	if !ok {
-		return fmt.Errorf("template %s not found", templateName)
+		log.Printf("template (%s) not found", templateName)
+		http.Error(w, "Något gick fel.", http.StatusInternalServerError)
+		return nil
 	}
 
 	user, _ := middleware.GetUser(req)
@@ -103,4 +105,40 @@ func (r *Renderer) Render(w io.Writer, req *http.Request, templateName string, p
 	}
 
 	return tmpl.ExecuteTemplate(w, templateName+".html", templateData)
+}
+
+func (r *Renderer) RenderErr(w http.ResponseWriter, req *http.Request, statusCode int, message string) {
+	devMode := true // TODO: set to false in production
+	if devMode {
+		if err := r.loadTemplates(); err != nil {
+			log.Printf("failed to reload templates: %v", err)
+		}
+	}
+
+	templateName := "error"
+
+	tmpl, ok := r.templates[templateName]
+	if !ok {
+		log.Printf("template (%s) not found", templateName)
+		http.Error(w, "Något gick fel.", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(statusCode)
+
+	user, _ := middleware.GetUser(req)
+
+	templateData := map[string]any{
+		"G": map[string]any{
+			"User":  user,
+			"Path":  req.URL.Path,
+			"Title": fmt.Sprintf("%d - %s", statusCode, message),
+		},
+		"L": map[string]any{
+			"StatusCode": statusCode,
+			"Message":    message,
+		},
+	}
+
+	tmpl.ExecuteTemplate(w, templateName+".html", templateData)
 }

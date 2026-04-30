@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -42,13 +42,13 @@ func (h *Handler) HomePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if r.Method != http.MethodGet {
-		http.Error(w, "Metoden är ej tillåten", http.StatusMethodNotAllowed)
+		h.renderErrMethodNotAllowed(w, r)
 		return
 	}
 
 	recipeOverviews, err := h.recipeService.GetAllRecipeOverviews()
 	if err != nil {
-		http.Error(w, "Kunde inte hämta recept", http.StatusInternalServerError)
+		h.renderErrInternal(w, r, fmt.Errorf("get recipe overviews: %w", err))
 		return
 	}
 
@@ -62,31 +62,43 @@ func (h *Handler) ViewRecipePage(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "ogiltigt id", http.StatusBadRequest)
+		h.renderErrPageNotFound(w, r)
 		return
 	}
 	recipe, err := h.recipeService.GetRecipeById(id)
 	if err != nil {
-		http.Error(w, "Receptet kunde inte hittas", http.StatusNotFound)
+		if errors.Is(err, services.ErrNotFound) {
+			h.renderErrPageNotFound(w, r)
+			return
+		}
+		h.renderErrInternal(w, r, fmt.Errorf("get recipe by id (%d): %w", id, err))
 		return
 	}
 
 	recipeOwner, err := h.userService.GetUser(recipe.OwnerID)
 	if err != nil {
-		http.Error(w, "internt serverfel", http.StatusInternalServerError)
+		if errors.Is(err, services.ErrNotFound) {
+			h.renderErrPageNotFound(w, r)
+			return
+		}
+		h.renderErrInternal(w, r, fmt.Errorf("get user by id (%d): %w", recipe.OwnerID, err))
 		return
 	}
 
 	dataDirectory := "data"
 	imageMatches, err := filepath.Glob(filepath.Join(dataDirectory, "uploads", "recipes", fmt.Sprintf("%d.*", id)))
-	if err != nil || len(imageMatches) == 0 {
-		http.Error(w, "kunde inte läsa bilden", http.StatusInternalServerError)
+	if err != nil {
+		h.renderErrInternal(w, r, fmt.Errorf("get images for recipe with id (%d): %w", id, err))
+		return
+	}
+	if len(imageMatches) == 0 {
+		h.renderErrInternal(w, r, fmt.Errorf("get images for recipe with id (%d): no images found", id))
 		return
 	}
 	imagePath := imageMatches[0]
 	imageSrc, err := filepath.Rel(dataDirectory, imagePath)
 	if err != nil {
-		http.Error(w, "kunde inte läsa bilden", http.StatusInternalServerError)
+		h.renderErrInternal(w, r, fmt.Errorf("calculate image src: %w", err))
 		return
 	}
 
@@ -138,7 +150,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 	returnURL, err := url.QueryUnescape(r.FormValue("return"))
 	if err != nil {
-		http.Error(w, "invalid return paramter", http.StatusBadRequest)
+		h.renderErrBadRequest(w, r)
 		return
 	}
 
@@ -216,7 +228,7 @@ func (h *Handler) NewRecipe(w http.ResponseWriter, r *http.Request) {
 
 	err := r.ParseMultipartForm(5 << 20)
 	if err != nil {
-		http.Error(w, "Kunde inte läsa formulär", http.StatusBadRequest)
+		h.renderErrBadRequest(w, r)
 		return
 	}
 
@@ -231,14 +243,14 @@ func (h *Handler) NewRecipe(w http.ResponseWriter, r *http.Request) {
 	cookTimeString := r.FormValue("cook-time")
 	cookTime, err := strconv.Atoi(cookTimeString)
 	if err != nil {
-		http.Error(w, "Kunde inte läsa tid", http.StatusBadRequest)
+		h.renderErrBadRequest(w, r)
 		return
 	}
 
 	prepTimeString := r.FormValue("prep-time")
 	prepTime, err := strconv.Atoi(prepTimeString)
 	if err != nil {
-		http.Error(w, "Kunde inte läsa förberedelsetid", http.StatusBadRequest)
+		h.renderErrBadRequest(w, r)
 		return
 	}
 
@@ -246,20 +258,20 @@ func (h *Handler) NewRecipe(w http.ResponseWriter, r *http.Request) {
 	var ingredientSections []models.IngredientSection
 	err = json.Unmarshal([]byte(ingredientsString), &ingredientSections)
 	if err != nil {
-		http.Error(w, "Kunde inte läsa ingredienser", http.StatusBadRequest)
+		h.renderErrBadRequest(w, r)
 		return
 	}
 
 	imageFile, _, err := r.FormFile("image")
 	if err != nil {
-		http.Error(w, "Bild krävs", http.StatusBadRequest)
+		h.renderErrBadRequest(w, r)
 		return
 	}
 	defer imageFile.Close()
 
 	imageBuff := make([]byte, 512)
 	if _, err := imageFile.Read(imageBuff); err != nil {
-		http.Error(w, "Kunde inte läsa bilden", http.StatusInternalServerError)
+		h.renderErrInternal(w, r, fmt.Errorf("read image into buffer: %w", err))
 		return
 	}
 	imageFileType := http.DetectContentType(imageBuff)
@@ -271,6 +283,7 @@ func (h *Handler) NewRecipe(w http.ResponseWriter, r *http.Request) {
 	case "image/png":
 		imageFileExt = "png"
 	default:
+		// TODO: give nice error message and allow user to fix their form data
 		http.Error(w, "Bara JPG och PNG är tillåtna", http.StatusUnsupportedMediaType)
 		return
 	}
@@ -294,7 +307,7 @@ func (h *Handler) NewRecipe(w http.ResponseWriter, r *http.Request) {
 	id, err := h.recipeService.CreateRecipe(recipe)
 
 	if err != nil {
-		http.Error(w, "Kunde inte skapa receptet"+err.Error(), http.StatusInternalServerError)
+		h.renderErrInternal(w, r, fmt.Errorf("create recipe: %w", err))
 		return
 	}
 
@@ -303,7 +316,7 @@ func (h *Handler) NewRecipe(w http.ResponseWriter, r *http.Request) {
 
 	imageDestinationFile, err := os.Create(imageFilePath)
 	if err != nil {
-		http.Error(w, "Kunde inte spara filen", http.StatusInternalServerError)
+		h.renderErrInternal(w, r, fmt.Errorf("create image file: %w", err))
 		return
 	}
 	defer imageDestinationFile.Close()
@@ -312,7 +325,7 @@ func (h *Handler) NewRecipe(w http.ResponseWriter, r *http.Request) {
 		h.recipeService.DeleteRecipeById(id)
 		os.Remove(imageFilePath)
 
-		http.Error(w, "Kunde inte spara bilden", http.StatusInternalServerError)
+		h.renderErrInternal(w, r, fmt.Errorf("copy image to created file: %w", err))
 		return
 	}
 
@@ -327,7 +340,7 @@ func (h *Handler) DashboardPage(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) UsersPage(w http.ResponseWriter, r *http.Request) {
 	users, err := h.userService.GetAllUsers()
 	if err != nil {
-		http.Error(w, "Kunde inte läsa användare", http.StatusInternalServerError)
+		h.renderErrInternal(w, r, fmt.Errorf("get all users: %w", err))
 		return
 	}
 	data := map[string]any{
@@ -377,7 +390,7 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	_, err := h.userService.CreateUser(username, displayName, password, role)
 	if err != nil {
-		http.Error(w, "kunde inte skapa användare", http.StatusInternalServerError)
+		h.renderErrInternal(w, r, fmt.Errorf("create user: %w", err))
 		return
 	}
 
@@ -388,16 +401,16 @@ func (h *Handler) ManageUserPage(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "ogiltigt id", http.StatusBadRequest)
+		h.renderErrPageNotFound(w, r)
 		return
 	}
 	managedUser, err := h.userService.GetUser(id)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			http.Error(w, "användaren kunde inte hittas", http.StatusNotFound)
+		if errors.Is(err, services.ErrNotFound) {
+			h.renderErrPageNotFound(w, r)
 			return
 		} else {
-			http.Error(w, "internet serverfel", http.StatusInternalServerError)
+			h.renderErrInternal(w, r, fmt.Errorf("get user by id (%d): %w", id, err))
 			return
 		}
 	}
@@ -411,7 +424,7 @@ func (h *Handler) UpdateUsername(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "ogiltigt id", http.StatusBadRequest)
+		h.renderErrPageNotFound(w, r)
 		return
 	}
 	newUsername := r.FormValue("username")
@@ -427,7 +440,7 @@ func (h *Handler) UpdateDisplayName(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "ogiltigt id", http.StatusBadRequest)
+		h.renderErrPageNotFound(w, r)
 		return
 	}
 	displayName := r.FormValue("display-name")
@@ -443,7 +456,7 @@ func (h *Handler) UpdatePassword(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "ogiltigt id", http.StatusBadRequest)
+		h.renderErrPageNotFound(w, r)
 		return
 	}
 	password := r.FormValue("password")
@@ -460,7 +473,7 @@ func (h *Handler) UpdateRole(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "ogiltigt id", http.StatusBadRequest)
+		h.renderErrPageNotFound(w, r)
 		return
 	}
 	role := r.FormValue("role")
@@ -470,6 +483,23 @@ func (h *Handler) UpdateRole(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.Redirect(w, r, fmt.Sprintf("/admin/users/manage/%d", id), http.StatusSeeOther)
+}
+
+func (h *Handler) renderErrMethodNotAllowed(w http.ResponseWriter, r *http.Request) {
+	h.renderer.RenderErr(w, r, http.StatusMethodNotAllowed, "Metoden är inte tillåten.")
+}
+
+func (h *Handler) renderErrPageNotFound(w http.ResponseWriter, r *http.Request) {
+	h.renderer.RenderErr(w, r, http.StatusNotFound, "Sidan kunde inte hittas.")
+}
+
+func (h *Handler) renderErrBadRequest(w http.ResponseWriter, r *http.Request) {
+	h.renderer.RenderErr(w, r, http.StatusBadRequest, "Dålig förfrågan.")
+}
+
+func (h *Handler) renderErrInternal(w http.ResponseWriter, r *http.Request, err error) {
+	log.Printf("internal error: %v", err)
+	h.renderer.RenderErr(w, r, http.StatusInternalServerError, "Något gick fel.")
 }
 
 func isInternalURL(urlStr string) bool {

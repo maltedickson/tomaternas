@@ -1,6 +1,9 @@
 package services
 
 import (
+	"database/sql"
+	"errors"
+	"fmt"
 	"html/template"
 	"recipe-web-server/internal/database"
 	"recipe-web-server/internal/models"
@@ -22,7 +25,14 @@ func (s *RecipeService) CreateRecipe(recipe *models.Recipe) (int, error) {
 }
 
 func (s *RecipeService) GetRecipeById(id int) (*models.Recipe, error) {
-	return s.db.GetRecipeById(id)
+	recipe, err := s.db.GetRecipeById(id)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrNotFound
+		}
+		return nil, fmt.Errorf("database error: %w", err)
+	}
+	return recipe, nil
 }
 
 func (s *RecipeService) GetAllRecipeOverviews() ([]models.RecipeOverview, error) {
