@@ -248,11 +248,12 @@ func (h *Handler) NewRecipe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	prepTimeString := r.FormValue("prep-time")
-	prepTime, err := strconv.Atoi(prepTimeString)
+	prepTimeHours, err := strconv.Atoi(prepTimeString)
 	if err != nil {
 		h.renderErrBadRequest(w, r)
 		return
 	}
+	prepTime := prepTimeHours * 3600
 
 	ingredientsString := r.FormValue("ingredients")
 	var ingredientSections []models.IngredientSection
