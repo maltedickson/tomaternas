@@ -223,7 +223,7 @@ func (h *Handler) ViewCreateRecipe(w http.ResponseWriter, r *http.Request) {
 	h.renderer.Render(w, r, "recipe-new", "Skapa nytt recept", data)
 }
 
-func (h *Handler) NewRecipe(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) CreateRecipe(w http.ResponseWriter, r *http.Request) {
 	user, _ := middleware.GetUser(r)
 
 	err := r.ParseMultipartForm(5 << 20)

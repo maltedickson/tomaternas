@@ -57,7 +57,7 @@ func main() {
 
 	loggedInMux.HandleFunc("GET /settings", handler.ViewSettings)
 	loggedInMux.HandleFunc("GET /manage/new", handler.ViewCreateRecipe)
-	loggedInMux.HandleFunc("POST /manage/new", handler.NewRecipe)
+	loggedInMux.HandleFunc("POST /manage/new", handler.CreateRecipe)
 
 	loggedInMux.HandleFunc("POST /manage/delete/{id}", handler.DeleteRecipe)
 
