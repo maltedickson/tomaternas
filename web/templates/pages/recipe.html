@@ -2,73 +2,75 @@
 
 {{define "content"}}
 
-<h1>{{.L.Recipe.Title}}</h1>
+<div class="wrapper">
 
-<!-- Bild -->
+    <h1>{{.L.Recipe.Title}}</h1>
 
-<img src="/{{.L.RecipeImageSrc}}" alt="Bild på färdigt resultat">
+    <img src="/{{.L.RecipeImageSrc}}" alt="Bild på färdigt resultat">
 
-<p>
-    Skapad {{.L.RecipeCreatedAtFormatted}} av {{.L.RecipeOwner.DisplayName}}
-    <br>
-    Redigerad senast {{.L.RecipeUpdatedAtFormatted}}
-</p>
+    <p>
+        Skapad {{.L.RecipeCreatedAtFormatted}} av {{.L.RecipeOwner.DisplayName}}
+        <br>
+        Redigerad senast {{.L.RecipeUpdatedAtFormatted}}
+    </p>
 
-{{if .RecipePrepTimeFormatted}}
-<p>
-    Förberedelsetid: {{.L.RecipePrepTimeFormatted}}
-</p>
-{{end}}
-
-<p>
-    Tillagningstid (för en person): {{.L.RecipeCookTimeFormatted}}
-</p>
-
-<ul>
-    {{range .L.Recipe.MealTypes}}
-    <li>{{.}}</li>
+    {{if .RecipePrepTimeFormatted}}
+    <p>
+        Förberedelsetid: {{.L.RecipePrepTimeFormatted}}
+    </p>
     {{end}}
-</ul>
 
-<ul>
-    {{range .L.Recipe.DietaryTags}}
-    <li>{{.}}</li>
-    {{end}}
-</ul>
+    <p>
+        Tillagningstid (för en person): {{.L.RecipeCookTimeFormatted}}
+    </p>
 
-<ul>
-    {{range .L.Recipe.OtherTags}}
-    <li>{{.}}</li>
-    {{end}}
-</ul>
-
-{{.L.RecipeDescriptionParsed}}
-
-<h2>Ingredienser</h2>
-
-<p>Mängder för {{.L.Recipe.Servings}}</p>
-
-{{range .L.Recipe.IngredientSections}}
-
-{{if .Heading}} <h3>{{.Heading}}</h3> {{end}}
-
-<table>
-    <tbody>
-        {{range .Ingredients}}
-
-        <tr>
-            <td>{{.Name}}</td>
-            <td>{{.Amount}}</td>
-        </tr>
-
+    <ul>
+        {{range .L.Recipe.MealTypes}}
+        <li>{{.}}</li>
         {{end}}
-    </tbody>
-</table>
+    </ul>
 
-{{end}}
+    <ul>
+        {{range .L.Recipe.DietaryTags}}
+        <li>{{.}}</li>
+        {{end}}
+    </ul>
 
-<h2>Instruktioner</h2>
+    <ul>
+        {{range .L.Recipe.OtherTags}}
+        <li>{{.}}</li>
+        {{end}}
+    </ul>
 
-{{.L.RecipeInstructionsParsed}}
+    {{.L.RecipeDescriptionParsed}}
+
+    <h2>Ingredienser</h2>
+
+    <p>Mängder för {{.L.Recipe.Servings}}</p>
+
+    {{range .L.Recipe.IngredientSections}}
+
+    {{if .Heading}} <h3>{{.Heading}}</h3> {{end}}
+
+    <table>
+        <tbody>
+            {{range .Ingredients}}
+
+            <tr>
+                <td>{{.Name}}</td>
+                <td>{{.Amount}}</td>
+            </tr>
+
+            {{end}}
+        </tbody>
+    </table>
+
+    {{end}}
+
+    <h2>Instruktioner</h2>
+
+    {{.L.RecipeInstructionsParsed}}
+
+</div>
 
 {{end}}
