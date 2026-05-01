@@ -36,7 +36,7 @@ func NewHandler(authService *services.AuthService, userService *services.UserSer
 	}
 }
 
-func (h *Handler) HomePage(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ViewHome(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		http.NotFound(w, r)
 		return
@@ -58,7 +58,7 @@ func (h *Handler) HomePage(w http.ResponseWriter, r *http.Request) {
 	h.renderer.Render(w, r, "home", "Hem", data)
 }
 
-func (h *Handler) ViewRecipePage(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ViewRecipe(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -123,7 +123,7 @@ func (h *Handler) ViewRecipePage(w http.ResponseWriter, r *http.Request) {
 	h.renderer.Render(w, r, "recipe", recipe.Title, data)
 }
 
-func (h *Handler) LoginPage(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ViewLogin(w http.ResponseWriter, r *http.Request) {
 	if middleware.IsAuthenticated(r) {
 		returnURL := r.URL.Query().Get("return")
 		if returnURL == "" || !isInternalURL(returnURL) {
@@ -213,12 +213,12 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, returnPath, http.StatusSeeOther)
 }
 
-func (h *Handler) SettingsPage(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ViewSettings(w http.ResponseWriter, r *http.Request) {
 	data := map[string]any{}
 	h.renderer.Render(w, r, "settings", "Inställningar", data)
 }
 
-func (h *Handler) NewRecipePage(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ViewCreateRecipe(w http.ResponseWriter, r *http.Request) {
 	data := map[string]any{}
 	h.renderer.Render(w, r, "recipe-new", "Skapa nytt recept", data)
 }
@@ -381,12 +381,12 @@ func (h *Handler) DeleteRecipe(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fromURL, http.StatusSeeOther)
 }
 
-func (h *Handler) DashboardPage(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ViewAdminDashboard(w http.ResponseWriter, r *http.Request) {
 	data := map[string]any{}
 	h.renderer.Render(w, r, "admin-dashboard", "Admin - Panel", data)
 }
 
-func (h *Handler) UsersPage(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ViewUsers(w http.ResponseWriter, r *http.Request) {
 	users, err := h.userService.GetAllUsers()
 	if err != nil {
 		h.renderErrInternal(w, r, fmt.Errorf("get all users: %w", err))
@@ -398,7 +398,7 @@ func (h *Handler) UsersPage(w http.ResponseWriter, r *http.Request) {
 	h.renderer.Render(w, r, "admin-users", "Admin - Hantera användare", data)
 }
 
-func (h *Handler) CreateUserPage(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ViewCreateUser(w http.ResponseWriter, r *http.Request) {
 	data := map[string]any{}
 	h.renderer.Render(w, r, "admin-create-user", "Admin - Skapa användare", data)
 }
@@ -446,7 +446,7 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
 }
 
-func (h *Handler) ManageUserPage(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ViewUpdateUser(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {

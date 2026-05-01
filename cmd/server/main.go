@@ -44,33 +44,33 @@ func main() {
 
 	handler := handlers.NewHandler(authService, userService, recipeService, renderer)
 
-	mux.HandleFunc("/", handler.HomePage)
+	mux.HandleFunc("/", handler.ViewHome)
 
-	mux.HandleFunc("GET /r/{id}", handler.ViewRecipePage)
+	mux.HandleFunc("GET /r/{id}", handler.ViewRecipe)
 
-	mux.HandleFunc("GET /login", handler.LoginPage)
+	mux.HandleFunc("GET /login", handler.ViewLogin)
 	mux.HandleFunc("POST /login", handler.Login)
 
 	mux.HandleFunc("POST /logout", handler.Logout)
 
 	loggedInMux := http.NewServeMux()
 
-	loggedInMux.HandleFunc("GET /settings", handler.SettingsPage)
-	loggedInMux.HandleFunc("GET /manage/new", handler.NewRecipePage)
+	loggedInMux.HandleFunc("GET /settings", handler.ViewSettings)
+	loggedInMux.HandleFunc("GET /manage/new", handler.ViewCreateRecipe)
 	loggedInMux.HandleFunc("POST /manage/new", handler.NewRecipe)
 
 	loggedInMux.HandleFunc("POST /manage/delete/{id}", handler.DeleteRecipe)
 
 	adminMux := http.NewServeMux()
 
-	adminMux.HandleFunc("GET /admin/dashboard", handler.DashboardPage)
+	adminMux.HandleFunc("GET /admin/dashboard", handler.ViewAdminDashboard)
 
-	adminMux.HandleFunc("GET /admin/users", handler.UsersPage)
+	adminMux.HandleFunc("GET /admin/users", handler.ViewUsers)
 
-	adminMux.HandleFunc("GET /admin/users/create", handler.CreateUserPage)
+	adminMux.HandleFunc("GET /admin/users/create", handler.ViewCreateUser)
 	adminMux.HandleFunc("POST /admin/users/create", handler.CreateUser)
 
-	adminMux.HandleFunc("GET /admin/users/manage/{id}", handler.ManageUserPage)
+	adminMux.HandleFunc("GET /admin/users/manage/{id}", handler.ViewUpdateUser)
 	adminMux.HandleFunc("POST /admin/users/manage/{id}/username", handler.UpdateUsername)
 	adminMux.HandleFunc("POST /admin/users/manage/{id}/display-name", handler.UpdateDisplayName)
 	adminMux.HandleFunc("POST /admin/users/manage/{id}/password", handler.UpdatePassword)
