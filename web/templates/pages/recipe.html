@@ -1,18 +1,22 @@
 {{template "base" .}}
 
+{{define "head"}}
+<link rel="stylesheet" href="/static/css/recipe.css">
+{{end}}
+
 {{define "content"}}
 
 <div class="wrapper">
 
     <h1>{{.L.Recipe.Title}}</h1>
 
-    <img src="/{{.L.RecipeImageSrc}}" alt="Bild på färdigt resultat">
-
     <p>
         Skapad {{.L.RecipeCreatedAtFormatted}} av {{.L.RecipeOwner.DisplayName}}
         <br>
         Redigerad senast {{.L.RecipeUpdatedAtFormatted}}
     </p>
+
+    <img src="/{{.L.RecipeImageSrc}}" alt="Bild på färdigt resultat" class="photo">
 
     {{if .RecipePrepTimeFormatted}}
     <p>
@@ -21,7 +25,7 @@
     {{end}}
 
     <p>
-        Tillagningstid (för en person): {{.L.RecipeCookTimeFormatted}}
+        Tillagningstid: {{.L.RecipeCookTimeFormatted}}
     </p>
 
     <ul>
