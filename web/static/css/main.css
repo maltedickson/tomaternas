@@ -107,6 +107,7 @@ img {
     border: 1px solid currentColor;
     border-radius: 4px;
     box-shadow: 0px 1px 2px 0 hsl(0 0% 0% / 0.2);
+    background-color: white;
 }
 
 .auth-menu .dropdown.open {
