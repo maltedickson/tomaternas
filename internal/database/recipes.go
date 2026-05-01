@@ -103,7 +103,7 @@ func (db *DB) GetRecipeById(id int) (*models.Recipe, error) {
 		return nil, err
 	}
 
-	err = json.Unmarshal(dietaryTagsString, &recipe.DietaryTags)
+	err = json.Unmarshal(otherTagsString, &recipe.OtherTags)
 	if err != nil {
 		return nil, err
 	}
