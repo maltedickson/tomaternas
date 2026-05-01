@@ -333,6 +333,54 @@ func (h *Handler) NewRecipe(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("/r/%d", id), http.StatusSeeOther)
 }
 
+func (h *Handler) DeleteRecipe(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		h.renderErrPageNotFound(w, r)
+		return
+	}
+
+	recipe, err := h.recipeService.GetRecipeById(id)
+	if err != nil {
+		if errors.Is(err, services.ErrNotFound) {
+			h.renderErrPageNotFound(w, r)
+			return
+		}
+		h.renderErrInternal(w, r, fmt.Errorf("get recipe by id (%d): %w", id, err))
+		return
+	}
+
+	user := middleware.MustGetUser(r)
+
+	havePermission := user.ID == recipe.OwnerID || user.Role == models.RoleAdmin
+	if !havePermission {
+		h.renderErrForbidden(w, r)
+		return
+	}
+
+	fromURL, err := url.QueryUnescape(r.FormValue("from"))
+	if err != nil {
+		h.renderErrBadRequest(w, r)
+		return
+	}
+
+	if err := h.recipeService.DeleteRecipeById(id); err != nil {
+		h.renderErrInternal(w, r, fmt.Errorf("delete recipe by id (%d): %w", id, err))
+		return
+	}
+
+	if fromURL == "" {
+		fromURL = "/"
+	}
+
+	if !isInternalURL(fromURL) {
+		fromURL = "/"
+	}
+
+	http.Redirect(w, r, fromURL, http.StatusSeeOther)
+}
+
 func (h *Handler) DashboardPage(w http.ResponseWriter, r *http.Request) {
 	data := map[string]any{}
 	h.renderer.Render(w, r, "admin-dashboard", "Admin - Panel", data)
@@ -496,6 +544,10 @@ func (h *Handler) renderErrPageNotFound(w http.ResponseWriter, r *http.Request) 
 
 func (h *Handler) renderErrBadRequest(w http.ResponseWriter, r *http.Request) {
 	h.renderer.RenderErr(w, r, http.StatusBadRequest, "Dålig förfrågan.")
+}
+
+func (h *Handler) renderErrForbidden(w http.ResponseWriter, r *http.Request) {
+	h.renderer.RenderErr(w, r, http.StatusForbidden, "Du saknar behörighet.")
 }
 
 func (h *Handler) renderErrInternal(w http.ResponseWriter, r *http.Request, err error) {

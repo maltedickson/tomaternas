@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"net/url"
 	"recipe-web-server/internal/models"
@@ -59,6 +60,14 @@ func RequireAdmin(next http.Handler) http.Handler {
 func GetUser(r *http.Request) (*models.User, bool) {
 	user, ok := r.Context().Value(UserContextKey).(*models.User)
 	return user, ok
+}
+
+func MustGetUser(r *http.Request) *models.User {
+	user, ok := r.Context().Value(UserContextKey).(*models.User)
+	if !ok {
+		panic(errors.New("expected client to be logged in, but found no user"))
+	}
+	return user
 }
 
 func IsAuthenticated(r *http.Request) bool {
