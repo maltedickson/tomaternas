@@ -60,15 +60,13 @@
         {{.L.RecipeDescriptionParsed}}
     </div>
 
-    <h2>Ingredienser</h2>
-
-    <p>Mängder för {{.L.Recipe.Servings}}</p>
+    <h2>Ingredienser ({{ .L.Recipe.Servings }})</h2>
 
     {{range .L.Recipe.IngredientSections}}
 
     {{if .Heading}} <h3>{{.Heading}}</h3> {{end}}
 
-    <table>
+    <table class="ingredients">
         <tbody>
             {{range .Ingredients}}
 

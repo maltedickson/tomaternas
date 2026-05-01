@@ -18,3 +18,19 @@
     border-radius: 4px;
     padding: 0rem 0.5rem;
 }
+
+.ingredients {
+    border-collapse: collapse;
+}
+
+.ingredients td {
+    padding-block: 0.5rem;
+}
+
+.ingredients td:not(:first-child) {
+    padding-left: 2rem;
+}
+
+.ingredients tr:not(:last-child) {
+    border-bottom: 1px solid hsl(0 0% 90%);
+}
