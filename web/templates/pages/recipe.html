@@ -18,35 +18,47 @@
 
     <img src="/{{.L.RecipeImageSrc}}" alt="Bild på färdigt resultat" class="photo">
 
-    {{if .RecipePrepTimeFormatted}}
-    <p>
-        Förberedelsetid: {{.L.RecipePrepTimeFormatted}}
-    </p>
-    {{end}}
+    <div class="spacing-small">
 
-    <p>
-        Tillagningstid: {{.L.RecipeCookTimeFormatted}}
-    </p>
+        <p>
+            {{if .L.RecipePrepTimeFormatted}}
+            <span>Förberedelsetid: {{.L.RecipePrepTimeFormatted}}</span>
+            {{end}}
+            <span>Tillagningstid: {{.L.RecipeCookTimeFormatted}}</span>
+        </p>
 
-    <ul>
-        {{range .L.Recipe.MealTypes}}
-        <li>{{.}}</li>
+        {{if .L.Recipe.MealTypes}}
+        <div class="tag-container">
+            <div>Måltidstyp:</div>
+            {{range .L.Recipe.MealTypes}}
+            <div class="tag">{{.}}</div>
+            {{end}}
+        </div>
         {{end}}
-    </ul>
 
-    <ul>
-        {{range .L.Recipe.DietaryTags}}
-        <li>{{.}}</li>
+        {{if .L.Recipe.DietaryTags}}
+        <div class="tag-container">
+            <div>Specialkost:</div>
+            {{range .L.Recipe.DietaryTags}}
+            <div class="tag">{{.}}</div>
+            {{end}}
+        </div>
         {{end}}
-    </ul>
 
-    <ul>
-        {{range .L.Recipe.OtherTags}}
-        <li>{{.}}</li>
+        {{if .L.Recipe.OtherTags}}
+        <div class="tag-container">
+            <div>Etiketter:</div>
+            {{range .L.Recipe.OtherTags}}
+            <div class="tag">{{.}}</div>
+            {{end}}
+        </div>
         {{end}}
-    </ul>
 
-    {{.L.RecipeDescriptionParsed}}
+    </div>
+
+    <div class="mt-large">
+        {{.L.RecipeDescriptionParsed}}
+    </div>
 
     <h2>Ingredienser</h2>
 

@@ -5,3 +5,16 @@
     height: 100%;
     object-fit: cover;
 }
+
+.tag-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-block: 1rem;
+}
+
+.tag {
+    border: 1px solid hsl(0 0% 70%);
+    border-radius: 4px;
+    padding: 0rem 0.5rem;
+}
