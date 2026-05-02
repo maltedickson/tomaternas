@@ -50,6 +50,7 @@ func main() {
 	mux.HandleFunc("POST /recipes", middleware.RequireAuth(handler.CreateRecipe))
 
 	mux.HandleFunc("GET /recipes/{id}", handler.ViewRecipe)
+	mux.HandleFunc("GET /recipes/{id}/edit", middleware.RequireAuth(handler.ViewEditRecipe))
 	mux.HandleFunc("POST /recipes/{id}/delete", middleware.RequireAuth(handler.DeleteRecipe))
 
 	mux.HandleFunc("GET /login", handler.ViewLogin)

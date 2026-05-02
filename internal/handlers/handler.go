@@ -246,6 +246,30 @@ func (h *Handler) ViewRecipe(w http.ResponseWriter, r *http.Request) {
 	h.renderer.Render(w, r, "recipe", recipe.Title, data)
 }
 
+func (h *Handler) ViewEditRecipe(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		h.renderErrPageNotFound(w, r)
+		return
+	}
+
+	recipe, err := h.recipeService.GetRecipeById(id)
+	if err != nil {
+		if errors.Is(err, services.ErrNotFound) {
+			h.renderErrPageNotFound(w, r)
+			return
+		}
+		h.renderErrInternal(w, r, fmt.Errorf("get recipe by id (%d): %w", id, err))
+		return
+	}
+
+	data := map[string]any{
+		"Recipe": recipe,
+	}
+	h.renderer.Render(w, r, "recipe-new", "Redigera recept", data)
+}
+
 func (h *Handler) DeleteRecipe(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)

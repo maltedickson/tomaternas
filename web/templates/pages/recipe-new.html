@@ -2,13 +2,16 @@
 
 {{define "head"}}
 <link rel="stylesheet" href="/static/css/recipe-new.css">
+<script>
+    window.recipe = {{.L.Recipe}}
+</script>
 <script src="/static/js/recipe-new.js" defer></script>
 {{end}}
 
 {{define "content"}}
 
 <div class="wrapper">
-    <h1>Skapa nytt recept</h1>
+    <h1>{{if .L.Recipe}}Redigera recept{{else}}Skapa nytt recept{{end}}</h1>
 
     <div class="card page">
 
@@ -125,13 +128,10 @@
                 </button>
             </section>
 
-
-
             <section>
                 <h2>Instruktioner</h2>
                 <textarea type="text" name="instructions" id="input-instructions" rows="10"></textarea>
             </section>
-
 
             <button type="submit" class="mt-large">Ladda upp</button>
 
