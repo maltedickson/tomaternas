@@ -34,3 +34,22 @@
 .ingredients tr:not(:last-child) {
     border-bottom: 1px solid hsl(0 0% 90%);
 }
+
+.title-section__actions {
+    height: calc(var(--h1-font-size) * var(--h1-line-height));
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.title-section__edit-link {
+    display: block;
+}
+
+@media (min-width: 768px) {
+    .title-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+}

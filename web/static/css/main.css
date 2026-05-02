@@ -18,6 +18,9 @@
 
     --font-sans: Inter, sans-serif;
     --font-serif: Lora, Libre Baskerville, serif;
+
+    --h1-font-size: 2rem;
+    --h1-line-height: 1.25;
 }
 
 *,
@@ -168,6 +171,11 @@ img {
 
 .time-slider__input {
     width: 100%;
+}
+
+h1 {
+    font-size: var(--h1-font-size);
+    line-height: var(--h1-line-height);
 }
 
 h2 {

@@ -8,12 +8,23 @@
 
 <div class="wrapper">
 
-    <h1>{{.L.Recipe.Title}}</h1>
+    <div class="title-section">
+
+        <h1>{{.L.Recipe.Title}}</h1>
+
+        <div class="title-section__actions">
+            <a href="/manage/edit/{{ .L.Recipe.ID }}" class="title-section__edit-link">Redigera</a>
+            <form action="/manage/delete/{{ .L.Recipe.ID }}" method="POST">
+                <button type="submit" class="title-section__delete-btn">Radera</button>
+            </form>
+        </div>
+
+    </div>
 
     <p>
-        Skapad {{.L.RecipeCreatedAtFormatted}} av {{.L.RecipeOwner.DisplayName}}
+        Skapad: {{.L.RecipeCreatedAtFormatted}} (av {{.L.RecipeOwner.DisplayName}})
         <br>
-        Redigerad senast {{.L.RecipeUpdatedAtFormatted}}
+        Ändrad: {{.L.RecipeUpdatedAtFormatted}}
     </p>
 
     <img src="/{{.L.RecipeImageSrc}}" alt="Bild på färdigt resultat" class="photo">
