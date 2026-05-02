@@ -12,12 +12,14 @@
 
         <h1>{{.L.Recipe.Title}}</h1>
 
+        {{if .L.CanManage}}
         <div class="title-section__actions">
-            <a href="/manage/edit/{{ .L.Recipe.ID }}" class="title-section__edit-link">Redigera</a>
-            <form action="/manage/delete/{{ .L.Recipe.ID }}" method="POST">
+            <a href="/recipes/{{.L.Recipe.ID}}/edit" class="title-section__edit-link">Redigera</a>
+            <form action="/recipes/{{.L.Recipe.ID}}/delete" method="POST">
                 <button type="submit" class="title-section__delete-btn">Radera</button>
             </form>
         </div>
+        {{end}}
 
     </div>
 

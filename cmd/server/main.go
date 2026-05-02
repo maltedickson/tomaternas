@@ -45,39 +45,31 @@ func main() {
 	handler := handlers.NewHandler(authService, userService, recipeService, renderer)
 
 	mux.HandleFunc("/", handler.ViewHome)
+	mux.HandleFunc("GET /recipes", handler.ViewRecipes)
+	mux.HandleFunc("GET /recipes/new", middleware.RequireAuth(handler.ViewCreateRecipe))
+	mux.HandleFunc("POST /recipes", middleware.RequireAuth(handler.CreateRecipe))
 
-	mux.HandleFunc("GET /r/{id}", handler.ViewRecipe)
+	mux.HandleFunc("GET /recipes/{id}", handler.ViewRecipe)
+	mux.HandleFunc("POST /recipes/{id}/delete", middleware.RequireAuth(handler.DeleteRecipe))
 
 	mux.HandleFunc("GET /login", handler.ViewLogin)
 	mux.HandleFunc("POST /login", handler.Login)
-
 	mux.HandleFunc("POST /logout", handler.Logout)
 
-	loggedInMux := http.NewServeMux()
-
-	loggedInMux.HandleFunc("GET /settings", handler.ViewSettings)
-	loggedInMux.HandleFunc("GET /manage/new", handler.ViewCreateRecipe)
-	loggedInMux.HandleFunc("POST /manage/new", handler.CreateRecipe)
-
-	loggedInMux.HandleFunc("POST /manage/delete/{id}", handler.DeleteRecipe)
+	mux.HandleFunc("GET /settings", middleware.RequireAuth(handler.ViewSettings))
 
 	adminMux := http.NewServeMux()
 
 	adminMux.HandleFunc("GET /admin/dashboard", handler.ViewAdminDashboard)
-
 	adminMux.HandleFunc("GET /admin/users", handler.ViewUsers)
+	adminMux.HandleFunc("GET /admin/users/new", handler.ViewCreateUser)
+	adminMux.HandleFunc("POST /admin/users", handler.CreateUser)
+	adminMux.HandleFunc("GET /admin/users/{id}/edit", handler.ViewUpdateUser)
+	adminMux.HandleFunc("POST /admin/users/{id}/username", handler.UpdateUsername)
+	adminMux.HandleFunc("POST /admin/users/{id}/display-name", handler.UpdateDisplayName)
+	adminMux.HandleFunc("POST /admin/users/{id}/password", handler.UpdatePassword)
+	adminMux.HandleFunc("POST /admin/users/{id}/role", handler.UpdateRole)
 
-	adminMux.HandleFunc("GET /admin/users/create", handler.ViewCreateUser)
-	adminMux.HandleFunc("POST /admin/users/create", handler.CreateUser)
-
-	adminMux.HandleFunc("GET /admin/users/manage/{id}", handler.ViewUpdateUser)
-	adminMux.HandleFunc("POST /admin/users/manage/{id}/username", handler.UpdateUsername)
-	adminMux.HandleFunc("POST /admin/users/manage/{id}/display-name", handler.UpdateDisplayName)
-	adminMux.HandleFunc("POST /admin/users/manage/{id}/password", handler.UpdatePassword)
-	adminMux.HandleFunc("POST /admin/users/manage/{id}/role", handler.UpdateRole)
-
-	mux.Handle("GET /settings", middleware.RequireAuth(loggedInMux))
-	mux.Handle("/manage/", middleware.RequireAuth(loggedInMux))
 	mux.Handle("/admin/", middleware.RequireAdmin(adminMux))
 
 	middlewareStack := middleware.CreateStack(

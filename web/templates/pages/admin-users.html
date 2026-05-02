@@ -24,14 +24,14 @@
             <td>{{.Role}}</td>
             <td>{{.UpdatedAt}}</td>
             <td>{{.CreatedAt}}</td>
-            <td><a href="/admin/users/manage/{{.ID}}">Hantera</a></td>
+            <td><a href="/admin/users/{{.ID}}/edit">Hantera</a></td>
         </tr>
         {{end}}
     </tbody>
 </table>
 
 <p>
-    <a href="/admin/users/create">Skapa ny användare</a>
+    <a href="/admin/users/new">Skapa ny användare</a>
 </p>
 
 {{end}}

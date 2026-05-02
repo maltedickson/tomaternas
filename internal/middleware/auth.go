@@ -35,7 +35,7 @@ func AuthMiddleware(authService *services.AuthService) Middleware {
 	}
 }
 
-func RequireAuth(next http.Handler) http.Handler {
+func RequireAuth(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		isAuth, ok := r.Context().Value(IsAuthContextKey).(bool)
 		if !ok || !isAuth {

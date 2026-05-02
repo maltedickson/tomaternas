@@ -41,7 +41,7 @@
 
 <p>Nuvarande värde: {{ .L.ManagedUser.Username}}</p>
 
-<form action="/admin/users/manage/{{ .L.ManagedUser.ID}}/username" method="POST">
+<form action="/admin/users/{{.L.ManagedUser.ID}}/username" method="POST">
     <label for="username">Nytt användarnamn</label>
     <input type="text" name="username" id="username" autocomplete="off" required>
     <button type="submit">Uppdatera</button>
@@ -51,7 +51,7 @@
 
 <p>Nuvarande värde: {{ .L.ManagedUser.DisplayName}}</p>
 
-<form action="/admin/users/manage/{{ .L.ManagedUser.ID}}/display-name" method="POST">
+<form action="/admin/users/{{.L.ManagedUser.ID}}/display-name" method="POST">
     <label for="display-name">Nytt visningsnamn</label>
     <input type="text" name="display-name" id="display-name" autocomplete="off" required>
     <button type="submit">Uppdatera</button>
@@ -64,7 +64,7 @@
     <code>{{ .L.ManagedUser.PasswordHash}}</code>
 </p>
 
-<form action="/admin/users/manage/{{ .L.ManagedUser.ID}}/password" method="POST">
+<form action="/admin/users/{{.L.ManagedUser.ID}}/password" method="POST">
     <label for="password">Nytt lösenord</label>
     <input type="password" name="password" id="password" autocomplete="off" minlength="15" required>
 
@@ -80,7 +80,7 @@
     Nuvarande roll: {{ .L.ManagedUser.Role}}
 </p>
 
-<form action="/admin/users/manage/{{ .L.ManagedUser.ID}}/role" method="POST">
+<form action="/admin/users/{{.L.ManagedUser.ID}}/role" method="POST">
     <label for="password">Ny roll</label>
 
     <fieldset>
