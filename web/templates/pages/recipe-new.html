@@ -22,7 +22,7 @@
 
             <h2>Receptets namn</h2>
 
-            <input type="text" name="title" placeholder="Vad vill du kalla receptet?">
+            <input type="text" name="title" placeholder="Vad vill du kalla receptet?" required>
             {{if .L.Errors.title}}
             <p class="form-error">{{.L.Errors.title}}</p>
             {{end}}
@@ -89,7 +89,7 @@
                     Ladda upp foto
                 </h2>
                 <div>
-                    <input type="file" name="image" accept="image/*">
+                    <input type="file" name="image" accept="image/*" required>
                     <!-- <img alt="Foto på resultat"> -->
                 </div>
             </div>
@@ -99,14 +99,14 @@
 
             <h2>Antal portioner</h2>
             <p>Hur många portioner är mängderna i ingredienslistan anpassade för?</p>
-            <input type="text" name="servings" placeholder="T.ex. 4">
+            <input type="text" name="servings" placeholder="T.ex. 4" required>
             {{if .L.Errors.servings}}
             <p class="form-error">{{.L.Errors.servings}}</p>
             {{end}}
 
             <h2>Ingredienser</h2>
 
-            <input type="hidden" name="ingredients" data-ingredients-input>
+            <input type="hidden" name="ingredients" data-ingredients-input required>
 
             <section>
                 <template id="tmpl-ingredients-section">
@@ -128,7 +128,7 @@
                 </template>
                 <template id="tmpl-ingredient">
                     <div data-ingredient class="ingredient">
-                        <input type="text" placeholder="Ingrediens" data-ingredient-input>
+                        <input type="text" placeholder="Ingrediens" data-ingredient-input required>
                         <input type="text" placeholder="Mängd" data-amount-input>
                         <button type="button">
                             <i class="las la-trash-alt"></i>
@@ -147,7 +147,7 @@
 
             <section>
                 <h2>Instruktioner</h2>
-                <textarea type="text" name="instructions" id="input-instructions" rows="10"></textarea>
+                <textarea type="text" name="instructions" id="input-instructions" rows="10"></textarea required>
                 {{if .L.Errors.instructions}}
                 <p class="form-error">{{.L.Errors.instructions}}</p>
                 {{end}}
