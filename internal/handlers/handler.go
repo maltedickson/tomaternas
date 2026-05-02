@@ -327,6 +327,7 @@ func (h *Handler) ViewEditRecipe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := map[string]any{
+		"IsEdit": true,
 		"Recipe": recipe,
 	}
 	h.renderer.Render(w, r, "recipe-new", "Redigera recept", data)
