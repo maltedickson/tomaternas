@@ -16,8 +16,16 @@
     <div class="card page">
 
         <form action="/recipes" method="POST" enctype="multipart/form-data" data-new-recipe-form>
+            {{if .L.Errors.form}}
+            <p class="form-error">{{.L.Errors.form}}</p>
+            {{end}}
+
             <h2>Receptets namn</h2>
-            <input type="text" name="title" placeholder="Vad vill du kalla receptet?" required>
+
+            <input type="text" name="title" placeholder="Vad vill du kalla receptet?">
+            {{if .L.Errors.title}}
+            <p class="form-error">{{.L.Errors.title}}</p>
+            {{end}}
 
             <div class="tags-editor">
                 <div>
@@ -85,10 +93,16 @@
                     <!-- <img alt="Foto på resultat"> -->
                 </div>
             </div>
+            {{if .L.Errors.image}}
+            <p class="form-error">{{.L.Errors.image}}</p>
+            {{end}}
 
             <h2>Antal portioner</h2>
             <p>Hur många portioner är mängderna i ingredienslistan anpassade för?</p>
             <input type="text" name="servings" placeholder="T.ex. 4">
+            {{if .L.Errors.servings}}
+            <p class="form-error">{{.L.Errors.servings}}</p>
+            {{end}}
 
             <h2>Ingredienser</h2>
 
@@ -114,7 +128,7 @@
                 </template>
                 <template id="tmpl-ingredient">
                     <div data-ingredient class="ingredient">
-                        <input type="text" placeholder="Ingrediens" required data-ingredient-input>
+                        <input type="text" placeholder="Ingrediens" data-ingredient-input>
                         <input type="text" placeholder="Mängd" data-amount-input>
                         <button type="button">
                             <i class="las la-trash-alt"></i>
@@ -126,11 +140,17 @@
                     <i class="las la-plus"></i>
                     Ny sektion
                 </button>
+                {{if .L.Errors.ingredients}}
+                <p class="form-error">{{.L.Errors.ingredients}}</p>
+                {{end}}
             </section>
 
             <section>
                 <h2>Instruktioner</h2>
                 <textarea type="text" name="instructions" id="input-instructions" rows="10"></textarea>
+                {{if .L.Errors.instructions}}
+                <p class="form-error">{{.L.Errors.instructions}}</p>
+                {{end}}
             </section>
 
             <button type="submit" class="mt-large">Ladda upp</button>

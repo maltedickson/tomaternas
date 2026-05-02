@@ -4,6 +4,10 @@ import (
 	"time"
 )
 
+var AllowedMealTypes = []string{"Frukost", "Förrätt", "Huvudrätt", "Tillbehör", "Fika/efterrätt", "Dryck"}
+var AllowedDietaryTags = []string{"Vegansk", "Vegetarisk", "Glutenfri", "Mjölkfri"}
+var AllowedOtherTags = []string{"Festlig", "Matlåda", "Storkok"}
+
 type Recipe struct {
 	ID                 int
 	Title              string

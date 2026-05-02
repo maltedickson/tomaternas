@@ -8,6 +8,7 @@ import (
 	"recipe-web-server/internal/database"
 	"recipe-web-server/internal/models"
 	"regexp"
+	"slices"
 	"strings"
 	"time"
 )
@@ -76,4 +77,17 @@ func ParseMarkup(markup string) template.HTML {
 
 func FormatDate(date time.Time) string {
 	return date.Format("2006-01-02")
+}
+
+func ValidateRecipeTagList(tags []string, allowedTags []string) bool {
+	seen := make(map[string]struct{})
+	for _, tag := range tags {
+		if _, ok := seen[tag]; ok {
+			return false
+		}
+		if !slices.Contains(allowedTags, tag) {
+			return false
+		}
+	}
+	return true
 }

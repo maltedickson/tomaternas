@@ -62,7 +62,7 @@ img {
     margin-block: 2rem;
 }
 
-.error {
+.form-error {
     background-color: var(--color-error-bg);
     padding: 0.5rem 0.75rem;
     border: 1px solid var(--color-error-border);

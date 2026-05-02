@@ -68,25 +68,76 @@ func (h *Handler) ViewCreateRecipe(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) CreateRecipe(w http.ResponseWriter, r *http.Request) {
-	user, _ := middleware.GetUser(r)
+	errs := map[string]string{}
 
 	err := r.ParseMultipartForm(5 << 20)
 	if err != nil {
+		errs["form"] = "Ett problem uppstod. Testa att ladda upp en mindre bild."
+		data := map[string]any{
+			"Errors": errs,
+		}
+		h.renderer.Render(w, r, "recipe-new", "Skapa nytt recept", data)
+		return
+	}
+
+	var imageFileExt string
+	imageFile, _, err := r.FormFile("image")
+	if err != nil {
+		errs["image"] = "Bild krävs."
+	} else {
+		defer imageFile.Close()
+		imageBuff := make([]byte, 512)
+		if _, err := imageFile.Read(imageBuff); err != nil {
+			h.renderErrInternal(w, r, fmt.Errorf("read image into buffer: %w", err))
+			return
+		}
+		imageFileType := http.DetectContentType(imageBuff)
+		switch imageFileType {
+		case "image/jpeg":
+			imageFileExt = "jpg"
+		case "image/png":
+			imageFileExt = "png"
+		default:
+			errs["image"] = "Bara JPG och PNG är tillåtna."
+		}
+
+		if _, err := imageFile.Seek(0, 0); err != nil {
+			h.renderErrInternal(w, r, fmt.Errorf("seek image: %w", err))
+			return
+		}
+	}
+
+	title := r.FormValue("title")
+	if strings.TrimSpace(title) == "" {
+		errs["title"] = "Receptnamn krävs."
+	}
+
+	mealTypes := r.Form["meal-types[]"]
+	diets := r.Form["diets[]"]
+	tags := r.Form["tags[]"]
+
+	if !services.ValidateRecipeTagList(mealTypes, models.AllowedMealTypes) || !services.ValidateRecipeTagList(diets, models.AllowedDietaryTags) || !services.ValidateRecipeTagList(tags, models.AllowedOtherTags) {
+		log.Printf("bad request: tags")
 		h.renderErrBadRequest(w, r)
 		return
 	}
 
-	title := r.FormValue("title")
-	mealTypes := r.Form["meal-types[]"]
-	diets := r.Form["diets[]"]
-	tags := r.Form["tags[]"]
 	description := r.FormValue("description")
+
 	servings := r.FormValue("servings")
+	if strings.TrimSpace(servings) == "" {
+		errs["servings"] = "Antal portioner krävs."
+	}
+
 	instructions := r.FormValue("instructions")
+	if strings.TrimSpace(instructions) == "" {
+		errs["instructions"] = "Instruktioner krävs."
+	}
 
 	cookTimeString := r.FormValue("cook-time")
 	cookTime, err := strconv.Atoi(cookTimeString)
 	if err != nil {
+		log.Printf("bad request: cook time")
 		h.renderErrBadRequest(w, r)
 		return
 	}
@@ -94,46 +145,50 @@ func (h *Handler) CreateRecipe(w http.ResponseWriter, r *http.Request) {
 	prepTimeString := r.FormValue("prep-time")
 	prepTimeHours, err := strconv.Atoi(prepTimeString)
 	if err != nil {
+		log.Printf("bad request: prep time")
 		h.renderErrBadRequest(w, r)
 		return
 	}
-	prepTime := prepTimeHours * 3600
 
 	ingredientsString := r.FormValue("ingredients")
 	var ingredientSections []models.IngredientSection
 	err = json.Unmarshal([]byte(ingredientsString), &ingredientSections)
 	if err != nil {
+		log.Printf("bad request: ingredients")
 		h.renderErrBadRequest(w, r)
 		return
 	}
+	{
+		var ingredientErrs []string
+		totalIngredients := 0
+		hasEmptyHeading := false
+		hasEmptyName := false
 
-	imageFile, _, err := r.FormFile("image")
-	if err != nil {
-		h.renderErrBadRequest(w, r)
-		return
+		for section_index, section := range ingredientSections {
+			if section_index > 0 && strings.TrimSpace(section.Heading) == "" {
+				hasEmptyHeading = true
+			}
+			for _, ingredient := range section.Ingredients {
+				totalIngredients++
+				if strings.TrimSpace(ingredient.Name) == "" {
+					hasEmptyName = true
+				}
+			}
+		}
+
+		if totalIngredients == 0 {
+			ingredientErrs = append(ingredientErrs, "Receptet måste ha minst en ingrediens.")
+		}
+		if hasEmptyHeading {
+			ingredientErrs = append(ingredientErrs, "Alla sektioner utom den första måste ha en rubrik.")
+		}
+		if hasEmptyName {
+			ingredientErrs = append(ingredientErrs, "Alla ingredienser måste ha ett namn.")
+		}
+		if len(ingredientErrs) > 0 {
+			errs["ingredients"] = strings.Join(ingredientErrs, " ")
+		}
 	}
-	defer imageFile.Close()
-
-	imageBuff := make([]byte, 512)
-	if _, err := imageFile.Read(imageBuff); err != nil {
-		h.renderErrInternal(w, r, fmt.Errorf("read image into buffer: %w", err))
-		return
-	}
-	imageFileType := http.DetectContentType(imageBuff)
-
-	var imageFileExt string
-	switch imageFileType {
-	case "image/jpeg":
-		imageFileExt = "jpg"
-	case "image/png":
-		imageFileExt = "png"
-	default:
-		// TODO: give nice error message and allow user to fix their form data
-		http.Error(w, "Bara JPG och PNG är tillåtna", http.StatusUnsupportedMediaType)
-		return
-	}
-
-	imageFile.Seek(0, 0)
 
 	recipe := &models.Recipe{
 		Title:              title,
@@ -141,12 +196,20 @@ func (h *Handler) CreateRecipe(w http.ResponseWriter, r *http.Request) {
 		IngredientSections: ingredientSections,
 		Instructions:       instructions,
 		Servings:           servings,
-		PrepTimeSeconds:    prepTime,
+		PrepTimeSeconds:    prepTimeHours * 3600,
 		CookTimeSeconds:    cookTime,
 		MealTypes:          mealTypes,
 		DietaryTags:        diets,
 		OtherTags:          tags,
-		OwnerID:            user.ID,
+		OwnerID:            middleware.MustGetUser(r).ID,
+	}
+
+	if len(errs) > 0 {
+		h.renderer.Render(w, r, "recipe-new", "Skapa nytt recept", map[string]any{
+			"Errors": errs,
+			"Recipe": recipe,
+		})
+		return
 	}
 
 	id, err := h.recipeService.CreateRecipe(recipe)
@@ -169,7 +232,6 @@ func (h *Handler) CreateRecipe(w http.ResponseWriter, r *http.Request) {
 	if _, err := io.Copy(imageDestinationFile, imageFile); err != nil {
 		h.recipeService.DeleteRecipeById(id)
 		os.Remove(imageFilePath)
-
 		h.renderErrInternal(w, r, fmt.Errorf("copy image to created file: %w", err))
 		return
 	}
