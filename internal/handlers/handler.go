@@ -326,9 +326,16 @@ func (h *Handler) ViewEditRecipe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	imageSrc, err := getImageSrc(recipe.ID)
+	if err != nil {
+		h.renderErrInternal(w, r, fmt.Errorf("get image src for recipe with id (%d): %w", id, err))
+		return
+	}
+
 	data := map[string]any{
-		"IsEdit": true,
-		"Recipe": recipe,
+		"IsEdit":         true,
+		"Recipe":         recipe,
+		"RecipeImageSrc": imageSrc,
 	}
 	h.renderer.Render(w, r, "recipe-new", "Redigera recept", data)
 }
@@ -653,4 +660,21 @@ func (h *Handler) renderErrInternal(w http.ResponseWriter, r *http.Request, err 
 func isInternalURL(urlStr string) bool {
 	return urlStr == "" ||
 		(strings.HasPrefix(urlStr, "/") && !strings.HasPrefix(urlStr, "//"))
+}
+
+func getImageSrc(id int) (string, error) {
+	dataDirectory := "data"
+	imageMatches, err := filepath.Glob(filepath.Join(dataDirectory, "uploads", "recipes", fmt.Sprintf("%d.*", id)))
+	if err != nil {
+		return "", fmt.Errorf("get image matches: %w", err)
+	}
+	if len(imageMatches) == 0 {
+		return "", fmt.Errorf("get image matches: no matches found")
+	}
+	imagePath := imageMatches[0]
+	imageSrc, err := filepath.Rel(dataDirectory, imagePath)
+	if err != nil {
+		return "", fmt.Errorf("calculate image src: %w", err)
+	}
+	return imageSrc, nil
 }

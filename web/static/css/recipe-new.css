@@ -1,3 +1,25 @@
+.photo {
+    aspect-ratio: 16 / 9;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    margin-block: 1rem;
+}
+
+.photo.photo--hidden {
+    display: none;
+}
+
+.btn-img-remove {
+    display: none;
+}
+
+.photo-upload__controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
 /* form { */
 /*     >*+* { */
 /*         margin-top: 2rem; */

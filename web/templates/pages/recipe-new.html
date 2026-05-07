@@ -3,7 +3,10 @@
 {{define "head"}}
 <link rel="stylesheet" href="/static/css/recipe-new.css">
 <script>
-    window.recipe = {{.L.Recipe}}
+    window.recipeContext = {}
+    window.recipeContext.serverData = {{.L.Recipe}}
+    window.recipeContext.isEditMode = {{.L.IsEdit}}
+    window.recipeContext.imageSrc = "/" + {{.L.RecipeImageSrc}}
 </script>
 <script src="/static/js/recipe-new.js" defer></script>
 {{end}}
@@ -22,10 +25,56 @@
 
             <h2>Receptets namn</h2>
 
-            <input type="text" name="title" placeholder="Vad vill du kalla receptet?" required>
+            <input type="text" name="title" placeholder="Vad vill du kalla receptet?" requiredxx>
             {{if .L.Errors.title}}
             <p class="form-error">{{.L.Errors.title}}</p>
             {{end}}
+
+            <div class="photo-upload">
+                <h2>
+                    Ladda upp foto
+                </h2>
+                <div>
+                    {{if .L.IsEdit}}
+                    <img alt="Foto på resultat" class="photo" data-image src="/{{.L.RecipeImageSrc}}">
+                    {{else}}
+                    <img alt="Foto på resultat" class="photo photo--hidden" data-image>
+                    {{end}}
+                    <div class="photo-upload__controls">
+                        <input type="file" name="image" accept="image/png, image/jpeg, image/*" requiredxx
+                            data-input-image>
+                        <button type="button" data-button-image-remove class="btn-img-remove">
+                            {{if .L.IsEdit}}
+                            Återställ
+                            {{else}}
+                            Ta bort
+                            {{end}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {{if .L.Errors.image}}
+            <p class="form-error">{{.L.Errors.image}}</p>
+            {{end}}
+
+            <h2 for="time-slider">Tillagningstid</h2>
+            <div class="time-slider">
+                <div class="time-slider__ticks" id="slider-ticks" aria-hidden="true">
+                    Tid:
+                    <div style="--m: 15;">15m</div>
+                    <div style="--m: 30;">30m</div>
+                    <div style="--m: 45;">45m</div>
+                    <div style="--m: 60;">1h</div>
+                    <div style="--m: 90;">1h30</div>
+                    <div style="--m: 120;">2h+</div>
+                </div>
+                <input class="time-slider__input" type="range" id="time-slider" name="cook-time" min="0" max="7200"
+                    step="300" value="0">
+            </div>
+
+            <h2 for="">Förberedelsetid</h2>
+            <p>Ange antal timmar.</p>
+            <input type="number" value="0" min="0" name="prep-time">
 
             <div class="tags-editor">
                 <div>
@@ -61,52 +110,22 @@
                 </div>
             </div>
 
-            <h2 for="time-slider">Tillagningstid</h2>
-            <div class="time-slider">
-                <div class="time-slider__ticks" id="slider-ticks" aria-hidden="true">
-                    Tid:
-                    <div style="--m: 15;">15m</div>
-                    <div style="--m: 30;">30m</div>
-                    <div style="--m: 45;">45m</div>
-                    <div style="--m: 60;">1h</div>
-                    <div style="--m: 90;">1h30</div>
-                    <div style="--m: 120;">2h+</div>
-                </div>
-                <input class="time-slider__input" type="range" id="time-slider" name="cook-time" min="0" max="7200"
-                    step="300" value="0">
-            </div>
-
-            <h2 for="">Förberedelsetid</h2>
-            <p>Ange antal timmar.</p>
-            <input type="number" value="0" min="0" name="prep-time">
 
             <h2>Beskrivning</h2>
             <textarea name="description" rows="3"
                 placeholder="Valfri beskrivning av receptet. Berätta gärna varifrån det kommer!"></textarea>
 
-            <div class="photo-upload">
-                <h2>
-                    Ladda upp foto
-                </h2>
-                <div>
-                    <input type="file" name="image" accept="image/*" required>
-                    <!-- <img alt="Foto på resultat"> -->
-                </div>
-            </div>
-            {{if .L.Errors.image}}
-            <p class="form-error">{{.L.Errors.image}}</p>
-            {{end}}
 
             <h2>Antal portioner</h2>
             <p>Hur många portioner är mängderna i ingredienslistan anpassade för?</p>
-            <input type="text" name="servings" placeholder="T.ex. 4" required>
+            <input type="text" name="servings" placeholder="T.ex. 4" requiredxx>
             {{if .L.Errors.servings}}
             <p class="form-error">{{.L.Errors.servings}}</p>
             {{end}}
 
             <h2>Ingredienser</h2>
 
-            <input type="hidden" name="ingredients" data-ingredients-input required>
+            <input type="hidden" name="ingredients" data-ingredients-input requiredxx>
 
             <section>
                 <template id="tmpl-ingredients-section">
@@ -128,7 +147,7 @@
                 </template>
                 <template id="tmpl-ingredient">
                     <div data-ingredient class="ingredient">
-                        <input type="text" placeholder="Ingrediens" data-ingredient-input required>
+                        <input type="text" placeholder="Ingrediens" data-ingredient-input requiredxx>
                         <input type="text" placeholder="Mängd" data-amount-input>
                         <button type="button">
                             <i class="las la-trash-alt"></i>
@@ -147,7 +166,7 @@
 
             <section>
                 <h2>Instruktioner</h2>
-                <textarea type="text" name="instructions" id="input-instructions" rows="10"></textarea required>
+                <textarea type="text" name="instructions" id="input-instructions" rows="10"></textarea requiredxx>
                 {{if .L.Errors.instructions}}
                 <p class="form-error">{{.L.Errors.instructions}}</p>
                 {{end}}
