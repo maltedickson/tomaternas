@@ -67,7 +67,7 @@ func (h *Handler) ViewRecipes(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) ViewCreateRecipe(w http.ResponseWriter, r *http.Request) {
 	data := map[string]any{}
-	h.renderer.Render(w, r, "recipe-new", "Skapa nytt recept", data)
+	h.renderer.Render(w, r, "recipe-form", "Skapa nytt recept", data)
 }
 
 func (h *Handler) CreateRecipe(w http.ResponseWriter, r *http.Request) {
@@ -88,7 +88,7 @@ func (h *Handler) CreateRecipe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(parsed.Errors) > 0 {
-		h.renderer.Render(w, r, "recipe-new", "Skapa nytt recept", map[string]any{
+		h.renderer.Render(w, r, "recipe-form", "Skapa nytt recept", map[string]any{
 			"Errors": parsed.Errors,
 			"Recipe": parsed.Recipe,
 		})
@@ -208,7 +208,7 @@ func (h *Handler) ViewEditRecipe(w http.ResponseWriter, r *http.Request) {
 		"Recipe":         recipe,
 		"RecipeImageSrc": imageSrc,
 	}
-	h.renderer.Render(w, r, "recipe-new", "Redigera recept", data)
+	h.renderer.Render(w, r, "recipe-form", "Redigera recept", data)
 }
 
 func (h *Handler) DeleteRecipe(w http.ResponseWriter, r *http.Request) {
@@ -293,7 +293,7 @@ func (h *Handler) UpdateRecipe(w http.ResponseWriter, r *http.Request) {
 
 	if len(parsed.Errors) > 0 {
 		parsed.Recipe.ID = id
-		h.renderer.Render(w, r, "recipe-new", "Redigera recept", map[string]any{
+		h.renderer.Render(w, r, "recipe-form", "Redigera recept", map[string]any{
 			"Errors": parsed.Errors,
 			"Recipe": parsed.Recipe,
 		})
