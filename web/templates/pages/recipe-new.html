@@ -18,7 +18,8 @@
 
     <div class="card page">
 
-        <form action="/recipes" method="POST" enctype="multipart/form-data" data-new-recipe-form>
+        <form action="{{if .L.IsEdit}}/recipes/{{.L.Recipe.ID}}{{else}}/recipes{{end}}" method="POST"
+            enctype="multipart/form-data" data-new-recipe-form>
             {{if .L.Errors.form}}
             <p class="form-error">{{.L.Errors.form}}</p>
             {{end}}
@@ -31,9 +32,7 @@
             {{end}}
 
             <div class="photo-upload">
-                <h2>
-                    Ladda upp foto
-                </h2>
+                <h2>Foto</h2>
                 <div>
                     {{if .L.IsEdit}}
                     <img alt="Foto på resultat" class="photo" data-image src="/{{.L.RecipeImageSrc}}">
@@ -172,7 +171,18 @@
                 {{end}}
             </section>
 
-            <button type="submit" class="mt-large">Ladda upp</button>
+
+            {{if .L.IsEdit}}
+            <a href="/recipes/{{.L.Recipe.ID}}">Avbryt</a>
+            {{end}}
+
+            <button type="submit" class="mt-large">
+                {{if .L.IsEdit}}
+                Spara
+                {{else}}
+                Ladda upp
+                {{end}}
+            </button>
 
         </form>
 

@@ -5,7 +5,7 @@ const imgEl = document.querySelector("[data-image]");
 const btnRemove = document.querySelector("[data-button-image-remove]")
 
 if (window.recipeContext.isEditMode) {
-    // TODO
+    populateFormWithRecipe(window.recipeContext.serverData);
 } else {
     if (window.recipeContext.serverData) {
         populateFormWithRecipe(window.recipeContext.serverData);
@@ -150,7 +150,6 @@ function setupPhotoUploadListener() {
     const showPreview = (src) => {
         imgEl.src = src;
         imgEl.style.display = "block";
-        btnRemove.style.display = "block";
     }
 
     const hidePreview = () => {

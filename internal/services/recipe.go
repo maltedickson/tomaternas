@@ -25,9 +25,11 @@ func (s *RecipeService) CreateRecipe(recipe *models.Recipe) (int, error) {
 	return s.db.CreateRecipe(recipe)
 }
 
-/*
-GetRecipeById returns the recipe with the specified ID. If no such recipe exists, GetRecipeById returns [ErrNotFound]. If some error occurs, GetRecipeById returns an error.
-*/
+func (s *RecipeService) UpdateRecipe(recipe *models.Recipe) error {
+	return s.db.UpdateRecipe(recipe)
+}
+
+// GetRecipeById returns the recipe with the specified ID. If no such recipe exists, GetRecipeById returns [ErrNotFound]. If some error occurs, GetRecipeById returns an error.
 func (s *RecipeService) GetRecipeById(id int) (*models.Recipe, error) {
 	recipe, err := s.db.GetRecipeById(id)
 	if err != nil {

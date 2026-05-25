@@ -54,6 +54,47 @@ func (db *DB) CreateRecipe(recipe *models.Recipe) (int, error) {
 	return int(id), nil
 }
 
+func (db *DB) UpdateRecipe(recipe *models.Recipe) error {
+	query := `
+		UPDATE recipes
+		SET title = ?, description = ?, ingredient_sections = ?, instructions = ?, servings = ?, prep_time_seconds = ?, cook_time_seconds = ?, meal_types = ?, dietary_tags = ?, other_tags = ?, updated_at = CURRENT_TIMESTAMP
+		WHERE id = ?
+	`
+
+	ingredientSectionsString, err := json.Marshal(recipe.IngredientSections)
+	if err != nil {
+		return err
+	}
+	mealTypesString, err := json.Marshal(recipe.MealTypes)
+	if err != nil {
+		return err
+	}
+	dietaryTagsString, err := json.Marshal(recipe.DietaryTags)
+	if err != nil {
+		return err
+	}
+	otherTagsString, err := json.Marshal(recipe.OtherTags)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec(
+		query,
+		recipe.Title,
+		recipe.Description,
+		ingredientSectionsString,
+		recipe.Instructions,
+		recipe.Servings,
+		recipe.PrepTimeSeconds,
+		recipe.CookTimeSeconds,
+		mealTypesString,
+		dietaryTagsString,
+		otherTagsString,
+		recipe.ID,
+	)
+	return err
+}
+
 func (db *DB) GetRecipeById(id int) (*models.Recipe, error) {
 	query := `
 		SELECT id, title, description, ingredient_sections, instructions, servings, prep_time_seconds, cook_time_seconds, meal_types, dietary_tags, other_tags, owner_id, created_at, updated_at

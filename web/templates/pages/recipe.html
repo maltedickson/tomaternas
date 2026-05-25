@@ -29,7 +29,7 @@
         Ändrad: {{.L.RecipeUpdatedAtFormatted}}
     </p>
 
-    <img src="/{{.L.RecipeImageSrc}}" alt="Bild på färdigt resultat" class="photo">
+    <img src="/{{.L.RecipeImageSrc}}?v={{.L.Recipe.UpdatedAt.Unix }}" alt="Bild på färdigt resultat" class="photo">
 
     <div class="spacing-small">
 
