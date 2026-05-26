@@ -58,7 +58,7 @@ func (h *Handler) ViewHome(w http.ResponseWriter, r *http.Request) {
 	data := map[string]any{
 		"RecipeOverviews": recipeOverviews,
 	}
-	h.renderer.Render(w, r, "home", "Hem", data)
+	h.renderer.Render(w, r, "home", data)
 }
 
 func (h *Handler) ViewRecipes(w http.ResponseWriter, r *http.Request) {
@@ -67,7 +67,7 @@ func (h *Handler) ViewRecipes(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) ViewCreateRecipe(w http.ResponseWriter, r *http.Request) {
 	data := map[string]any{}
-	h.renderer.Render(w, r, "recipe-form", "Skapa nytt recept", data)
+	h.renderer.Render(w, r, "recipe-form", data)
 }
 
 func (h *Handler) CreateRecipe(w http.ResponseWriter, r *http.Request) {
@@ -88,7 +88,7 @@ func (h *Handler) CreateRecipe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(parsed.Errors) > 0 {
-		h.renderer.Render(w, r, "recipe-form", "Skapa nytt recept", map[string]any{
+		h.renderer.Render(w, r, "recipe-form", map[string]any{
 			"Errors": parsed.Errors,
 			"Recipe": parsed.Recipe,
 		})
@@ -176,7 +176,7 @@ func (h *Handler) ViewRecipe(w http.ResponseWriter, r *http.Request) {
 		"RecipeOwner":              recipeOwner,
 		"CanManage":                canManage,
 	}
-	h.renderer.Render(w, r, "recipe", recipe.Title, data)
+	h.renderer.Render(w, r, "recipe", data)
 }
 
 func (h *Handler) ViewEditRecipe(w http.ResponseWriter, r *http.Request) {
@@ -208,7 +208,7 @@ func (h *Handler) ViewEditRecipe(w http.ResponseWriter, r *http.Request) {
 		"Recipe":         recipe,
 		"RecipeImageSrc": imageSrc,
 	}
-	h.renderer.Render(w, r, "recipe-form", "Redigera recept", data)
+	h.renderer.Render(w, r, "recipe-form", data)
 }
 
 func (h *Handler) DeleteRecipe(w http.ResponseWriter, r *http.Request) {
@@ -293,7 +293,7 @@ func (h *Handler) UpdateRecipe(w http.ResponseWriter, r *http.Request) {
 
 	if len(parsed.Errors) > 0 {
 		parsed.Recipe.ID = id
-		h.renderer.Render(w, r, "recipe-form", "Redigera recept", map[string]any{
+		h.renderer.Render(w, r, "recipe-form", map[string]any{
 			"Errors": parsed.Errors,
 			"Recipe": parsed.Recipe,
 		})
@@ -345,7 +345,7 @@ func (h *Handler) ViewLogin(w http.ResponseWriter, r *http.Request) {
 		"Error":      errMsg,
 		"ReturnPath": returnPath,
 	}
-	h.renderer.Render(w, r, "login", "Logga in", data)
+	h.renderer.Render(w, r, "login", data)
 }
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
@@ -418,12 +418,12 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) ViewSettings(w http.ResponseWriter, r *http.Request) {
 	data := map[string]any{}
-	h.renderer.Render(w, r, "settings", "Inställningar", data)
+	h.renderer.Render(w, r, "settings", data)
 }
 
 func (h *Handler) ViewAdminDashboard(w http.ResponseWriter, r *http.Request) {
 	data := map[string]any{}
-	h.renderer.Render(w, r, "admin-dashboard", "Admin - Panel", data)
+	h.renderer.Render(w, r, "admin-dashboard", data)
 }
 
 func (h *Handler) ViewUsers(w http.ResponseWriter, r *http.Request) {
@@ -435,12 +435,12 @@ func (h *Handler) ViewUsers(w http.ResponseWriter, r *http.Request) {
 	data := map[string]any{
 		"Users": users,
 	}
-	h.renderer.Render(w, r, "admin-users", "Admin - Hantera användare", data)
+	h.renderer.Render(w, r, "admin-users", data)
 }
 
 func (h *Handler) ViewCreateUser(w http.ResponseWriter, r *http.Request) {
 	data := map[string]any{}
-	h.renderer.Render(w, r, "admin-create-user", "Admin - Skapa användare", data)
+	h.renderer.Render(w, r, "admin-create-user", data)
 }
 
 func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -506,7 +506,7 @@ func (h *Handler) ViewUpdateUser(w http.ResponseWriter, r *http.Request) {
 	data := map[string]any{
 		"ManagedUser": managedUser,
 	}
-	h.renderer.Render(w, r, "admin-manage-user", "Admin - Hantera användare", data)
+	h.renderer.Render(w, r, "admin-manage-user", data)
 }
 
 func (h *Handler) UpdateUsername(w http.ResponseWriter, r *http.Request) {

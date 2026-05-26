@@ -78,7 +78,7 @@ func (r *Renderer) funcMap() template.FuncMap {
 	}
 }
 
-func (r *Renderer) Render(w http.ResponseWriter, req *http.Request, templateName string, pageTitle string, localData any) error {
+func (r *Renderer) Render(w http.ResponseWriter, req *http.Request, templateName string, localData any) error {
 	devMode := true // TODO: set to false in production
 	if devMode {
 		if err := r.loadTemplates(); err != nil {
@@ -97,9 +97,8 @@ func (r *Renderer) Render(w http.ResponseWriter, req *http.Request, templateName
 
 	templateData := map[string]any{
 		"G": map[string]any{
-			"User":  user,
-			"Path":  req.URL.Path,
-			"Title": pageTitle,
+			"User": user,
+			"Path": req.URL.Path,
 		},
 		"L": localData,
 	}
@@ -130,9 +129,8 @@ func (r *Renderer) RenderErr(w http.ResponseWriter, req *http.Request, statusCod
 
 	templateData := map[string]any{
 		"G": map[string]any{
-			"User":  user,
-			"Path":  req.URL.Path,
-			"Title": fmt.Sprintf("%d - %s", statusCode, message),
+			"User": user,
+			"Path": req.URL.Path,
 		},
 		"L": map[string]any{
 			"StatusCode": statusCode,

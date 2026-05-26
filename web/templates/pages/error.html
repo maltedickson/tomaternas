@@ -1,5 +1,9 @@
 {{template "base" .}}
 
+{{define "head"}}
+<title>{{.L.StatusCode}} - {{.L.Message}}</title>
+{{end}}
+
 {{define "content"}}
 
 <h1>{{ .L.StatusCode }}</h1>

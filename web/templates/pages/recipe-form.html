@@ -1,6 +1,7 @@
 {{template "base" .}}
 
 {{define "head"}}
+<title>{{if .L.IsEdit}}Redigera recept{{else}}Skapa nytt recept{{end}}</title>
 <link rel="stylesheet" href="/static/css/recipe-new.css">
 <script>
     window.recipeContext = {}
