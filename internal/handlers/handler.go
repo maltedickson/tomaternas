@@ -372,7 +372,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		Value:    session.Token,
 		Expires:  session.ExpiresAt,
 		HttpOnly: true,
-		Secure:   false, // TODO: set to true in production
+		Secure:   true, // TODO: set to true in production
 		SameSite: http.SameSiteLaxMode,
 		Path:     "/",
 	})

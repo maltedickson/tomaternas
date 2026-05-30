@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
@@ -10,6 +11,7 @@ import (
 	"recipe-web-server/internal/middleware"
 	"recipe-web-server/internal/services"
 	"recipe-web-server/internal/templates"
+	"recipe-web-server/web"
 )
 
 func main() {
@@ -25,15 +27,19 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	fileServer := http.FileServer(http.Dir("./web/static/"))
-	mux.Handle("GET /static/", http.StripPrefix("/static", fileServer))
+	staticSub, err := fs.Sub(web.StaticFiles, "static")
+	if err != nil {
+		log.Fatal(err)
+	}
+	staticFS := http.FileServer(http.FS(staticSub))
+	mux.Handle("GET /static/", http.StripPrefix("/static", staticFS))
 
 	uploadsFileServer := http.FileServer(http.Dir("./data/uploads/"))
 	mux.Handle("GET /uploads/", http.StripPrefix("/uploads", uploadsFileServer))
 
 	os.MkdirAll("data/uploads/recipes", 0755)
 
-	renderer, err := templates.NewRenderer()
+	renderer, err := templates.NewRenderer(web.TemplateFiles)
 	if err != nil {
 		log.Fatal(err)
 	}

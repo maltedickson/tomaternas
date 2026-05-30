@@ -1,8 +1,10 @@
 package templates
 
 import (
+	"embed"
 	"fmt"
 	"html/template"
+	"io/fs"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -12,11 +14,13 @@ import (
 
 type Renderer struct {
 	templates map[string]*template.Template
+	embedFS   embed.FS
 }
 
-func NewRenderer() (*Renderer, error) {
+func NewRenderer(embedFS embed.FS) (*Renderer, error) {
 	r := &Renderer{
 		templates: make(map[string]*template.Template),
+		embedFS:   embedFS,
 	}
 
 	if err := r.loadTemplates(); err != nil {
@@ -27,19 +31,18 @@ func NewRenderer() (*Renderer, error) {
 }
 
 func (r *Renderer) loadTemplates() error {
-	templatesDir := "web/templates"
-
-	layoutFiles, err := filepath.Glob(filepath.Join(templatesDir, "layouts", "*.html"))
+	templatesDir := "templates"
+	layoutFiles, err := fs.Glob(r.embedFS, filepath.Join(templatesDir, "layouts", "*.html"))
 	if err != nil {
 		return fmt.Errorf("failed to read layouts: %w", err)
 	}
 
-	partialFiles, err := filepath.Glob(filepath.Join(templatesDir, "partials", "*.html"))
+	partialFiles, err := fs.Glob(r.embedFS, filepath.Join(templatesDir, "partials", "*.html"))
 	if err != nil {
 		return fmt.Errorf("failed to read partials: %w", err)
 	}
 
-	pageFiles, err := filepath.Glob(filepath.Join(templatesDir, "pages", "*.html"))
+	pageFiles, err := fs.Glob(r.embedFS, filepath.Join(templatesDir, "pages", "*.html"))
 	if err != nil {
 		return fmt.Errorf("failed to read pages: %w", err)
 	}
@@ -53,7 +56,7 @@ func (r *Renderer) loadTemplates() error {
 		files = append(files, partialFiles...)
 		files = append(files, pageFile)
 
-		tmpl, err := template.New(pageFile).Funcs(r.funcMap()).ParseFiles(files...)
+		tmpl, err := template.New(pageFile).Funcs(r.funcMap()).ParseFS(r.embedFS, files...)
 		if err != nil {
 			return fmt.Errorf("failed to parse template %s: %w", templateName, err)
 		}
@@ -79,7 +82,7 @@ func (r *Renderer) funcMap() template.FuncMap {
 }
 
 func (r *Renderer) Render(w http.ResponseWriter, req *http.Request, templateName string, localData any) error {
-	devMode := true // TODO: set to false in production
+	devMode := false // TODO: set to false in production
 	if devMode {
 		if err := r.loadTemplates(); err != nil {
 			return fmt.Errorf("failed to reload templates: %w", err)
@@ -107,7 +110,7 @@ func (r *Renderer) Render(w http.ResponseWriter, req *http.Request, templateName
 }
 
 func (r *Renderer) RenderErr(w http.ResponseWriter, req *http.Request, statusCode int, message string) {
-	devMode := true // TODO: set to false in production
+	devMode := false // TODO: set to false in production
 	if devMode {
 		if err := r.loadTemplates(); err != nil {
 			log.Printf("failed to reload templates: %v", err)
