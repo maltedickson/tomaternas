@@ -1,12 +1,12 @@
 @font-face {
-    font-family: Lora;
-    src: url("/static/fonts/lora/Lora-VariableFont_wght.ttf");
+    font-family: Literata;
+    src: url("/static/fonts/literata/Literata-VariableFont_opsz,wght.ttf");
 }
 
 @font-face {
-    font-family: Lora;
+    font-family: Literata;
     font-style: italic;
-    src: url("/static/fonts/lora/Lora-Italic-VariableFont_wght.ttf");
+    src: url("/static/fonts/literata/Literata-Italic-VariableFont_opsz,wght.ttf");
 }
 
 :root {
@@ -17,7 +17,7 @@
     --color-text: hsl(0 0% 0%);
 
     --font-sans: Inter, sans-serif;
-    --font-serif: Lora, Libre Baskerville, serif;
+    --font-serif: Literata, serif;
 
     --h1-font-size: 2rem;
     --h1-line-height: 1.25;
@@ -57,7 +57,7 @@ img {
 .wrapper {
     max-width: 48rem;
     margin-inline: auto;
-    /* padding-inline: 1.5rem; */
+    padding-inline: 1rem;
     box-sizing: content-box;
     margin-block: 2rem;
 }
