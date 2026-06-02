@@ -5,12 +5,17 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"mime/multipart"
+	"os"
+	"path/filepath"
 	"recipe-web-server/internal/database"
 	"recipe-web-server/internal/models"
 	"regexp"
 	"slices"
 	"strings"
 	"time"
+
+	"github.com/disintegration/imaging"
 )
 
 type RecipeService struct {
@@ -92,4 +97,33 @@ func ValidateRecipeTagList(tags []string, allowedTags []string) bool {
 		}
 	}
 	return true
+}
+
+func ProcessAndSaveRecipeImage(recipeId int, uploadedFile multipart.File) error {
+	uploadDir := filepath.Join("data", "uploads", "recipes")
+
+	srcImage, err := imaging.Decode(uploadedFile)
+	if err != nil {
+		return fmt.Errorf("failed to decode uploaded image: %w", err)
+	}
+
+	largeImage := imaging.Fill(srcImage, 1600, 1200, imaging.Center, imaging.Lanczos)
+
+	smallImage := imaging.Fill(srcImage, 800, 800, imaging.Center, imaging.Lanczos)
+
+	largePath := filepath.Join(uploadDir, fmt.Sprintf("%d_1600x1200.jpg", recipeId))
+	thumbPath := filepath.Join(uploadDir, fmt.Sprintf("%d_800x800.jpg", recipeId))
+
+	err = imaging.Save(largeImage, largePath, imaging.JPEGQuality(80))
+	if err != nil {
+		return fmt.Errorf("failed to save 1600x1200 jpeg: %w", err)
+	}
+
+	err = imaging.Save(smallImage, thumbPath, imaging.JPEGQuality(80))
+	if err != nil {
+		os.Remove(largePath)
+		return fmt.Errorf("failed to save 800x800 jpeg: %w", err)
+	}
+
+	return nil
 }

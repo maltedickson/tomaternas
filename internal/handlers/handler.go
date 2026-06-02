@@ -9,13 +9,12 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/url"
-	"os"
-	"path/filepath"
 	"recipe-web-server/internal/config"
 	"recipe-web-server/internal/middleware"
 	"recipe-web-server/internal/models"
 	"recipe-web-server/internal/services"
 	"recipe-web-server/internal/templates"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -101,7 +100,7 @@ func (h *Handler) CreateRecipe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := saveRecipeImage(id, parsed.ImageFileExt, parsed.Image); err != nil {
+	if err := services.ProcessAndSaveRecipeImage(id, parsed.Image); err != nil {
 		h.recipeService.DeleteRecipeById(id)
 		h.renderErrInternal(w, r, err)
 		return
@@ -137,23 +136,6 @@ func (h *Handler) ViewRecipe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dataDirectory := "data"
-	imageMatches, err := filepath.Glob(filepath.Join(dataDirectory, "uploads", "recipes", fmt.Sprintf("%d.*", id)))
-	if err != nil {
-		h.renderErrInternal(w, r, fmt.Errorf("get images for recipe with id (%d): %w", id, err))
-		return
-	}
-	if len(imageMatches) == 0 {
-		h.renderErrInternal(w, r, fmt.Errorf("get images for recipe with id (%d): no images found", id))
-		return
-	}
-	imagePath := imageMatches[0]
-	imageSrc, err := filepath.Rel(dataDirectory, imagePath)
-	if err != nil {
-		h.renderErrInternal(w, r, fmt.Errorf("calculate image src: %w", err))
-		return
-	}
-
 	prepTimeFormatted := ""
 	if recipe.PrepTimeSeconds > 0 {
 		prepTimeFormatted = fmt.Sprintf("%d h", recipe.PrepTimeSeconds/3600)
@@ -172,7 +154,6 @@ func (h *Handler) ViewRecipe(w http.ResponseWriter, r *http.Request) {
 		"RecipeInstructionsParsed": services.ParseMarkup(recipe.Instructions),
 		"RecipeCreatedAtFormatted": services.FormatDate(recipe.CreatedAt),
 		"RecipeUpdatedAtFormatted": services.FormatDate(recipe.UpdatedAt),
-		"RecipeImageSrc":           imageSrc,
 		"RecipeOwner":              recipeOwner,
 		"CanManage":                canManage,
 	}
@@ -197,16 +178,9 @@ func (h *Handler) ViewEditRecipe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	imageSrc, err := getImageSrc(recipe.ID)
-	if err != nil {
-		h.renderErrInternal(w, r, fmt.Errorf("get image src for recipe with id (%d): %w", id, err))
-		return
-	}
-
 	data := map[string]any{
-		"IsEdit":         true,
-		"Recipe":         recipe,
-		"RecipeImageSrc": imageSrc,
+		"IsEdit": true,
+		"Recipe": recipe,
 	}
 	h.renderer.Render(w, r, "recipe-form", data)
 }
@@ -307,19 +281,9 @@ func (h *Handler) UpdateRecipe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if parsed.Image != nil {
-		oldExt, err := getImageExt(id)
-		if err != nil {
-			h.renderErrInternal(w, r, fmt.Errorf("get image ext for recipe with id (%d): %w", id, err))
-			return
-		}
-
-		if err := saveRecipeImage(id, parsed.ImageFileExt, parsed.Image); err != nil {
+		if err := services.ProcessAndSaveRecipeImage(id, parsed.Image); err != nil {
 			h.renderErrInternal(w, r, err)
 			return
-		}
-
-		if oldExt != parsed.ImageFileExt {
-			os.Remove(calcImagePath(id, oldExt))
 		}
 	}
 
@@ -600,31 +564,12 @@ func isInternalURL(urlStr string) bool {
 		(strings.HasPrefix(urlStr, "/") && !strings.HasPrefix(urlStr, "//"))
 }
 
-func getImageExt(id int) (string, error) {
-	for _, ext := range []string{"jpg", "png"} {
-		p := filepath.Join("data", "uploads", "recipes", fmt.Sprintf("%d.%s", id, ext))
-		if _, err := os.Stat(p); err == nil {
-			return ext, nil
-		}
-	}
-	return "", fmt.Errorf("no image found for recipe with id (%d)", id)
-}
-
-func getImageSrc(id int) (string, error) {
-	ext, err := getImageExt(id)
-	if err != nil {
-		return "", err
-	}
-	return filepath.Join("uploads", "recipes", fmt.Sprintf("%d.%s", id, ext)), nil
-}
-
 // recipeFormResult holds everything parsed out of a recipe create/edit form.
 // Image and ImageFileExt are only set when the user actually uploaded a file.
 type recipeFormResult struct {
-	Recipe       *models.Recipe
-	Image        multipart.File
-	ImageFileExt string // "jpg" or "png"; empty when no file was uploaded
-	Errors       map[string]string
+	Recipe *models.Recipe
+	Image  multipart.File
+	Errors map[string]string
 }
 
 // parseRecipeForm parses and validates the multipart form shared by both
@@ -635,7 +580,7 @@ func (h *Handler) parseRecipeForm(r *http.Request, ownerID int) (*recipeFormResu
 		Errors: map[string]string{},
 	}
 
-	if err := r.ParseMultipartForm(5 << 20); err != nil {
+	if err := r.ParseMultipartForm(15 << 20); err != nil {
 		result.Errors["form"] = "Ett problem uppstod. Testa att ladda upp en mindre bild."
 		return result, nil
 	}
@@ -643,23 +588,18 @@ func (h *Handler) parseRecipeForm(r *http.Request, ownerID int) (*recipeFormResu
 	imageFile, _, err := r.FormFile("image")
 	if err == nil {
 		buf := make([]byte, 512)
-		if _, err := imageFile.Read(buf); err != nil {
-			return nil, fmt.Errorf("read image into buffer: %w", err)
+		if _, err := imageFile.Read(buf); err != nil && err != io.EOF {
+			return nil, fmt.Errorf("read image header into buffer: %w", err)
 		}
-		switch ct := http.DetectContentType(buf); ct {
-		case "image/jpeg":
-			result.ImageFileExt = "jpg"
-		case "image/png":
-			result.ImageFileExt = "png"
-		default:
-			result.Errors["image"] = "Bara JPG och PNG är tillåtna."
-			imageFile.Close()
-		}
-		if result.ImageFileExt != "" {
+		allowedContentTypes := []string{"image/jpeg", "image/png", "image/webp"}
+		if slices.Contains(allowedContentTypes, http.DetectContentType(buf)) {
 			if _, err := imageFile.Seek(0, 0); err != nil {
 				return nil, fmt.Errorf("seek image: %w", err)
 			}
 			result.Image = imageFile
+		} else {
+			result.Errors["image"] = "Bara JPG, JPEG, PNG och WEBP är tillåtna."
+			imageFile.Close()
 		}
 	}
 
@@ -751,25 +691,6 @@ func (h *Handler) parseRecipeForm(r *http.Request, ownerID int) (*recipeFormResu
 	}
 
 	return result, nil
-}
-
-// saveRecipeImage writes the uploaded image to disk as <id>.<ext>.
-func saveRecipeImage(id int, ext string, src multipart.File) error {
-	path := calcImagePath(id, ext)
-	dst, err := os.Create(path)
-	if err != nil {
-		return fmt.Errorf("create image file: %w", err)
-	}
-	defer dst.Close()
-	if _, err := io.Copy(dst, src); err != nil {
-		os.Remove(path)
-		return fmt.Errorf("copy image: %w", err)
-	}
-	return nil
-}
-
-func calcImagePath(id int, ext string) string {
-	return filepath.Join("data", "uploads", "recipes", fmt.Sprintf("%d.%s", id, ext))
 }
 
 // handleParseErr routes errors from parseRecipeForm to the right response.
