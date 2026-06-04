@@ -7,100 +7,71 @@
 
 {{define "content"}}
 
-<div class="wrapper">
-
-    <div class="title-section">
-
-        <h1>{{.L.Recipe.Title}}</h1>
-
-        {{if .L.CanManage}}
-        <div class="title-section__actions">
-            <a href="/recipes/{{.L.Recipe.ID}}/edit" class="title-section__edit-link">Redigera</a>
-            <form action="/recipes/{{.L.Recipe.ID}}/delete" method="POST">
-                <button type="submit" class="title-section__delete-btn">Radera</button>
-            </form>
-        </div>
-        {{end}}
-
-    </div>
-
-    <p>
-        Skapad: {{.L.RecipeCreatedAtFormatted}} (av {{.L.RecipeOwner.DisplayName}})
-        <br>
-        Ändrad: {{.L.RecipeUpdatedAtFormatted}}
-    </p>
-
+<div class="meta">
     <img src="/uploads/recipes/{{.L.Recipe.ID}}_800x800.jpg?v={{.L.Recipe.UpdatedAt.Unix }}"
-        alt="Bild på färdigt resultat" class="photo">
-
-    <div class="spacing-small">
-
-        <p>
-            {{if .L.RecipePrepTimeFormatted}}
-            <span>Förberedelsetid: {{.L.RecipePrepTimeFormatted}}</span>
-            <br>
-            {{end}}
-            <span>Tillagningstid: {{.L.RecipeCookTimeFormatted}}</span>
-        </p>
-
-        {{if .L.Recipe.MealTypes}}
-        <div class="tag-container">
-            <div>Måltidstyp:</div>
-            {{range .L.Recipe.MealTypes}}
-            <div class="tag">{{.}}</div>
+        alt="Bild på färdigt resultat" class="meta__photo shadow-lg">
+    <div class="meta__content shadow-lg">
+        <h1 class="meta__title">{{.L.Recipe.Title}}</h1>
+        <div class="meta__owner">av {{.L.RecipeOwner.DisplayName}}</div>
+        <div class="meta__timestamps">
+            <div>Skapad: {{.L.RecipeCreatedAtFormatted}}</div>
+            <div>Ändrad: {{.L.RecipeUpdatedAtFormatted}}</div>
+        </div>
+        <div class="meta__iconwtext-container">
+            <div class="meta__iconwtext">
+                <i class="ri-time-line"></i>
+                <span>{{.L.RecipeCookTimeMinutes}} min</span>
+                {{if .L.RecipePrepTimeHours}}
+                <span>(+ {{.L.RecipePrepTimeHours}} h)</span>
+                {{end}}
+            </div>
+        </div>
+        <div class="meta__tags">
+            {{range .L.RecipeTags}}
+            <div class="meta__tag">{{.}}</div>
             {{end}}
         </div>
-        {{end}}
 
-        {{if .L.Recipe.DietaryTags}}
-        <div class="tag-container">
-            <div>Specialkost:</div>
-            {{range .L.Recipe.DietaryTags}}
-            <div class="tag">{{.}}</div>
-            {{end}}
+        <div class="meta__description">
+            {{.L.RecipeDescriptionParsed}}
         </div>
-        {{end}}
-
-        {{if .L.Recipe.OtherTags}}
-        <div class="tag-container">
-            <div>Etiketter:</div>
-            {{range .L.Recipe.OtherTags}}
-            <div class="tag">{{.}}</div>
-            {{end}}
-        </div>
-        {{end}}
-
     </div>
+</div>
 
-    <div class="mt-large">
-        {{.L.RecipeDescriptionParsed}}
-    </div>
+{{if .L.CanManage}}
+<div class="title-section__actions">
+    <a href="/recipes/{{.L.Recipe.ID}}/edit" class="title-section__edit-link">Redigera</a>
+    <form action="/recipes/{{.L.Recipe.ID}}/delete" method="POST">
+        <button type="submit" class="title-section__delete-btn">Radera</button>
+    </form>
+</div>
+{{end}}
 
-    <h2>Ingredienser ({{ .L.Recipe.Servings }})</h2>
+<div class="content">
+    <div class="content__wrapper">
+        <div class="content__ingredients">
+            <h2>Ingredienser ({{ .L.Recipe.Servings }})</h2>
+            {{range .L.Recipe.IngredientSections}}
+            {{if .Heading}} <h3>{{.Heading}}</h3> {{end}}
+            <table class="ingredients">
+                <tbody>
+                    {{range .Ingredients}}
 
-    {{range .L.Recipe.IngredientSections}}
+                    <tr>
+                        <td>{{.Name}}</td>
+                        <td>{{.Amount}}</td>
+                    </tr>
 
-    {{if .Heading}} <h3>{{.Heading}}</h3> {{end}}
-
-    <table class="ingredients">
-        <tbody>
-            {{range .Ingredients}}
-
-            <tr>
-                <td>{{.Name}}</td>
-                <td>{{.Amount}}</td>
-            </tr>
-
+                    {{end}}
+                </tbody>
+            </table>
             {{end}}
-        </tbody>
-    </table>
-
-    {{end}}
-
-    <h2>Instruktioner</h2>
-
-    {{.L.RecipeInstructionsParsed}}
-
+        </div>
+        <div class="content__instructions">
+            <h2>Instruktioner</h2>
+            {{.L.RecipeInstructionsParsed}}
+        </div>
+    </div>
 </div>
 
 {{end}}

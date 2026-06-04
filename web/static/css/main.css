@@ -282,3 +282,11 @@ textarea {
 .keep-line-breaks {
     white-space: pre-wrap;
 }
+
+.shadow {
+    box-shadow: 0 1px 4px hsl(0 0% 0% / 0.2);
+}
+
+.shadow-lg {
+    box-shadow: 0 2px 8px hsl(0 0% 0% / 0.1);
+}

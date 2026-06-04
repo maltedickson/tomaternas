@@ -6,10 +6,12 @@ import (
 
 const (
 	TagVegetarian = "Vegetarisk"
+	TagVegan      = "Vegansk"
+	TagMilkFree   = "Mjölkfri"
 )
 
 var AllowedMealTypes = []string{"Frukost", "Förrätt", "Huvudrätt", "Tillbehör", "Fika/efterrätt", "Dryck"}
-var AllowedDietaryTags = []string{"Vegansk", TagVegetarian, "Glutenfri", "Mjölkfri"}
+var AllowedDietaryTags = []string{TagVegan, TagVegetarian, "Glutenfri", TagMilkFree}
 var AllowedOtherTags = []string{"Festlig", "Matlåda", "Storkok"}
 
 type Recipe struct {

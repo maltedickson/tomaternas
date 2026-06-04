@@ -158,20 +158,28 @@ func (h *Handler) ViewRecipe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	prepTimeFormatted := ""
-	if recipe.PrepTimeSeconds > 0 {
-		prepTimeFormatted = fmt.Sprintf("%d h", recipe.PrepTimeSeconds/3600)
-	}
-
-	cookTimeFormatted := fmt.Sprintf("%d min", recipe.CookTimeSeconds/60)
-
 	user, ok := middleware.GetUser(r)
 	canManage := ok && (user.ID == recipe.OwnerID || user.Role == models.RoleAdmin)
 
+	tags := make([]string, 0)
+	for _, tag := range recipe.MealTypes {
+		tags = append(tags, tag)
+	}
+	for _, tag := range recipe.DietaryTags {
+		if slices.Contains(recipe.DietaryTags, models.TagVegan) && (tag == models.TagVegetarian || tag == models.TagMilkFree) {
+			continue
+		}
+		tags = append(tags, tag)
+	}
+	for _, tag := range recipe.OtherTags {
+		tags = append(tags, tag)
+	}
+
 	data := map[string]any{
 		"Recipe":                   recipe,
-		"RecipePrepTimeFormatted":  prepTimeFormatted,
-		"RecipeCookTimeFormatted":  cookTimeFormatted,
+		"RecipeTags":               tags,
+		"RecipePrepTimeHours":      recipe.PrepTimeSeconds / 3600,
+		"RecipeCookTimeMinutes":    recipe.CookTimeSeconds / 60,
 		"RecipeDescriptionParsed":  services.ParseMarkup(recipe.Description),
 		"RecipeInstructionsParsed": services.ParseMarkup(recipe.Instructions),
 		"RecipeCreatedAtFormatted": services.FormatDate(recipe.CreatedAt),
