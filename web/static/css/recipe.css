@@ -1,7 +1,8 @@
 :root {
+    --max-photo-width: 37.5rem;
     --padding-inline-page: 0.5rem;
     --padding-meta-content: 1.25rem;
-    --max-content-width-desktop: 75rem;
+    --max-content-width-desktop: calc(var(--max-photo-width) * 2);
 }
 
 .meta {
@@ -15,10 +16,12 @@
 .meta__photo {
     aspect-ratio: 4 / 3;
     width: 100%;
+    max-width: var(--max-photo-width);
     display: block;
     object-fit: cover;
     border-top-left-radius: var(--radius);
     border-top-right-radius: var(--radius);
+    margin-left: max(0px, calc(min(var(--padding-meta-content), 50% - var(--max-photo-width) / 2)));
 }
 
 .meta__content {
@@ -28,11 +31,6 @@
     border-bottom-left-radius: var(--radius);
     border-bottom-right-radius: var(--radius);
 }
-
-/* .meta__photo, */
-/* .meta__content { */
-/*     box-shadow: 0 2px 8px hsl(0 0% 0% / 0.1); */
-/* } */
 
 .meta__title {
     hyphens: auto;
