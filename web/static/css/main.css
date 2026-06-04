@@ -56,6 +56,23 @@ img {
     max-inline-size: 100%;
 }
 
+.logo-link {
+    font-size: 1.5rem;
+    text-decoration: none;
+    display: flex;
+    align-items: flex-end;
+}
+
+.logo-link__tomato {
+    width: 1.25rem;
+}
+
+.logo-link__text {
+    line-height: 1;
+    color: hsl(0 85% 55%);
+    font-weight: 700;
+}
+
 .wrapper {
     max-width: 48rem;
     margin-inline: auto;
