@@ -122,7 +122,7 @@ func (h *Handler) CreateRecipe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := services.ProcessAndSaveRecipeImage(id, parsed.Image); err != nil {
+	if err := services.ProcessAndSaveRecipeImage(id, parsed.Image, parsed.ImageExt); err != nil {
 		h.recipeService.DeleteRecipeById(id)
 		h.renderErrInternal(w, r, err)
 		return
@@ -311,7 +311,7 @@ func (h *Handler) UpdateRecipe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if parsed.Image != nil {
-		if err := services.ProcessAndSaveRecipeImage(id, parsed.Image); err != nil {
+		if err := services.ProcessAndSaveRecipeImage(id, parsed.Image, parsed.ImageExt); err != nil {
 			h.renderErrInternal(w, r, err)
 			return
 		}
@@ -597,9 +597,10 @@ func isInternalURL(urlStr string) bool {
 // recipeFormResult holds everything parsed out of a recipe create/edit form.
 // Image and ImageFileExt are only set when the user actually uploaded a file.
 type recipeFormResult struct {
-	Recipe *models.Recipe
-	Image  multipart.File
-	Errors map[string]string
+	Recipe   *models.Recipe
+	Image    multipart.File
+	ImageExt string
+	Errors   map[string]string
 }
 
 // parseRecipeForm parses and validates the multipart form shared by both
@@ -611,7 +612,7 @@ func (h *Handler) parseRecipeForm(r *http.Request, ownerID int) (*recipeFormResu
 	}
 
 	if err := r.ParseMultipartForm(15 << 20); err != nil {
-		result.Errors["form"] = "Ett problem uppstod. Testa att ladda upp en mindre bild."
+		result.Errors["form"] = "Ett problem uppstod. Om bilden är större än 10 MB, testa att ladda upp en mindre bild."
 		return result, nil
 	}
 
@@ -621,15 +622,20 @@ func (h *Handler) parseRecipeForm(r *http.Request, ownerID int) (*recipeFormResu
 		if _, err := imageFile.Read(buf); err != nil && err != io.EOF {
 			return nil, fmt.Errorf("read image header into buffer: %w", err)
 		}
-		allowedContentTypes := []string{"image/jpeg", "image/png"}
-		if slices.Contains(allowedContentTypes, http.DetectContentType(buf)) {
+		switch contentType := http.DetectContentType(buf); contentType {
+		case "image/jpeg":
+			result.ImageExt = "jpg"
+		case "image/png":
+			result.ImageExt = "png"
+		default:
+			result.Errors["image"] = "Bara JPG, JPEG och PNG är tillåtna."
+			imageFile.Close()
+		}
+		if result.ImageExt != "" {
 			if _, err := imageFile.Seek(0, 0); err != nil {
 				return nil, fmt.Errorf("seek image: %w", err)
 			}
 			result.Image = imageFile
-		} else {
-			result.Errors["image"] = "Bara JPG, JPEG och PNG är tillåtna."
-			imageFile.Close()
 		}
 	}
 

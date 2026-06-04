@@ -16,8 +16,9 @@
 
     {{range .L.Recipes}}
     <a href="/recipes/{{.ID}}" class="recipe-card shadow">
-        <img src="/uploads/recipes/{{.ID}}_800x800.jpg?v={{.UpdatedAt.Unix}}" alt="Bild på resultat."
-            class="recipe-card__img">
+        <img src="/uploads/recipes/{{.ID}}_thumb@1x.jpg?v={{.UpdatedAt.Unix}}"
+            srcset="/uploads/recipes/{{.ID}}_thumb@1x.jpg?v={{.UpdatedAt.Unix}} 1x, /uploads/recipes/{{.ID}}_thumb@2x.jpg?v={{.UpdatedAt.Unix}} 2x"
+            alt="{{.Title}}" class="recipe-card__img">
         <div class="recipe-card__content">
             <div class="recipe-card__meta">
                 <span class="recipe-card__meta-left">

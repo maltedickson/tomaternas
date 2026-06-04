@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"io"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -99,30 +100,69 @@ func ValidateRecipeTagList(tags []string, allowedTags []string) bool {
 	return true
 }
 
-func ProcessAndSaveRecipeImage(recipeId int, uploadedFile multipart.File) error {
+func ProcessAndSaveRecipeImage(recipeId int, uploadedFile multipart.File, imageExt string) error {
 	uploadDir := filepath.Join("data", "uploads", "recipes")
+
+	pathForOriginalImage := filepath.Join(uploadDir, fmt.Sprintf("%d_original.%s", recipeId, imageExt))
+
+	err := saveFileToDisk(uploadedFile, pathForOriginalImage)
+	if err != nil {
+		return fmt.Errorf("failed to save original image to path \"%s\": %w", pathForOriginalImage, err)
+	}
 
 	srcImage, err := imaging.Decode(uploadedFile)
 	if err != nil {
 		return fmt.Errorf("failed to decode uploaded image: %w", err)
 	}
 
-	largeImage := imaging.Fill(srcImage, 1600, 1200, imaging.Center, imaging.Lanczos)
+	sizeLarge := 600
+	sizeThumb := 350
 
-	smallImage := imaging.Fill(srcImage, 800, 800, imaging.Center, imaging.Lanczos)
+	imageLarge2x := imaging.Fill(srcImage, sizeLarge*2, sizeLarge*2, imaging.Center, imaging.Lanczos)
 
-	largePath := filepath.Join(uploadDir, fmt.Sprintf("%d_1600x1200.jpg", recipeId))
-	thumbPath := filepath.Join(uploadDir, fmt.Sprintf("%d_800x800.jpg", recipeId))
+	imageThumb := imaging.Fill(srcImage, sizeThumb, sizeThumb, imaging.Center, imaging.Lanczos)
+	imageThumb2x := imaging.Fill(srcImage, sizeThumb*2, sizeThumb*2, imaging.Center, imaging.Lanczos)
 
-	err = imaging.Save(largeImage, largePath, imaging.JPEGQuality(80))
+	pathLarge2x := filepath.Join(uploadDir, fmt.Sprintf("%d_lg@2x.jpg", recipeId))
+	pathThumb1x := filepath.Join(uploadDir, fmt.Sprintf("%d_thumb@1x.jpg", recipeId))
+	pathThumb2x := filepath.Join(uploadDir, fmt.Sprintf("%d_thumb@2x.jpg", recipeId))
+
+	err = imaging.Save(imageLarge2x, pathLarge2x, imaging.JPEGQuality(80))
 	if err != nil {
-		return fmt.Errorf("failed to save 1600x1200 jpeg: %w", err)
+		return fmt.Errorf("failed to save jpeg lg@2x: %w", err)
 	}
 
-	err = imaging.Save(smallImage, thumbPath, imaging.JPEGQuality(80))
+	err = imaging.Save(imageThumb, pathThumb1x, imaging.JPEGQuality(60))
 	if err != nil {
-		os.Remove(largePath)
-		return fmt.Errorf("failed to save 800x800 jpeg: %w", err)
+		return fmt.Errorf("failed to save jpeg thumb@1x: %w", err)
+	}
+
+	err = imaging.Save(imageThumb2x, pathThumb2x, imaging.JPEGQuality(60))
+	if err != nil {
+		return fmt.Errorf("failed to save jpeg thumb@2x: %w", err)
+	}
+
+	return nil
+}
+
+func saveFileToDisk(file multipart.File, filepath string) error {
+	if _, err := file.Seek(0, io.SeekStart); err != nil {
+		return fmt.Errorf("failed to seek image: %w", err)
+	}
+
+	dst, err := os.Create(filepath)
+	if err != nil {
+		return err
+	}
+	defer dst.Close()
+
+	_, err = io.Copy(dst, file)
+	if err != nil {
+		return err
+	}
+
+	if _, err := file.Seek(0, io.SeekStart); err != nil {
+		return fmt.Errorf("failed to seek image: %w", err)
 	}
 
 	return nil
