@@ -1,23 +1,46 @@
 {{template "base" .}}
 
 {{define "head"}}
-<title>Hem</title>
+<link rel="stylesheet" href="/static/css/home.css">
+<title>Tomaternas</title>
 {{end}}
 
 {{define "content"}}
 
-<h1>Recept!!!</h1>
+<div class="hero">
+    <div>Välkommen till</div>
+    <h1>Tomaternas</h1>
+</div>
 
-{{range .L.RecipeOverviews}}
-<div>
+<div class="recipe-grid">
 
-    <a href="/recipes/{{ .ID }}">{{ .Title }}</a>
+    {{range .L.Recipes}}
+    <a href="/recipes/{{.ID}}" class="recipe-card surface">
+        <img src="/uploads/recipes/{{.ID}}_800x800.jpg?v={{.UpdatedAt.Unix}}" alt="Bild på resultat."
+            class="recipe-card__img">
+        <div class="recipe-card__content">
+            <div class="recipe-card__meta">
+                <span class="recipe-card__meta-left">
+                    <div class="recipe-card__rating">
+                        <i class="ri-star-fill"></i>
+                        <span class="recipe-card__meta-text">4,1</span>
+                    </div>
+                    <div class="recipe-card__time">
+                        <i class="ri-timer-line"></i>
+                        <span class="recipe-card__meta-text">{{.CookTimeMinutes}}m{{if .PrepTimeHours}}
+                            (+{{.PrepTimeHours}}h){{end}}</span>
+                    </div>
+                </span>
+                {{if .IsGreen}}
+                <span class="recipe-card__leaf"><i class="ri-leaf-fill"></i></span>
+                {{end}}
+            </div>
+            <div class="recipe-card__title">{{.Title}}</div>
+        </div>
+    </a>
+    {{end}}
 
 </div>
-{{end}}
 
-<p>
-    Här kommer det finnas massa fina recept.
-</p>
 
 {{end}}

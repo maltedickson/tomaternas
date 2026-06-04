@@ -37,7 +37,7 @@
                 <div>
                     {{if .L.IsEdit}}
                     <img alt="Foto på resultat" class="photo" data-image
-                        src="/uploads/recipes/{{.L.Recipe.ID}}_800x800.jpg">
+                        src="/uploads/recipes/{{.L.Recipe.ID}}_800x800.jpg?v={{.L.Recipe.UpdatedAt.Unix}}">
                     {{else}}
                     <img alt="Foto på resultat" class="photo photo--hidden" data-image>
                     {{end}}

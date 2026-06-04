@@ -4,8 +4,12 @@ import (
 	"time"
 )
 
+const (
+	TagVegetarian = "Vegetarisk"
+)
+
 var AllowedMealTypes = []string{"Frukost", "Förrätt", "Huvudrätt", "Tillbehör", "Fika/efterrätt", "Dryck"}
-var AllowedDietaryTags = []string{"Vegansk", "Vegetarisk", "Glutenfri", "Mjölkfri"}
+var AllowedDietaryTags = []string{"Vegansk", TagVegetarian, "Glutenfri", "Mjölkfri"}
 var AllowedOtherTags = []string{"Festlig", "Matlåda", "Storkok"}
 
 type Recipe struct {

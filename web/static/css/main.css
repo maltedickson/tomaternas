@@ -13,7 +13,7 @@
     --color-error-bg: hsl(0 90% 85%);
     --color-error-border: hsl(0 80% 60%);
 
-    --color-background: hsl(0 0% 100%);
+    --color-background: hsl(45 29% 97%);
     --color-text: hsl(0 0% 0%);
 
     --font-sans: Inter, sans-serif;
@@ -41,6 +41,8 @@ body {
     line-height: 1.5;
 
     font-family: var(--font-serif);
+
+    background-color: var(--color-background);
 }
 
 button:has(i.ph) {

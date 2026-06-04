@@ -54,8 +54,30 @@ func (h *Handler) ViewHome(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	type RecipeCardData struct {
+		ID              int
+		Title           string
+		PrepTimeHours   int
+		CookTimeMinutes int
+		IsGreen         bool
+		UpdatedAt       time.Time
+	}
+
+	recipeCardDatas := make([]RecipeCardData, len(recipeOverviews))
+
+	for i, val := range recipeOverviews {
+		recipeCardDatas[i] = RecipeCardData{
+			ID:              val.ID,
+			Title:           val.Title,
+			PrepTimeHours:   val.PrepTimeSeconds / 3600,
+			CookTimeMinutes: val.CookTimeSeconds / 60,
+			IsGreen:         slices.Contains(val.DietaryTags, models.TagVegetarian),
+			UpdatedAt:       val.UpdatedAt,
+		}
+	}
+
 	data := map[string]any{
-		"RecipeOverviews": recipeOverviews,
+		"Recipes": recipeCardDatas,
 	}
 	h.renderer.Render(w, r, "home", data)
 }
@@ -591,14 +613,14 @@ func (h *Handler) parseRecipeForm(r *http.Request, ownerID int) (*recipeFormResu
 		if _, err := imageFile.Read(buf); err != nil && err != io.EOF {
 			return nil, fmt.Errorf("read image header into buffer: %w", err)
 		}
-		allowedContentTypes := []string{"image/jpeg", "image/png", "image/webp"}
+		allowedContentTypes := []string{"image/jpeg", "image/png"}
 		if slices.Contains(allowedContentTypes, http.DetectContentType(buf)) {
 			if _, err := imageFile.Seek(0, 0); err != nil {
 				return nil, fmt.Errorf("seek image: %w", err)
 			}
 			result.Image = imageFile
 		} else {
-			result.Errors["image"] = "Bara JPG, JPEG, PNG och WEBP är tillåtna."
+			result.Errors["image"] = "Bara JPG, JPEG och PNG är tillåtna."
 			imageFile.Close()
 		}
 	}
