@@ -5,8 +5,21 @@
     --max-content-width-desktop: calc(var(--max-photo-width) * 2);
 }
 
+.recipe-actions {
+    display: flex;
+    justify-content: flex-end;
+    max-width: var(--max-content-width-desktop);
+    padding-inline: var(--padding-inline-page);
+    box-sizing: content-box;
+    margin-inline: auto;
+    margin-top: 4rem;
+    margin-bottom: 1rem;
+    column-gap: 0.5rem;
+    row-gap: 0.25rem;
+}
+
 .meta {
-    padding-block: 4rem;
+    margin-bottom: 4rem;
     padding-inline: var(--padding-inline-page);
     --radius: 1.5rem;
     margin-inline: auto;
@@ -38,9 +51,6 @@
     line-height: 1.1;
 }
 
-.meta__owner {
-    margin-top: 0.5rem;
-}
 
 .meta__iconwtext-container {
     margin-block: 0.5rem;

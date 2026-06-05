@@ -7,6 +7,15 @@
 
 {{define "content"}}
 
+{{if .L.CanManage}}
+<div class="recipe-actions">
+    <a href="/recipes/{{.L.Recipe.ID}}/edit" class="title-section__edit-link">Redigera</a>
+    <form action="/recipes/{{.L.Recipe.ID}}/delete" method="POST">
+        <button type="submit" class="title-section__delete-btn">Radera</button>
+    </form>
+</div>
+{{end}}
+
 <div class="meta">
     <img src="/uploads/recipes/{{.L.Recipe.ID}}_lg@2x.jpg?v={{.L.Recipe.UpdatedAt.Unix }}"
         alt="Bild på färdigt resultat" class="meta__photo shadow-lg">
@@ -35,14 +44,6 @@
     </div>
 </div>
 
-{{if .L.CanManage}}
-<div class="title-section__actions">
-    <a href="/recipes/{{.L.Recipe.ID}}/edit" class="title-section__edit-link">Redigera</a>
-    <form action="/recipes/{{.L.Recipe.ID}}/delete" method="POST">
-        <button type="submit" class="title-section__delete-btn">Radera</button>
-    </form>
-</div>
-{{end}}
 
 <div class="content">
     <div class="content__wrapper">
