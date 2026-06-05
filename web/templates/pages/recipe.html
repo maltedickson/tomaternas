@@ -10,10 +10,20 @@
 {{if .L.CanManage}}
 <div class="recipe-actions">
     <a href="/recipes/{{.L.Recipe.ID}}/edit" class="button">Redigera</a>
-    <form action="/recipes/{{.L.Recipe.ID}}/delete" method="POST">
+    <form action="/recipes/{{.L.Recipe.ID}}/delete" method="POST" id="form-delete-recipe">
         <button type="submit">Radera</button>
     </form>
 </div>
+<script>
+    const recipeDeleteForm = document.getElementById("form-delete-recipe");
+    recipeDeleteForm.addEventListener("submit", function (e) {
+        const isConfirmed = confirm("Är du säker på att du vill radera receptet permanent?");
+
+        if (!isConfirmed) {
+            e.preventDefault();
+        }
+    });
+</script>
 {{end}}
 
 <div class="meta">
