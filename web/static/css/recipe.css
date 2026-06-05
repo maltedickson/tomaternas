@@ -14,7 +14,7 @@
 }
 
 .meta__photo {
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 1 / 1;
     width: 100%;
     max-width: var(--max-photo-width);
     display: block;
@@ -118,15 +118,12 @@
     }
 
     .meta__photo {
-        aspect-ratio: 1 / 1;
-        width: 100%;
         border-radius: 0;
         border-top-left-radius: var(--radius);
         border-bottom-left-radius: var(--radius);
     }
 
     .meta__content {
-        height: 100%;
         border-radius: 0;
         border-top-right-radius: var(--radius);
         border-bottom-right-radius: var(--radius);
@@ -136,7 +133,7 @@
 .content {
     background-color: white;
     padding-block: 4rem;
-    padding-inline: calc(var(--padding-inline-page) + var(--padding-meta-content));
+    padding-inline: var(--padding-inline-page);
 }
 
 .content__wrapper {
@@ -170,6 +167,12 @@
     border-bottom: 1px solid hsl(0 0% 90%);
 }
 
+@media (min-width: 768px) {
+    .content {
+        padding-inline: calc(var(--padding-inline-page) + var(--padding-meta-content));
+    }
+}
+
 @media (min-width: 1024px) {
     .content {
         padding-inline: var(--padding-inline-page);
@@ -182,9 +185,8 @@
         max-width: var(--max-content-width-desktop);
         flex-direction: row;
         column-gap: var(--gap);
-        justify-content: space-between;
+        /* justify-content: space-between; */
         margin-inline: auto;
-
     }
 
     .content__ingredients {

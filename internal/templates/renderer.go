@@ -82,7 +82,7 @@ func (r *Renderer) funcMap() template.FuncMap {
 }
 
 func (r *Renderer) Render(w http.ResponseWriter, req *http.Request, templateName string, localData any) error {
-	devMode := true // TODO: set to false in production
+	devMode := false // TODO: set to false in production
 	if devMode {
 		if err := r.loadTemplates(); err != nil {
 			return fmt.Errorf("failed to reload templates: %w", err)
