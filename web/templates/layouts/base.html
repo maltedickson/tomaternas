@@ -29,7 +29,9 @@
             <a href="/admin/dashboard" class="button">Adminpanel</a>
             {{end}}
 
+            {{if .G.User}}
             <a href="/recipes/new" class="button">Nytt recept</a>
+            {{end}}
 
             {{template "auth-menu" .}}
 
