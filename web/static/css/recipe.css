@@ -42,12 +42,6 @@
     margin-top: 0.5rem;
 }
 
-.meta__timestamps {
-    display: flex;
-    column-gap: 1rem;
-    flex-wrap: wrap;
-}
-
 .meta__iconwtext-container {
     margin-block: 0.5rem;
 }

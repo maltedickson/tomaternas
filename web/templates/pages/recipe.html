@@ -12,11 +12,8 @@
         alt="Bild på färdigt resultat" class="meta__photo shadow-lg">
     <div class="meta__content shadow-lg">
         <h1 class="meta__title">{{.L.Recipe.Title}}</h1>
-        <div class="meta__owner">av {{.L.RecipeOwner.DisplayName}}</div>
-        <div class="meta__timestamps">
-            <div>Skapad: {{.L.RecipeCreatedAtFormatted}}</div>
-            <div>Ändrad: {{.L.RecipeUpdatedAtFormatted}}</div>
-        </div>
+        <div class="meta__owner">av {{.L.RecipeOwner.DisplayName}} {{.L.RecipeCreatedAtFormatted}} (ändrad
+            {{.L.RecipeUpdatedAtFormatted}})</div>
         <div class="meta__iconwtext-container">
             <div class="meta__iconwtext">
                 <i class="ri-time-line"></i>
