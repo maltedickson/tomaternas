@@ -64,6 +64,11 @@ img {
     margin-top: 1rem;
     margin-bottom: 4rem;
     padding-inline: 1rem;
+    gap: 1rem;
+}
+
+.top-bar__logo {
+    flex-shrink: 0;
 }
 
 .top-bar__right {
@@ -71,6 +76,7 @@ img {
     align-items: center;
     gap: 0.5rem;
     flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
 .logo-link {
@@ -78,6 +84,7 @@ img {
     text-decoration: none;
     display: flex;
     align-items: flex-end;
+    height: 1.25rem;
 }
 
 .logo-link__tomato {
@@ -117,8 +124,9 @@ img {
     top: calc(100% + 0.5rem);
     right: 0;
     border: 2px solid var(--color-border);
-    border-radius: 4px;
+    border-radius: 8px;
     background-color: white;
+    z-index: 1000;
 }
 
 .auth-menu__dropdown.open {
@@ -205,8 +213,9 @@ ul {
 }
 
 
-button,
+button:not(.nobutton),
 a.button {
+    text-wrap: nowrap;
     font: inherit;
     border: none;
     outline: none;
@@ -230,7 +239,7 @@ a.button {
     /* border-radius: 8px; */
 }
 
-button::before,
+button:not(.nobutton)::before,
 a.button::before {
     content: "";
     inset: 0;
@@ -243,13 +252,13 @@ a.button::before {
     border-radius: 8px;
 }
 
-button:active,
+button:not(.nobutton):active,
 a.button:active {
     padding-bottom: 0;
     padding-top: 2px;
 }
 
-button:active::before,
+button:not(.nobutton):active::before,
 a.button:active::before {
     box-shadow: none;
     bottom: 0;
@@ -279,7 +288,7 @@ textarea {
     padding: 0.25rem 0.5rem;
 }
 
-button:focus-visible,
+button:not(.nobutton):focus-visible,
 a.button:focus-visible,
 :where(input[type="text"]:focus-visible),
 :where(input[type="number"]:focus-visible),
