@@ -1,0 +1,28 @@
+.photo {
+    aspect-ratio: 1 / 1;
+    width: min(400px, 100%);
+    object-fit: cover;
+    margin-block: 1rem;
+}
+
+.photo.photo--hidden {
+    display: none;
+}
+
+.btn-img-remove {
+    display: none;
+}
+
+.photo-upload__controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+}

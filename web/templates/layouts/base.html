@@ -17,16 +17,19 @@
 
 <body>
     <div class="top-bar">
-        <div class="left">
-            {{block "top-left" .}}{{end}}
-        </div>
         <a href="/" class="logo-link">
             <div class="logo-link__text">t</div>
             <img class="logo-link__tomato" src="/static/img/tomato.svg">
             <div class="logo-link__text">maternas</div>
         </a>
-        <div class="right">
+        <div class="top-bar__right">
             {{block "top-right" .}}
+
+            {{if and .G.User (eq .G.User.Role "admin")}}
+            <a href="/admin/dashboard" class="button">Adminpanel</a>
+            {{end}}
+
+            <a href="/recipes/new" class="button">Nytt recept</a>
 
             {{template "auth-menu" .}}
 

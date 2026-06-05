@@ -4,18 +4,16 @@
 
 <div class="auth-menu" id="auth-menu">
 
-    <button class="profile-button" id="auth-menu-profile-button">
-        {{slice .G.User.DisplayName 0 2}}
-    </button>
+    <button id="auth-menu-profile-button">{{.G.User.DisplayName }}</button>
 
-    <div class="dropdown" id="auth-menu-dropdown">
+    <div class="auth-menu__dropdown" id="auth-menu-dropdown">
         <a href="/settings" role="menuitem">Inställningar</a>
 
-        <a href="/recipes/new" role="menuitem">Nytt recept</a>
+        <!-- <a href="/recipes/new" role="menuitem">Nytt recept</a> -->
 
-        {{if eq .G.User.Role "admin"}}
-        <a href="/admin/dashboard" role="menuitem">Adminpanel</a>
-        {{end}}
+        <!-- {{if eq .G.User.Role "admin"}} -->
+        <!-- <a href="/admin/dashboard" role="menuitem">Adminpanel</a> -->
+        <!-- {{end}} -->
 
         <form action="/logout" method="POST">
             <button type="submit" role="menuitem">Logga ut</button>
@@ -24,12 +22,11 @@
 
 </div>
 
-
 <script src="/static/js/auth-menu.js" defer></script>
 
 {{else}}
 
-<a href="/login?return={{.G.Path}}">Logga in</a>
+<a href="/login?return={{.G.Path}}" class="button">Logga in</a>
 
 {{end}}
 

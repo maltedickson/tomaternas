@@ -2,7 +2,7 @@
 
 {{define "head"}}
 <title>{{if .L.IsEdit}}Redigera recept{{else}}Skapa nytt recept{{end}}</title>
-<link rel="stylesheet" href="/static/css/recipe-new.css">
+<link rel="stylesheet" href="/static/css/recipe-form.css">
 <script>
     window.recipeContext = {}
     window.recipeContext.serverData = {{.L.Recipe}}
@@ -173,18 +173,18 @@
                 {{end}}
             </section>
 
-
-            {{if .L.IsEdit}}
-            <a href="/recipes/{{.L.Recipe.ID}}">Avbryt</a>
-            {{end}}
-
-            <button type="submit" class="mt-large">
+            <div class="form-actions">
                 {{if .L.IsEdit}}
-                Spara
-                {{else}}
-                Ladda upp
+                <a href="/recipes/{{.L.Recipe.ID}}" class="button">Avbryt</a>
                 {{end}}
-            </button>
+                <button type="submit">
+                    {{if .L.IsEdit}}
+                    Spara
+                    {{else}}
+                    Ladda upp
+                    {{end}}
+                </button>
+            </div>
 
         </form>
 

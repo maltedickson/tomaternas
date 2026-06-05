@@ -9,17 +9,17 @@
 
 {{if .L.CanManage}}
 <div class="recipe-actions">
-    <a href="/recipes/{{.L.Recipe.ID}}/edit" class="title-section__edit-link">Redigera</a>
+    <a href="/recipes/{{.L.Recipe.ID}}/edit" class="button">Redigera</a>
     <form action="/recipes/{{.L.Recipe.ID}}/delete" method="POST">
-        <button type="submit" class="title-section__delete-btn">Radera</button>
+        <button type="submit">Radera</button>
     </form>
 </div>
 {{end}}
 
 <div class="meta">
     <img src="/uploads/recipes/{{.L.Recipe.ID}}_lg@2x.jpg?v={{.L.Recipe.UpdatedAt.Unix }}"
-        alt="Bild på färdigt resultat" class="meta__photo shadow-lg">
-    <div class="meta__content shadow-lg">
+        alt="Bild på färdigt resultat" class="meta__photo">
+    <div class="meta__content">
         <h1 class="meta__title">{{.L.Recipe.Title}}</h1>
         <div class="meta__owner">av {{.L.RecipeOwner.DisplayName}} {{.L.RecipeCreatedAtFormatted}} (ändrad
             {{.L.RecipeUpdatedAtFormatted}})</div>
