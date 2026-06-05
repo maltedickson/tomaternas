@@ -110,7 +110,7 @@ func ProcessAndSaveRecipeImage(recipeId int, uploadedFile multipart.File, imageE
 		return fmt.Errorf("failed to save original image to path \"%s\": %w", pathForOriginalImage, err)
 	}
 
-	srcImage, err := imaging.Decode(uploadedFile)
+	srcImage, err := imaging.Decode(uploadedFile, imaging.AutoOrientation(true))
 	if err != nil {
 		return fmt.Errorf("failed to decode uploaded image: %w", err)
 	}
