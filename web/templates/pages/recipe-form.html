@@ -77,6 +77,15 @@
             <p>Ange antal timmar.</p>
             <input type="number" value="0" min="0" name="prep-time">
 
+            <div id="prep-instructions-container" hidden>
+                <p>Beskriv förberedelsen.</p>
+                <textarea name="prep-instructions" rows="3"
+                    placeholder="Vad ska göras? Till exempel &quot;Tina räkorna.&quot;"></textarea>
+                {{if .L.Errors.prepInstructions}}
+                <p class="form-error">{{.L.Errors.prepInstructions}}</p>
+                {{end}}
+            </div>
+
             <div class="tags-editor">
                 <div>
                     <h2>Måltidstyp</h2>

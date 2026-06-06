@@ -7,8 +7,8 @@ import (
 
 func (db *DB) CreateRecipe(recipe *models.Recipe) (int, error) {
 	query := `
-		INSERT INTO recipes (title, description, ingredient_sections, instructions, servings, prep_time_seconds, cook_time_seconds, meal_types, dietary_tags, other_tags, owner_id)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		INSERT INTO recipes (title, description, ingredient_sections, instructions, servings, prep_time_seconds, prep_instructions, cook_time_seconds, meal_types, dietary_tags, other_tags, owner_id)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
 
 	ingredient_sections_string, err := json.Marshal(recipe.IngredientSections)
@@ -36,6 +36,7 @@ func (db *DB) CreateRecipe(recipe *models.Recipe) (int, error) {
 		recipe.Instructions,
 		recipe.Servings,
 		recipe.PrepTimeSeconds,
+		recipe.PrepInstructions,
 		recipe.CookTimeSeconds,
 		mealTypesString,
 		dietaryTagsString,
@@ -57,7 +58,7 @@ func (db *DB) CreateRecipe(recipe *models.Recipe) (int, error) {
 func (db *DB) UpdateRecipe(recipe *models.Recipe) error {
 	query := `
 		UPDATE recipes
-		SET title = ?, description = ?, ingredient_sections = ?, instructions = ?, servings = ?, prep_time_seconds = ?, cook_time_seconds = ?, meal_types = ?, dietary_tags = ?, other_tags = ?, updated_at = CURRENT_TIMESTAMP
+		SET title = ?, description = ?, ingredient_sections = ?, instructions = ?, servings = ?, prep_time_seconds = ?, prep_instructions = ?, cook_time_seconds = ?, meal_types = ?, dietary_tags = ?, other_tags = ?, updated_at = CURRENT_TIMESTAMP
 		WHERE id = ?
 	`
 
@@ -86,6 +87,7 @@ func (db *DB) UpdateRecipe(recipe *models.Recipe) error {
 		recipe.Instructions,
 		recipe.Servings,
 		recipe.PrepTimeSeconds,
+		recipe.PrepInstructions,
 		recipe.CookTimeSeconds,
 		mealTypesString,
 		dietaryTagsString,
@@ -97,7 +99,7 @@ func (db *DB) UpdateRecipe(recipe *models.Recipe) error {
 
 func (db *DB) GetRecipeById(id int) (*models.Recipe, error) {
 	query := `
-		SELECT id, title, description, ingredient_sections, instructions, servings, prep_time_seconds, cook_time_seconds, meal_types, dietary_tags, other_tags, owner_id, created_at, updated_at
+		SELECT id, title, description, ingredient_sections, instructions, servings, prep_time_seconds, prep_instructions, cook_time_seconds, meal_types, dietary_tags, other_tags, owner_id, created_at, updated_at
 		FROM recipes
 		WHERE id = ?
 	`
@@ -116,6 +118,7 @@ func (db *DB) GetRecipeById(id int) (*models.Recipe, error) {
 		&recipe.Instructions,
 		&recipe.Servings,
 		&recipe.PrepTimeSeconds,
+		&recipe.PrepInstructions,
 		&recipe.CookTimeSeconds,
 		&mealTypesString,
 		&dietaryTagsString,

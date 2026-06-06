@@ -16,6 +16,7 @@ if (window.recipeContext.isEditMode) {
 
 setupFormSubmitHandler();
 setupPhotoUploadListener();
+setupPrepTimeListener();
 
 function addIngredient(ingredientsContainer, isInit = false, value = null) {
     const template = document.getElementById("tmpl-ingredient");
@@ -118,6 +119,7 @@ function populateFormWithRecipe(recipe) {
     }
     document.querySelector("[name=cook-time]").value = recipe.CookTimeSeconds;
     document.querySelector("[name='prep-time']").value = recipe.PrepTimeSeconds / 3600;
+    document.querySelector("[name='prep-instructions']").value = recipe.PrepInstructions;
     document.querySelector("[name=description]").value = recipe.Description;
     document.querySelector("[name=servings]").value = recipe.Servings;
     recipe.IngredientSections.forEach(section => {
@@ -181,4 +183,20 @@ function setupPhotoUploadListener() {
             hidePreview();
         }
     });
+}
+
+function setupPrepTimeListener() {
+    const prepTimeInput = document.querySelector("[name=prep-time]");
+    const prepInstructionsInput = document.querySelector("[name=prep-instructions]");
+    const container = document.getElementById("prep-instructions-container");
+
+    prepTimeInput.addEventListener("input", update);
+
+    update();
+
+    function update() {
+        const requiresPrep = prepTimeInput.value > 0;
+        prepInstructionsInput.required = requiresPrep;
+        container.style.display = requiresPrep ? "block" : "none";
+    }
 }

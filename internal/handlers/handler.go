@@ -176,16 +176,17 @@ func (h *Handler) ViewRecipe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := map[string]any{
-		"Recipe":                   recipe,
-		"RecipeTags":               tags,
-		"RecipePrepTimeHours":      recipe.PrepTimeSeconds / 3600,
-		"RecipeCookTimeMinutes":    recipe.CookTimeSeconds / 60,
-		"RecipeDescriptionParsed":  services.ParseMarkup(recipe.Description),
-		"RecipeInstructionsParsed": services.ParseMarkup(recipe.Instructions),
-		"RecipeCreatedAtFormatted": services.FormatDate(recipe.CreatedAt),
-		"RecipeUpdatedAtFormatted": services.FormatDate(recipe.UpdatedAt),
-		"RecipeOwner":              recipeOwner,
-		"CanManage":                canManage,
+		"Recipe":                       recipe,
+		"RecipeTags":                   tags,
+		"RecipePrepTimeHours":          recipe.PrepTimeSeconds / 3600,
+		"RecipeCookTimeMinutes":        recipe.CookTimeSeconds / 60,
+		"RecipeDescriptionParsed":      services.ParseMarkup(recipe.Description),
+		"RecipeInstructionsParsed":     services.ParseMarkup(recipe.Instructions),
+		"RecipePrepInstructionsParsed": services.ParseMarkup(recipe.PrepInstructions),
+		"RecipeCreatedAtFormatted":     services.FormatDate(recipe.CreatedAt),
+		"RecipeUpdatedAtFormatted":     services.FormatDate(recipe.UpdatedAt),
+		"RecipeOwner":                  recipeOwner,
+		"CanManage":                    canManage,
 	}
 	h.renderer.Render(w, r, "recipe", data)
 }
@@ -677,6 +678,14 @@ func (h *Handler) parseRecipeForm(r *http.Request, ownerID int) (*recipeFormResu
 		return nil, fmt.Errorf("%w: prep time", errBadRequest)
 	}
 
+	prepInstructions := ""
+	if prepTimeHours > 0 {
+		prepInstructions = r.FormValue("prep-instructions")
+		if strings.TrimSpace(prepInstructions) == "" {
+			result.Errors["prepInstructions"] = "Instruktion av förberedelsen krävs."
+		}
+	}
+
 	// --- Ingredients ---
 	var ingredientSections []models.IngredientSection
 	if err := json.Unmarshal([]byte(r.FormValue("ingredients")), &ingredientSections); err != nil {
@@ -719,6 +728,7 @@ func (h *Handler) parseRecipeForm(r *http.Request, ownerID int) (*recipeFormResu
 		Instructions:       instructions,
 		Servings:           servings,
 		PrepTimeSeconds:    prepTimeHours * 3600,
+		PrepInstructions:   prepInstructions,
 		CookTimeSeconds:    cookTime,
 		MealTypes:          mealTypes,
 		DietaryTags:        diets,

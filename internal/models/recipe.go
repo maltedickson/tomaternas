@@ -22,6 +22,7 @@ type Recipe struct {
 	Instructions       string
 	Servings           string
 	PrepTimeSeconds    int
+	PrepInstructions   string
 	CookTimeSeconds    int
 	MealTypes          []string
 	DietaryTags        []string

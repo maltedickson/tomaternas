@@ -82,6 +82,11 @@
             {{end}}
         </div>
         <div class="content__instructions">
+            {{if .L.RecipePrepInstructionsParsed}}
+            <h2>Förberedelser (ca {{.L.RecipePrepTimeHours}} timmar innan)</h2>
+            {{.L.RecipePrepInstructionsParsed}}
+            {{end}}
+
             <h2>Instruktioner</h2>
             {{.L.RecipeInstructionsParsed}}
         </div>
