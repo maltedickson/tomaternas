@@ -58,6 +58,30 @@ var migrations = []migration{
 			`ALTER TABLE recipes ADD COLUMN prep_instructions TEXT NOT NULL DEFAULT ''`,
 		},
 	},
+	{
+		version:     3,
+		description: "add reviews",
+		statements: []string{
+			`CREATE TABLE IF NOT EXISTS reviews (
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				recipe_id INTEGER NOT NULL,
+				owner_id INTEGER NOT NULL,
+				rating INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
+				comment TEXT NOT NULL DEFAULT '',
+				created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE,
+				FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE,
+				UNIQUE (recipe_id, owner_id)
+			)`,
+			`CREATE INDEX IF NOT EXISTS idx_reviews_recipe_id ON reviews(recipe_id)`,
+			`CREATE TRIGGER IF NOT EXISTS trg_reviews_updated_at
+				AFTER UPDATE ON reviews
+				BEGIN
+					UPDATE reviews SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+				END`,
+		},
+	},
 }
 
 func (db *DB) RunMigrations() error {
