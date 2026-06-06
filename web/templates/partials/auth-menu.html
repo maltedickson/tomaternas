@@ -4,12 +4,21 @@
 
 <div class="auth-menu" id="auth-menu">
 
-    <button id="auth-menu-profile-button">{{.G.User.DisplayName }}</button>
+    <button id="auth-menu-profile-button">
+        {{ icon "outline" "user" }}
+        <span>{{.G.User.DisplayName }}</span>
+    </button>
 
     <div class="auth-menu__dropdown" id="auth-menu-dropdown">
-        <a href="/settings" role="menuitem">Inställningar</a>
+        <a href="/settings" role="menuitem">
+            {{ icon "outline" "settings" }}
+            Inställningar
+        </a>
         <form action="/logout" method="POST">
-            <button type="submit" role="menuitem" class="nobutton">Logga ut</button>
+            <button type="submit" role="menuitem" class="nobutton">
+                {{icon "outline" "logout"}}
+                Logga ut
+            </button>
         </form>
     </div>
 

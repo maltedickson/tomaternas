@@ -9,9 +9,15 @@
 
 {{if .L.CanManage}}
 <div class="recipe-actions">
-    <a href="/recipes/{{.L.Recipe.ID}}/edit" class="button">Redigera</a>
+    <a href="/recipes/{{.L.Recipe.ID}}/edit" class="button">
+        {{icon "outline" "edit"}}
+        Redigera
+    </a>
     <form action="/recipes/{{.L.Recipe.ID}}/delete" method="POST" id="form-delete-recipe">
-        <button type="submit">Radera</button>
+        <button type="submit">
+            {{icon "outline" "trash"}}
+            Radera
+        </button>
     </form>
 </div>
 <script>
@@ -35,7 +41,7 @@
             {{.L.RecipeUpdatedAtFormatted}})</div>
         <div class="meta__iconwtext-container">
             <div class="meta__iconwtext">
-                <i class="ri-time-line"></i>
+                {{icon "outline" "clock"}}
                 <span>{{.L.RecipeCookTimeMinutes}} min</span>
                 {{if .L.RecipePrepTimeHours}}
                 <span>(+ {{.L.RecipePrepTimeHours}} h)</span>

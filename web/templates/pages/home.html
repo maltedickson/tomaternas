@@ -27,13 +27,13 @@
                     <!--     <span class="recipe-card__meta-text">4,1</span> -->
                     <!-- </div> -->
                     <div class="recipe-card__time">
-                        <i class="ri-timer-line"></i>
+                        {{icon "outline" "clock"}}
                         <span class="recipe-card__meta-text">{{.CookTimeMinutes}}m{{if .PrepTimeHours}}
                             (+{{.PrepTimeHours}}h){{end}}</span>
                     </div>
                 </span>
                 {{if .IsGreen}}
-                <span class="recipe-card__leaf"><i class="ri-leaf-fill"></i></span>
+                <span class="recipe-card__leaf">{{icon "filled" "leaf"}}</span>
                 {{end}}
             </div>
             <div class="recipe-card__title">{{.Title}}</div>

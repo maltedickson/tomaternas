@@ -61,6 +61,12 @@
     flex-wrap: wrap;
 }
 
+.recipe-card__time {
+    display: flex;
+    align-items: center;
+    column-gap: 0.25em;
+}
+
 .recipe-card__meta-text {
     font-size: 0.875rem;
 }

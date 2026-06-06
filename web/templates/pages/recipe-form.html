@@ -137,11 +137,13 @@
                                 <input type="text" id="" class="ingredients-section-heading__input"
                                     data-section-heading-input>
                             </label>
-                            <button type="button" data-action="remove-section"><i class="las la-trash-alt"></i></button>
+                            <button type="button" data-action="remove-section">
+                                {{icon "outline" "trash"}}
+                            </button>
                         </div>
                         <div data-ingredients-container class="spacing-small"></div>
                         <button type="button" data-action="new-ingredient">
-                            <i class="las la-plus"></i>
+                            {{icon "outline" "plus"}}
                             Ny ingrediens
                         </button>
                     </div>
@@ -151,13 +153,13 @@
                         <input type="text" placeholder="Ingrediens" data-ingredient-input requiredxx>
                         <input type="text" placeholder="Mängd" data-amount-input>
                         <button type="button">
-                            <i class="las la-trash-alt"></i>
+                            {{icon "outline" "trash"}}
                         </button>
                     </div>
                 </template>
                 <div id="ingredients-sections-container" class="spacing-large"></div>
                 <button onclick="addSection()" type="button" class="new-ingredients-section-button">
-                    <i class="las la-plus"></i>
+                    {{icon "outline" "plus"}}
                     Ny sektion
                 </button>
                 {{if .L.Errors.ingredients}}

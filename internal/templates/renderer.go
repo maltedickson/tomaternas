@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"recipe-web-server/internal/middleware"
+	"recipe-web-server/web"
 	"strings"
 )
 
@@ -56,7 +57,7 @@ func (r *Renderer) loadTemplates() error {
 		files = append(files, partialFiles...)
 		files = append(files, pageFile)
 
-		tmpl, err := template.New(pageFile).Funcs(r.funcMap()).ParseFS(r.embedFS, files...)
+		tmpl, err := template.New(pageFile).Funcs(r.funcMap()).Funcs(web.IconFuncMap()).ParseFS(r.embedFS, files...)
 		if err != nil {
 			return fmt.Errorf("failed to parse template %s: %w", templateName, err)
 		}
