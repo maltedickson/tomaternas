@@ -29,7 +29,12 @@ type Handler struct {
 	renderer      *templates.Renderer
 }
 
-func NewHandler(authService *services.AuthService, userService *services.UserService, recipeService *services.RecipeService, renderer *templates.Renderer) *Handler {
+func NewHandler(
+	authService *services.AuthService,
+	userService *services.UserService,
+	recipeService *services.RecipeService,
+	renderer *templates.Renderer,
+) *Handler {
 	return &Handler{
 		userService:   userService,
 		authService:   authService,
