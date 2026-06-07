@@ -83,13 +83,6 @@ func (r *Renderer) funcMap() template.FuncMap {
 }
 
 func (r *Renderer) Render(w http.ResponseWriter, req *http.Request, templateName string, localData any) error {
-	devMode := false // TODO: set to false in production
-	if devMode {
-		if err := r.loadTemplates(); err != nil {
-			return fmt.Errorf("failed to reload templates: %w", err)
-		}
-	}
-
 	tmpl, ok := r.templates[templateName]
 	if !ok {
 		log.Printf("template (%s) not found", templateName)
@@ -111,13 +104,6 @@ func (r *Renderer) Render(w http.ResponseWriter, req *http.Request, templateName
 }
 
 func (r *Renderer) RenderErr(w http.ResponseWriter, req *http.Request, statusCode int, message string) {
-	devMode := false // TODO: set to false in production
-	if devMode {
-		if err := r.loadTemplates(); err != nil {
-			log.Printf("failed to reload templates: %v", err)
-		}
-	}
-
 	templateName := "error"
 
 	tmpl, ok := r.templates[templateName]
