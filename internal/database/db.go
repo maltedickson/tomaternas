@@ -20,11 +20,6 @@ func New() (*DB, error) {
 		return nil, err
 	}
 
-	// _, err = db.Exec(schema)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
 	return &DB{db}, nil
 }
 

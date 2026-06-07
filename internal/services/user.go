@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -27,12 +28,12 @@ func GetRole(roleStr string) (models.UserRole, bool) {
 	return role, ok
 }
 
-func (s *UserService) CreateUser(username, displayName, password string, role models.UserRole) (*models.User, error) {
+func (s *UserService) CreateUser(ctx context.Context, username, displayName, password string, role models.UserRole) (*models.User, error) {
 	if username == "" || password == "" {
 		return nil, errors.New("username and password required")
 	}
 
-	_, err := s.db.GetUserByUsername(username)
+	_, err := s.db.GetUserByUsername(ctx, username)
 	if err == nil {
 		return nil, errors.New("username already exists")
 	}
@@ -46,15 +47,15 @@ func (s *UserService) CreateUser(username, displayName, password string, role mo
 		Role:         role,
 	}
 
-	if err := s.db.CreateUser(user); err != nil {
+	if err := s.db.CreateUser(ctx, user); err != nil {
 		return nil, err
 	}
 
 	return user, nil
 }
 
-func (s *UserService) GetUser(id int) (*models.User, error) {
-	user, err := s.db.GetUserById(id)
+func (s *UserService) GetUser(ctx context.Context, id int) (*models.User, error) {
+	user, err := s.db.GetUserById(ctx, id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, ErrNotFound
@@ -64,23 +65,23 @@ func (s *UserService) GetUser(id int) (*models.User, error) {
 	return user, nil
 }
 
-func (s *UserService) GetAllUsers() ([]*models.User, error) {
-	return s.db.GetAllUsers()
+func (s *UserService) GetAllUsers(ctx context.Context) ([]*models.User, error) {
+	return s.db.GetAllUsers(ctx)
 }
 
-func (s *UserService) UpdateUsername(id int, newUsername string) error {
-	_, err := s.db.GetUserByUsername(newUsername)
+func (s *UserService) UpdateUsername(ctx context.Context, id int, newUsername string) error {
+	_, err := s.db.GetUserByUsername(ctx, newUsername)
 	if err == nil {
 		return errors.New("username already exists")
 	}
-	return s.db.UpdateUsername(id, newUsername)
+	return s.db.UpdateUsername(ctx, id, newUsername)
 }
 
-func (s *UserService) UpdateDisplayName(id int, displayName string) error {
-	return s.db.UpdateDisplayName(id, displayName)
+func (s *UserService) UpdateDisplayName(ctx context.Context, id int, displayName string) error {
+	return s.db.UpdateDisplayName(ctx, id, displayName)
 }
 
-func (s *UserService) UpdatePassword(id int, password, confirmPassword string) error {
+func (s *UserService) UpdatePassword(ctx context.Context, id int, password, confirmPassword string) error {
 	if password != confirmPassword {
 		return errors.New("confirm_not_match")
 	}
@@ -88,9 +89,9 @@ func (s *UserService) UpdatePassword(id int, password, confirmPassword string) e
 		return errors.New("password_too_short")
 	}
 	hash := generateFromPassword(password, defaultParams)
-	return s.db.UpdatePasswordHash(id, hash)
+	return s.db.UpdatePasswordHash(ctx, id, hash)
 }
 
-func (s *UserService) UpdateRole(id int, role string) error {
-	return s.db.UpdateRole(id, role)
+func (s *UserService) UpdateRole(ctx context.Context, id int, role string) error {
+	return s.db.UpdateRole(ctx, id, role)
 }

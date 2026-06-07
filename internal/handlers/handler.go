@@ -39,7 +39,7 @@ func NewHandler(authService *services.AuthService, userService *services.UserSer
 }
 
 func (h *Handler) ViewHome(w http.ResponseWriter, r *http.Request) {
-	recipeOverviews, err := h.recipeService.GetAllRecipeOverviews()
+	recipeOverviews, err := h.recipeService.GetAllRecipeOverviews(r.Context())
 	if err != nil {
 		h.renderErrInternal(w, r, fmt.Errorf("get recipe overviews: %w", err))
 		return
@@ -105,14 +105,14 @@ func (h *Handler) CreateRecipe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, err := h.recipeService.CreateRecipe(parsed.Recipe)
+	id, err := h.recipeService.CreateRecipe(r.Context(), parsed.Recipe)
 	if err != nil {
 		h.renderErrInternal(w, r, fmt.Errorf("create recipe: %w", err))
 		return
 	}
 
 	if err := services.ProcessAndSaveRecipeImage(id, parsed.Image, parsed.ImageExt); err != nil {
-		h.recipeService.DeleteRecipeById(id)
+		h.recipeService.DeleteRecipeById(r.Context(), id)
 		h.renderErrInternal(w, r, err)
 		return
 	}
@@ -127,7 +127,7 @@ func (h *Handler) ViewRecipe(w http.ResponseWriter, r *http.Request) {
 		h.renderErrPageNotFound(w, r)
 		return
 	}
-	recipe, err := h.recipeService.GetRecipeById(id)
+	recipe, err := h.recipeService.GetRecipeById(r.Context(), id)
 	if err != nil {
 		if errors.Is(err, services.ErrNotFound) {
 			h.renderErrPageNotFound(w, r)
@@ -137,7 +137,7 @@ func (h *Handler) ViewRecipe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	recipeOwner, err := h.userService.GetUser(recipe.OwnerID)
+	recipeOwner, err := h.userService.GetUser(r.Context(), recipe.OwnerID)
 	if err != nil {
 		if errors.Is(err, services.ErrNotFound) {
 			h.renderErrPageNotFound(w, r)
@@ -188,7 +188,7 @@ func (h *Handler) ViewEditRecipe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	recipe, err := h.recipeService.GetRecipeById(id)
+	recipe, err := h.recipeService.GetRecipeById(r.Context(), id)
 	if err != nil {
 		if errors.Is(err, services.ErrNotFound) {
 			h.renderErrPageNotFound(w, r)
@@ -213,7 +213,7 @@ func (h *Handler) DeleteRecipe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	recipe, err := h.recipeService.GetRecipeById(id)
+	recipe, err := h.recipeService.GetRecipeById(r.Context(), id)
 	if err != nil {
 		if errors.Is(err, services.ErrNotFound) {
 			h.renderErrPageNotFound(w, r)
@@ -237,7 +237,7 @@ func (h *Handler) DeleteRecipe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.recipeService.DeleteRecipeById(id); err != nil {
+	if err := h.recipeService.DeleteRecipeById(r.Context(), id); err != nil {
 		h.renderErrInternal(w, r, fmt.Errorf("delete recipe by id (%d): %w", id, err))
 		return
 	}
@@ -262,7 +262,7 @@ func (h *Handler) UpdateRecipe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	existing, err := h.recipeService.GetRecipeById(id)
+	existing, err := h.recipeService.GetRecipeById(r.Context(), id)
 	if err != nil {
 		h.renderErrInternal(w, r, fmt.Errorf("get recipe: %w", err))
 		return
@@ -295,7 +295,7 @@ func (h *Handler) UpdateRecipe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	parsed.Recipe.ID = id
-	if err := h.recipeService.UpdateRecipe(parsed.Recipe); err != nil {
+	if err := h.recipeService.UpdateRecipe(r.Context(), parsed.Recipe); err != nil {
 		h.renderErrInternal(w, r, fmt.Errorf("update recipe: %w", err))
 		return
 	}
@@ -341,7 +341,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session, err := h.authService.Login(username, password)
+	session, err := h.authService.Login(r.Context(), username, password)
 	if err != nil {
 		redirectURL := "/login?error=invalid_credentials"
 		if returnURL != "" {
@@ -377,7 +377,7 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 
 	cookie, err := r.Cookie(middleware.SessionCookieName)
 	if err == nil {
-		h.authService.Logout(cookie.Value)
+		h.authService.Logout(r.Context(), cookie.Value)
 	}
 
 	http.SetCookie(w, &http.Cookie{
@@ -411,7 +411,7 @@ func (h *Handler) ViewAdminDashboard(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) ViewUsers(w http.ResponseWriter, r *http.Request) {
-	users, err := h.userService.GetAllUsers()
+	users, err := h.userService.GetAllUsers(r.Context())
 	if err != nil {
 		h.renderErrInternal(w, r, fmt.Errorf("get all users: %w", err))
 		return
@@ -461,7 +461,7 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := h.userService.CreateUser(username, displayName, password, role)
+	_, err := h.userService.CreateUser(r.Context(), username, displayName, password, role)
 	if err != nil {
 		h.renderErrInternal(w, r, fmt.Errorf("create user: %w", err))
 		return
@@ -477,7 +477,7 @@ func (h *Handler) ViewUpdateUser(w http.ResponseWriter, r *http.Request) {
 		h.renderErrPageNotFound(w, r)
 		return
 	}
-	managedUser, err := h.userService.GetUser(id)
+	managedUser, err := h.userService.GetUser(r.Context(), id)
 	if err != nil {
 		if errors.Is(err, services.ErrNotFound) {
 			h.renderErrPageNotFound(w, r)
@@ -501,7 +501,7 @@ func (h *Handler) UpdateUsername(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	newUsername := r.FormValue("username")
-	err = h.userService.UpdateUsername(id, newUsername)
+	err = h.userService.UpdateUsername(r.Context(), id, newUsername)
 	if err != nil {
 		http.Redirect(w, r, fmt.Sprintf("/admin/users/%d/edit?error=%s", id, url.QueryEscape(err.Error())), http.StatusSeeOther)
 		return
@@ -517,7 +517,7 @@ func (h *Handler) UpdateDisplayName(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	displayName := r.FormValue("display-name")
-	err = h.userService.UpdateDisplayName(id, displayName)
+	err = h.userService.UpdateDisplayName(r.Context(), id, displayName)
 	if err != nil {
 		http.Redirect(w, r, fmt.Sprintf("/admin/users/%d/edit?error=%s", id, url.QueryEscape(err.Error())), http.StatusSeeOther)
 		return
@@ -534,7 +534,7 @@ func (h *Handler) UpdatePassword(w http.ResponseWriter, r *http.Request) {
 	}
 	password := r.FormValue("password")
 	confirmPassword := r.FormValue("confirm-password")
-	err = h.userService.UpdatePassword(id, password, confirmPassword)
+	err = h.userService.UpdatePassword(r.Context(), id, password, confirmPassword)
 	if err != nil {
 		http.Redirect(w, r, fmt.Sprintf("/admin/users/%d/edit?error=%s", id, url.QueryEscape(err.Error())), http.StatusSeeOther)
 		return
@@ -550,7 +550,7 @@ func (h *Handler) UpdateRole(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	role := r.FormValue("role")
-	err = h.userService.UpdateRole(id, role)
+	err = h.userService.UpdateRole(r.Context(), id, role)
 	if err != nil {
 		http.Redirect(w, r, fmt.Sprintf("/admin/users/%d/edit?error=%s", id, url.QueryEscape(err.Error())), http.StatusSeeOther)
 		return

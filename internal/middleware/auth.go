@@ -21,7 +21,7 @@ func AuthMiddleware(authService *services.AuthService) Middleware {
 				return
 			}
 
-			user, err := authService.ValidateSession(cookie.Value)
+			user, err := authService.ValidateSession(r.Context(), cookie.Value)
 			if err != nil {
 				ctx := context.WithValue(r.Context(), IsAuthContextKey, false)
 				next.ServeHTTP(w, r.WithContext(ctx))

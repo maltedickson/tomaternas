@@ -1,17 +1,19 @@
 package database
 
 import (
+	"context"
 	"fmt"
 	"recipe-web-server/internal/models"
 )
 
-func (db *DB) CreateReview(review *models.Review) (int, error) {
+func (db *DB) CreateReview(ctx context.Context, review *models.Review) (int, error) {
 	query := `
 		INSERT INTO reviews (recipe_id, owner_id, rating, comment)
 		VALUES (?, ?, ?, ?)
 	`
 
-	result, err := db.Exec(
+	result, err := db.ExecContext(
+		ctx,
 		query,
 		review.RecipeID,
 		review.OwnerID,
@@ -30,13 +32,14 @@ func (db *DB) CreateReview(review *models.Review) (int, error) {
 	return int(id), nil
 }
 
-func (db *DB) UpdateReview(review *models.Review) error {
+func (db *DB) UpdateReview(ctx context.Context, review *models.Review) error {
 	query := `
 		UPDATE reviews
 		SET rating = ?, comment = ?
 		WHERE id = ?
 	`
-	_, err := db.Exec(
+	_, err := db.ExecContext(
+		ctx,
 		query,
 		review.Rating,
 		review.Comment,
@@ -48,14 +51,14 @@ func (db *DB) UpdateReview(review *models.Review) error {
 	return nil
 }
 
-func (db *DB) GetReviewById(id int) (*models.Review, error) {
+func (db *DB) GetReviewById(ctx context.Context, id int) (*models.Review, error) {
 	query := `
 		SELECT id, recipe_id, owner_id, rating, comment, created_at, updated_at
 		FROM reviews
 		WHERE id = ?
 	`
 	var review models.Review
-	err := db.QueryRow(query, id).Scan(
+	err := db.QueryRowContext(ctx, query, id).Scan(
 		&review.ID,
 		&review.RecipeID,
 		&review.OwnerID,
@@ -70,14 +73,14 @@ func (db *DB) GetReviewById(id int) (*models.Review, error) {
 	return &review, nil
 }
 
-func (db *DB) GetReviewsForRecipe(recipeID int) ([]models.Review, error) {
+func (db *DB) GetReviewsForRecipe(ctx context.Context, recipeID int) ([]models.Review, error) {
 	query := `
 		SELECT id, recipe_id, owner_id, rating, comment, created_at, updated_at
 		FROM reviews
 		WHERE recipe_id = ?
 	`
 
-	rows, err := db.Query(query, recipeID)
+	rows, err := db.QueryContext(ctx, query, recipeID)
 	if err != nil {
 		return nil, fmt.Errorf("fetching reviews for recipe with ID %d from database: %w", recipeID, err)
 	}
@@ -106,12 +109,12 @@ func (db *DB) GetReviewsForRecipe(recipeID int) ([]models.Review, error) {
 	return reviews, nil
 }
 
-func (db *DB) DeleteReviewById(id int) error {
+func (db *DB) DeleteReviewById(ctx context.Context, id int) error {
 	query := `
 		DELETE FROM reviews
 		WHERE id = ?
 	`
-	_, err := db.Exec(query, id)
+	_, err := db.ExecContext(ctx, query, id)
 	if err != nil {
 		return fmt.Errorf("executing query to delete review with ID %d from database: %w", id, err)
 	}

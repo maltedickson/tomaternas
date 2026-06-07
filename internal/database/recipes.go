@@ -1,11 +1,12 @@
 package database
 
 import (
+	"context"
 	"encoding/json"
 	"recipe-web-server/internal/models"
 )
 
-func (db *DB) CreateRecipe(recipe *models.Recipe) (int, error) {
+func (db *DB) CreateRecipe(ctx context.Context, recipe *models.Recipe) (int, error) {
 	query := `
 		INSERT INTO recipes (title, description, ingredient_sections, instructions, servings, prep_time_seconds, prep_instructions, cook_time_seconds, meal_types, dietary_tags, other_tags, owner_id)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -28,7 +29,8 @@ func (db *DB) CreateRecipe(recipe *models.Recipe) (int, error) {
 		return 0, err
 	}
 
-	result, err := db.Exec(
+	result, err := db.ExecContext(
+		ctx,
 		query,
 		recipe.Title,
 		recipe.Description,
@@ -55,7 +57,7 @@ func (db *DB) CreateRecipe(recipe *models.Recipe) (int, error) {
 	return int(id), nil
 }
 
-func (db *DB) UpdateRecipe(recipe *models.Recipe) error {
+func (db *DB) UpdateRecipe(ctx context.Context, recipe *models.Recipe) error {
 	query := `
 		UPDATE recipes
 		SET title = ?, description = ?, ingredient_sections = ?, instructions = ?, servings = ?, prep_time_seconds = ?, prep_instructions = ?, cook_time_seconds = ?, meal_types = ?, dietary_tags = ?, other_tags = ?, updated_at = CURRENT_TIMESTAMP
@@ -79,7 +81,8 @@ func (db *DB) UpdateRecipe(recipe *models.Recipe) error {
 		return err
 	}
 
-	_, err = db.Exec(
+	_, err = db.ExecContext(
+		ctx,
 		query,
 		recipe.Title,
 		recipe.Description,
@@ -97,7 +100,7 @@ func (db *DB) UpdateRecipe(recipe *models.Recipe) error {
 	return err
 }
 
-func (db *DB) GetRecipeById(id int) (*models.Recipe, error) {
+func (db *DB) GetRecipeById(ctx context.Context, id int) (*models.Recipe, error) {
 	query := `
 		SELECT id, title, description, ingredient_sections, instructions, servings, prep_time_seconds, prep_instructions, cook_time_seconds, meal_types, dietary_tags, other_tags, owner_id, created_at, updated_at
 		FROM recipes
@@ -110,7 +113,7 @@ func (db *DB) GetRecipeById(id int) (*models.Recipe, error) {
 	var dietaryTagsString []byte
 	var otherTagsString []byte
 
-	err := db.QueryRow(query, id).Scan(
+	err := db.QueryRowContext(ctx, query, id).Scan(
 		&recipe.ID,
 		&recipe.Title,
 		&recipe.Description,
@@ -155,14 +158,14 @@ func (db *DB) GetRecipeById(id int) (*models.Recipe, error) {
 	return &recipe, nil
 }
 
-func (db *DB) GetAllRecipeOverviews() ([]models.RecipeOverview, error) {
+func (db *DB) GetAllRecipeOverviews(ctx context.Context) ([]models.RecipeOverview, error) {
 	query := `
 		SELECT id, title, prep_time_seconds, cook_time_seconds, meal_types, dietary_tags, other_tags, owner_id, created_at, updated_at
 		FROM recipes
 		ORDER BY created_at DESC
 	`
 
-	rows, err := db.Query(query)
+	rows, err := db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}
@@ -216,12 +219,12 @@ func (db *DB) GetAllRecipeOverviews() ([]models.RecipeOverview, error) {
 	return overviews, nil
 }
 
-func (db *DB) DeleteRecipeById(id int) error {
+func (db *DB) DeleteRecipeById(ctx context.Context, id int) error {
 	query := `
 		DELETE FROM recipes
 		WHERE id = ?
 	`
 
-	_, err := db.Exec(query, id)
+	_, err := db.ExecContext(ctx, query, id)
 	return err
 }

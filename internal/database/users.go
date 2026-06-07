@@ -1,15 +1,17 @@
 package database
 
 import (
+	"context"
 	"recipe-web-server/internal/models"
 )
 
-func (db *DB) CreateUser(user *models.User) error {
+func (db *DB) CreateUser(ctx context.Context, user *models.User) error {
 	query := `
 		INSERT INTO users (username, display_name, password_hash, role)
 		VALUES (?, ?, ?, ?)
 	`
-	result, err := db.Exec(
+	result, err := db.ExecContext(
+		ctx,
 		query,
 		user.Username,
 		user.DisplayName,
@@ -29,14 +31,14 @@ func (db *DB) CreateUser(user *models.User) error {
 	return nil
 }
 
-func (db *DB) GetUserById(id int) (*models.User, error) {
+func (db *DB) GetUserById(ctx context.Context, id int) (*models.User, error) {
 	query := `
 		SELECT *
 		FROM users
 		WHERE id = ?
 	`
 	var user models.User
-	err := db.QueryRow(query, id).Scan(
+	err := db.QueryRowContext(ctx, query, id).Scan(
 		&user.ID,
 		&user.Username,
 		&user.DisplayName,
@@ -51,14 +53,14 @@ func (db *DB) GetUserById(id int) (*models.User, error) {
 	return &user, nil
 }
 
-func (db *DB) GetUserByUsername(username string) (*models.User, error) {
+func (db *DB) GetUserByUsername(ctx context.Context, username string) (*models.User, error) {
 	query := `
 		SELECT *
 		FROM users
 		WHERE username = ?
 	`
 	var user models.User
-	err := db.QueryRow(query, username).Scan(
+	err := db.QueryRowContext(ctx, query, username).Scan(
 		&user.ID,
 		&user.Username,
 		&user.DisplayName,
@@ -73,13 +75,13 @@ func (db *DB) GetUserByUsername(username string) (*models.User, error) {
 	return &user, nil
 }
 
-func (db *DB) GetAllUsers() ([]*models.User, error) {
+func (db *DB) GetAllUsers(ctx context.Context) ([]*models.User, error) {
 	query := `
 		SELECT *
 		FROM users
 	`
 
-	rows, err := db.Query(query)
+	rows, err := db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}
@@ -107,19 +109,19 @@ func (db *DB) GetAllUsers() ([]*models.User, error) {
 	return users, rows.Err()
 }
 
-func (db *DB) UpdateUsername(id int, username string) error {
+func (db *DB) UpdateUsername(ctx context.Context, id int, username string) error {
 	query := `
 		UPDATE users
 		SET username = ?, updated_at = CURRENT_TIMESTAMP
 		WHERE id = ?
 	`
-	_, err := db.Exec(query, username, id)
+	_, err := db.ExecContext(ctx, query, username, id)
 	return err
 }
 
-func (db *DB) UpdateDisplayName(id int, displayName string) error {
+func (db *DB) UpdateDisplayName(ctx context.Context, id int, displayName string) error {
 	var current string
-	err := db.QueryRow("SELECT display_name FROM users WHERE id = ?", id).Scan(&current)
+	err := db.QueryRowContext(ctx, "SELECT display_name FROM users WHERE id = ?", id).Scan(&current)
 	if err != nil {
 		return err
 	}
@@ -131,23 +133,23 @@ func (db *DB) UpdateDisplayName(id int, displayName string) error {
 		SET display_name = ?, updated_at = CURRENT_TIMESTAMP
 		WHERE id = ?
 	`
-	_, err = db.Exec(query, displayName, id)
+	_, err = db.ExecContext(ctx, query, displayName, id)
 	return err
 }
 
-func (db *DB) UpdatePasswordHash(id int, passwordHash string) error {
+func (db *DB) UpdatePasswordHash(ctx context.Context, id int, passwordHash string) error {
 	query := `
 		UPDATE users
 		SET password_hash = ?, updated_at = CURRENT_TIMESTAMP
 		WHERE id = ?
 	`
-	_, err := db.Exec(query, passwordHash, id)
+	_, err := db.ExecContext(ctx, query, passwordHash, id)
 	return err
 }
 
-func (db *DB) UpdateRole(id int, role string) error {
+func (db *DB) UpdateRole(ctx context.Context, id int, role string) error {
 	var current string
-	err := db.QueryRow("SELECT role FROM users WHERE id = ?", id).Scan(&current)
+	err := db.QueryRowContext(ctx, "SELECT role FROM users WHERE id = ?", id).Scan(&current)
 	if err != nil {
 		return err
 	}
@@ -159,6 +161,6 @@ func (db *DB) UpdateRole(id int, role string) error {
 		SET role = ?, updated_at = CURRENT_TIMESTAMP
 		WHERE id = ?
 	`
-	_, err = db.Exec(query, role, id)
+	_, err = db.ExecContext(ctx, query, role, id)
 	return err
 }

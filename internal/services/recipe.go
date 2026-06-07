@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -27,17 +28,17 @@ func NewRecipeService(db *database.DB) *RecipeService {
 	return &RecipeService{db: db}
 }
 
-func (s *RecipeService) CreateRecipe(recipe *models.Recipe) (int, error) {
-	return s.db.CreateRecipe(recipe)
+func (s *RecipeService) CreateRecipe(ctx context.Context, recipe *models.Recipe) (int, error) {
+	return s.db.CreateRecipe(ctx, recipe)
 }
 
-func (s *RecipeService) UpdateRecipe(recipe *models.Recipe) error {
-	return s.db.UpdateRecipe(recipe)
+func (s *RecipeService) UpdateRecipe(ctx context.Context, recipe *models.Recipe) error {
+	return s.db.UpdateRecipe(ctx, recipe)
 }
 
 // GetRecipeById returns the recipe with the specified ID. If no such recipe exists, GetRecipeById returns [ErrNotFound]. If some error occurs, GetRecipeById returns an error.
-func (s *RecipeService) GetRecipeById(id int) (*models.Recipe, error) {
-	recipe, err := s.db.GetRecipeById(id)
+func (s *RecipeService) GetRecipeById(ctx context.Context, id int) (*models.Recipe, error) {
+	recipe, err := s.db.GetRecipeById(ctx, id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, ErrNotFound
@@ -47,12 +48,12 @@ func (s *RecipeService) GetRecipeById(id int) (*models.Recipe, error) {
 	return recipe, nil
 }
 
-func (s *RecipeService) GetAllRecipeOverviews() ([]models.RecipeOverview, error) {
-	return s.db.GetAllRecipeOverviews()
+func (s *RecipeService) GetAllRecipeOverviews(ctx context.Context) ([]models.RecipeOverview, error) {
+	return s.db.GetAllRecipeOverviews(ctx)
 }
 
-func (s *RecipeService) DeleteRecipeById(id int) error {
-	return s.db.DeleteRecipeById(id)
+func (s *RecipeService) DeleteRecipeById(ctx context.Context, id int) error {
+	return s.db.DeleteRecipeById(ctx, id)
 }
 
 func ParseMarkup(markup string) template.HTML {

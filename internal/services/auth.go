@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"crypto/rand"
 	"crypto/subtle"
 	"encoding/base64"
@@ -43,8 +44,8 @@ func NewAuthService(db *database.DB) *AuthService {
 	return &AuthService{db: db}
 }
 
-func (s *AuthService) Login(username, password string) (*models.Session, error) {
-	user, err := s.db.GetUserByUsername(username)
+func (s *AuthService) Login(ctx context.Context, username, password string) (*models.Session, error) {
+	user, err := s.db.GetUserByUsername(ctx, username)
 	if err != nil {
 		return nil, errors.New("invalid credentials")
 	}
@@ -70,27 +71,27 @@ func (s *AuthService) Login(username, password string) (*models.Session, error) 
 		CreatedAt: time.Now(),
 	}
 
-	if err := s.db.CreateSession(session); err != nil {
+	if err := s.db.CreateSession(ctx, session); err != nil {
 		return nil, err
 	}
 
 	return session, nil
 }
 
-func (s *AuthService) Logout(token string) error {
-	return s.db.DeleteSession(token)
+func (s *AuthService) Logout(ctx context.Context, token string) error {
+	return s.db.DeleteSession(ctx, token)
 }
 
-func (s *AuthService) ValidateSession(token string) (*models.User, error) {
-	session, err := s.db.GetSessionByToken(token)
+func (s *AuthService) ValidateSession(ctx context.Context, token string) (*models.User, error) {
+	session, err := s.db.GetSessionByToken(ctx, token)
 	if err != nil {
 		return nil, err
 	}
 	if session.IsExpired() {
-		s.db.DeleteSession(token)
+		s.db.DeleteSession(ctx, token)
 		return nil, errors.New("session expired")
 	}
-	user, err := s.db.GetUserById(session.UserID)
+	user, err := s.db.GetUserById(ctx, session.UserID)
 	if err != nil {
 		return nil, err
 	}
