@@ -41,7 +41,7 @@ func NewHandler(authService *services.AuthService, userService *services.UserSer
 func (h *Handler) ViewHome(w http.ResponseWriter, r *http.Request) {
 	recipeOverviews, err := h.recipeService.GetAllRecipeOverviews(r.Context())
 	if err != nil {
-		h.renderErrInternal(w, r, fmt.Errorf("get recipe overviews: %w", err))
+		h.renderErrInternal(w, r, fmt.Errorf("getting recipe overviews: %w", err))
 		return
 	}
 
@@ -107,7 +107,7 @@ func (h *Handler) CreateRecipe(w http.ResponseWriter, r *http.Request) {
 
 	id, err := h.recipeService.CreateRecipe(r.Context(), parsed.Recipe)
 	if err != nil {
-		h.renderErrInternal(w, r, fmt.Errorf("create recipe: %w", err))
+		h.renderErrInternal(w, r, fmt.Errorf("creating recipe: %w", err))
 		return
 	}
 
@@ -133,7 +133,7 @@ func (h *Handler) ViewRecipe(w http.ResponseWriter, r *http.Request) {
 			h.renderErrPageNotFound(w, r)
 			return
 		}
-		h.renderErrInternal(w, r, fmt.Errorf("get recipe by id (%d): %w", id, err))
+		h.renderErrInternal(w, r, fmt.Errorf("getting recipe with ID %d: %w", id, err))
 		return
 	}
 
@@ -143,7 +143,7 @@ func (h *Handler) ViewRecipe(w http.ResponseWriter, r *http.Request) {
 			h.renderErrPageNotFound(w, r)
 			return
 		}
-		h.renderErrInternal(w, r, fmt.Errorf("get user by id (%d): %w", recipe.OwnerID, err))
+		h.renderErrInternal(w, r, fmt.Errorf("getting user with id %d: %w", recipe.OwnerID, err))
 		return
 	}
 
@@ -194,7 +194,7 @@ func (h *Handler) ViewEditRecipe(w http.ResponseWriter, r *http.Request) {
 			h.renderErrPageNotFound(w, r)
 			return
 		}
-		h.renderErrInternal(w, r, fmt.Errorf("get recipe by id (%d): %w", id, err))
+		h.renderErrInternal(w, r, fmt.Errorf("getting recipe with ID %d: %w", id, err))
 		return
 	}
 
@@ -219,7 +219,7 @@ func (h *Handler) DeleteRecipe(w http.ResponseWriter, r *http.Request) {
 			h.renderErrPageNotFound(w, r)
 			return
 		}
-		h.renderErrInternal(w, r, fmt.Errorf("get recipe by id (%d): %w", id, err))
+		h.renderErrInternal(w, r, fmt.Errorf("getting recipe with ID %d: %w", id, err))
 		return
 	}
 
@@ -238,7 +238,7 @@ func (h *Handler) DeleteRecipe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := h.recipeService.DeleteRecipeById(r.Context(), id); err != nil {
-		h.renderErrInternal(w, r, fmt.Errorf("delete recipe by id (%d): %w", id, err))
+		h.renderErrInternal(w, r, fmt.Errorf("deleting recipe with id %d: %w", id, err))
 		return
 	}
 
@@ -264,7 +264,7 @@ func (h *Handler) UpdateRecipe(w http.ResponseWriter, r *http.Request) {
 
 	existing, err := h.recipeService.GetRecipeById(r.Context(), id)
 	if err != nil {
-		h.renderErrInternal(w, r, fmt.Errorf("get recipe: %w", err))
+		h.renderErrInternal(w, r, fmt.Errorf("getting recipe with ID %d: %w", id, err))
 		return
 	}
 	if existing == nil {
@@ -296,7 +296,7 @@ func (h *Handler) UpdateRecipe(w http.ResponseWriter, r *http.Request) {
 
 	parsed.Recipe.ID = id
 	if err := h.recipeService.UpdateRecipe(r.Context(), parsed.Recipe); err != nil {
-		h.renderErrInternal(w, r, fmt.Errorf("update recipe: %w", err))
+		h.renderErrInternal(w, r, fmt.Errorf("updating recipe: %w", err))
 		return
 	}
 
@@ -413,7 +413,7 @@ func (h *Handler) ViewAdminDashboard(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) ViewUsers(w http.ResponseWriter, r *http.Request) {
 	users, err := h.userService.GetAllUsers(r.Context())
 	if err != nil {
-		h.renderErrInternal(w, r, fmt.Errorf("get all users: %w", err))
+		h.renderErrInternal(w, r, fmt.Errorf("getting all users: %w", err))
 		return
 	}
 	data := map[string]any{
@@ -463,7 +463,7 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	_, err := h.userService.CreateUser(r.Context(), username, displayName, password, role)
 	if err != nil {
-		h.renderErrInternal(w, r, fmt.Errorf("create user: %w", err))
+		h.renderErrInternal(w, r, fmt.Errorf("creating user: %w", err))
 		return
 	}
 
@@ -483,7 +483,7 @@ func (h *Handler) ViewUpdateUser(w http.ResponseWriter, r *http.Request) {
 			h.renderErrPageNotFound(w, r)
 			return
 		} else {
-			h.renderErrInternal(w, r, fmt.Errorf("get user by id (%d): %w", id, err))
+			h.renderErrInternal(w, r, fmt.Errorf("getting user with ID %d: %w", id, err))
 			return
 		}
 	}
@@ -610,7 +610,7 @@ func (h *Handler) parseRecipeForm(r *http.Request, ownerID int) (*recipeFormResu
 	if err == nil {
 		buf := make([]byte, 512)
 		if _, err := imageFile.Read(buf); err != nil && err != io.EOF {
-			return nil, fmt.Errorf("read image header into buffer: %w", err)
+			return nil, fmt.Errorf("reading image header into buffer: %w", err)
 		}
 		switch contentType := http.DetectContentType(buf); contentType {
 		case "image/jpeg":
@@ -623,7 +623,7 @@ func (h *Handler) parseRecipeForm(r *http.Request, ownerID int) (*recipeFormResu
 		}
 		if result.ImageExt != "" {
 			if _, err := imageFile.Seek(0, 0); err != nil {
-				return nil, fmt.Errorf("seek image: %w", err)
+				return nil, fmt.Errorf("seeking image: %w", err)
 			}
 			result.Image = imageFile
 		}

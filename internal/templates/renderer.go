@@ -35,17 +35,17 @@ func (r *Renderer) loadTemplates() error {
 	templatesDir := "templates"
 	layoutFiles, err := fs.Glob(r.embedFS, filepath.Join(templatesDir, "layouts", "*.html"))
 	if err != nil {
-		return fmt.Errorf("failed to read layouts: %w", err)
+		return fmt.Errorf("getting filenames of layouts: %w", err)
 	}
 
 	partialFiles, err := fs.Glob(r.embedFS, filepath.Join(templatesDir, "partials", "*.html"))
 	if err != nil {
-		return fmt.Errorf("failed to read partials: %w", err)
+		return fmt.Errorf("getting filenames of partials: %w", err)
 	}
 
 	pageFiles, err := fs.Glob(r.embedFS, filepath.Join(templatesDir, "pages", "*.html"))
 	if err != nil {
-		return fmt.Errorf("failed to read pages: %w", err)
+		return fmt.Errorf("getting filenames of pages: %w", err)
 	}
 
 	for _, pageFile := range pageFiles {
@@ -59,7 +59,7 @@ func (r *Renderer) loadTemplates() error {
 
 		tmpl, err := template.New(pageFile).Funcs(r.funcMap()).Funcs(web.IconFuncMap()).ParseFS(r.embedFS, files...)
 		if err != nil {
-			return fmt.Errorf("failed to parse template %s: %w", templateName, err)
+			return fmt.Errorf("parsing template %s: %w", templateName, err)
 		}
 
 		r.templates[templateName] = tmpl
@@ -85,7 +85,7 @@ func (r *Renderer) funcMap() template.FuncMap {
 func (r *Renderer) Render(w http.ResponseWriter, req *http.Request, templateName string, localData any) error {
 	tmpl, ok := r.templates[templateName]
 	if !ok {
-		log.Printf("template (%s) not found", templateName)
+		log.Printf("template %s not found", templateName)
 		http.Error(w, "Något gick fel.", http.StatusInternalServerError)
 		return nil
 	}
@@ -108,7 +108,7 @@ func (r *Renderer) RenderErr(w http.ResponseWriter, req *http.Request, statusCod
 
 	tmpl, ok := r.templates[templateName]
 	if !ok {
-		log.Printf("template (%s) not found", templateName)
+		log.Printf("template %s not found", templateName)
 		http.Error(w, "Något gick fel.", http.StatusInternalServerError)
 		return
 	}

@@ -108,12 +108,12 @@ func ProcessAndSaveRecipeImage(recipeId int, uploadedFile multipart.File, imageE
 
 	err := saveFileToDisk(uploadedFile, pathForOriginalImage)
 	if err != nil {
-		return fmt.Errorf("failed to save original image to path \"%s\": %w", pathForOriginalImage, err)
+		return fmt.Errorf("saving original image to path \"%s\": %w", pathForOriginalImage, err)
 	}
 
 	srcImage, err := imaging.Decode(uploadedFile, imaging.AutoOrientation(true))
 	if err != nil {
-		return fmt.Errorf("failed to decode uploaded image: %w", err)
+		return fmt.Errorf("decoding uploaded image: %w", err)
 	}
 
 	sizeLarge := 600
@@ -130,17 +130,17 @@ func ProcessAndSaveRecipeImage(recipeId int, uploadedFile multipart.File, imageE
 
 	err = imaging.Save(imageLarge2x, pathLarge2x, imaging.JPEGQuality(80))
 	if err != nil {
-		return fmt.Errorf("failed to save jpeg lg@2x: %w", err)
+		return fmt.Errorf("saving jpeg lg@2x: %w", err)
 	}
 
 	err = imaging.Save(imageThumb, pathThumb1x, imaging.JPEGQuality(60))
 	if err != nil {
-		return fmt.Errorf("failed to save jpeg thumb@1x: %w", err)
+		return fmt.Errorf("saving jpeg thumb@1x: %w", err)
 	}
 
 	err = imaging.Save(imageThumb2x, pathThumb2x, imaging.JPEGQuality(60))
 	if err != nil {
-		return fmt.Errorf("failed to save jpeg thumb@2x: %w", err)
+		return fmt.Errorf("saving jpeg thumb@2x: %w", err)
 	}
 
 	return nil
@@ -148,7 +148,7 @@ func ProcessAndSaveRecipeImage(recipeId int, uploadedFile multipart.File, imageE
 
 func saveFileToDisk(file multipart.File, filepath string) error {
 	if _, err := file.Seek(0, io.SeekStart); err != nil {
-		return fmt.Errorf("failed to seek image: %w", err)
+		return fmt.Errorf("seeking image: %w", err)
 	}
 
 	dst, err := os.Create(filepath)
@@ -163,7 +163,7 @@ func saveFileToDisk(file multipart.File, filepath string) error {
 	}
 
 	if _, err := file.Seek(0, io.SeekStart); err != nil {
-		return fmt.Errorf("failed to seek image: %w", err)
+		return fmt.Errorf("seeking image: %w", err)
 	}
 
 	return nil

@@ -109,10 +109,10 @@ func (db *DB) RunMigrations() error {
 			return fmt.Errorf("starting transaction for migration %d: %w", m.version, err)
 		}
 
-		for _, stmt := range m.statements {
+		for stmt_index, stmt := range m.statements {
 			if _, err := tx.Exec(stmt); err != nil {
 				tx.Rollback()
-				return fmt.Errorf("migration %d (%s): %w", m.version, m.description, err)
+				return fmt.Errorf("executing statement at index %d in migration %d (%s): %w", stmt_index, m.version, m.description, err)
 			}
 		}
 
