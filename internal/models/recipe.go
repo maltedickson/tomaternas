@@ -1,6 +1,7 @@
 package models
 
 import (
+	"slices"
 	"time"
 )
 
@@ -53,4 +54,8 @@ type RecipeOverview struct {
 	OwnerID         int
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
+}
+
+func (recipeOverview RecipeOverview) IsVegetarian() bool {
+	return slices.Contains(recipeOverview.DietaryTags, TagVegetarian)
 }

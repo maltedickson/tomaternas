@@ -62,7 +62,7 @@ func (h *Handler) ViewHome(w http.ResponseWriter, r *http.Request) {
 			Title:           val.Title,
 			PrepTimeHours:   val.PrepTimeSeconds / 3600,
 			CookTimeMinutes: val.CookTimeSeconds / 60,
-			IsGreen:         slices.Contains(val.DietaryTags, models.TagVegetarian),
+			IsGreen:         val.IsVegetarian(),
 			UpdatedAt:       val.UpdatedAt,
 		}
 	}
