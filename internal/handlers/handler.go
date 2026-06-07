@@ -39,15 +39,6 @@ func NewHandler(authService *services.AuthService, userService *services.UserSer
 }
 
 func (h *Handler) ViewHome(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		http.NotFound(w, r)
-		return
-	}
-	if r.Method != http.MethodGet {
-		h.renderErrMethodNotAllowed(w, r)
-		return
-	}
-
 	recipeOverviews, err := h.recipeService.GetAllRecipeOverviews()
 	if err != nil {
 		h.renderErrInternal(w, r, fmt.Errorf("get recipe overviews: %w", err))
@@ -76,10 +67,9 @@ func (h *Handler) ViewHome(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	data := map[string]any{
+	h.renderer.Render(w, r, "home", map[string]any{
 		"Recipes": recipeCardDatas,
-	}
-	h.renderer.Render(w, r, "home", data)
+	})
 }
 
 func (h *Handler) ViewRecipes(w http.ResponseWriter, r *http.Request) {
@@ -87,8 +77,7 @@ func (h *Handler) ViewRecipes(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) ViewCreateRecipe(w http.ResponseWriter, r *http.Request) {
-	data := map[string]any{}
-	h.renderer.Render(w, r, "recipe-form", data)
+	h.renderer.Render(w, r, "recipe-form", map[string]any{})
 }
 
 func (h *Handler) CreateRecipe(w http.ResponseWriter, r *http.Request) {

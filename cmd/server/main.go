@@ -50,7 +50,7 @@ func main() {
 
 	handler := handlers.NewHandler(authService, userService, recipeService, renderer)
 
-	mux.HandleFunc("/", handler.ViewHome)
+	mux.HandleFunc("GET /{$}", handler.ViewHome)
 	mux.HandleFunc("GET /recipes", handler.ViewRecipes)
 	mux.HandleFunc("GET /recipes/new", middleware.RequireAuth(handler.ViewCreateRecipe))
 	mux.HandleFunc("POST /recipes", middleware.RequireAuth(handler.CreateRecipe))
