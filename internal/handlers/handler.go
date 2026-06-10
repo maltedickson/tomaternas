@@ -550,7 +550,7 @@ func (h *Handler) renderErrForbidden(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) renderErrInternal(w http.ResponseWriter, r *http.Request, err error) {
-	log.Printf("internal error: %v", err)
+	log.Printf("internal error: %s %s: %v", r.Method, r.URL.RequestURI(), err)
 	h.renderer.RenderErr(w, r, http.StatusInternalServerError, "Något gick fel.")
 }
 
