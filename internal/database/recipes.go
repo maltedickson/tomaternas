@@ -2,7 +2,10 @@ package database
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
+	"errors"
+	"recipe-web-server/internal/apperrors"
 	"recipe-web-server/internal/models"
 )
 
@@ -100,6 +103,8 @@ func (db *DB) UpdateRecipe(ctx context.Context, recipe *models.Recipe) error {
 	return err
 }
 
+// GetRecipeById fetches the recipe with the specified ID from the database.
+// If no such recipe exists, GetRecipeById returns apperrors.ErrNotFound.
 func (db *DB) GetRecipeById(ctx context.Context, id int) (*models.Recipe, error) {
 	query := `
 		SELECT id, title, description, ingredient_sections, instructions, servings, prep_time_seconds, prep_instructions, cook_time_seconds, meal_types, dietary_tags, other_tags, owner_id, created_at, updated_at
@@ -132,6 +137,9 @@ func (db *DB) GetRecipeById(ctx context.Context, id int) (*models.Recipe, error)
 	)
 
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, apperrors.ErrNotFound
+		}
 		return nil, err
 	}
 

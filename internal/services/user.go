@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"recipe-web-server/internal/apperrors"
 	"recipe-web-server/internal/config"
 	"recipe-web-server/internal/database"
 	"recipe-web-server/internal/models"
@@ -58,7 +59,7 @@ func (s *UserService) GetUser(ctx context.Context, id int) (*models.User, error)
 	user, err := s.db.GetUserById(ctx, id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, ErrNotFound
+			return nil, apperrors.ErrNotFound
 		}
 		return nil, fmt.Errorf("database error: %w", err)
 	}
