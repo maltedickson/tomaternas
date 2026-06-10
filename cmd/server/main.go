@@ -6,12 +6,12 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"recipe-web-server/internal/database"
-	"recipe-web-server/internal/handlers"
-	"recipe-web-server/internal/middleware"
-	"recipe-web-server/internal/services"
-	"recipe-web-server/internal/templates"
-	"recipe-web-server/web"
+	"github.com/maltedickson/tomaternas/internal/database"
+	"github.com/maltedickson/tomaternas/internal/handlers"
+	"github.com/maltedickson/tomaternas/internal/middleware"
+	"github.com/maltedickson/tomaternas/internal/services"
+	"github.com/maltedickson/tomaternas/internal/templates"
+	"github.com/maltedickson/tomaternas/web"
 )
 
 func main() {

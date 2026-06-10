@@ -5,8 +5,8 @@ import (
 	"errors"
 	"net/http"
 	"net/url"
-	"recipe-web-server/internal/models"
-	"recipe-web-server/internal/services"
+	"github.com/maltedickson/tomaternas/internal/models"
+	"github.com/maltedickson/tomaternas/internal/services"
 )
 
 const SessionCookieName = "session_token"

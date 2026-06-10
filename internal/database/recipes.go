@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"recipe-web-server/internal/apperrors"
-	"recipe-web-server/internal/models"
+	"github.com/maltedickson/tomaternas/internal/apperrors"
+	"github.com/maltedickson/tomaternas/internal/models"
 )
 
 func (db *DB) CreateRecipe(ctx context.Context, recipe *models.Recipe) (int, error) {

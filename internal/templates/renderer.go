@@ -8,8 +8,8 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
-	"recipe-web-server/internal/middleware"
-	"recipe-web-server/web"
+	"github.com/maltedickson/tomaternas/internal/middleware"
+	"github.com/maltedickson/tomaternas/web"
 	"strings"
 )
 

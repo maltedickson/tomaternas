@@ -3,7 +3,7 @@ package database
 import (
 	"context"
 	"fmt"
-	"recipe-web-server/internal/models"
+	"github.com/maltedickson/tomaternas/internal/models"
 )
 
 func (db *DB) CreateReview(ctx context.Context, review *models.Review) (int, error) {

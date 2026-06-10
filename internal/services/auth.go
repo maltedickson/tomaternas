@@ -7,8 +7,8 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"recipe-web-server/internal/database"
-	"recipe-web-server/internal/models"
+	"github.com/maltedickson/tomaternas/internal/database"
+	"github.com/maltedickson/tomaternas/internal/models"
 	"strings"
 	"time"
 

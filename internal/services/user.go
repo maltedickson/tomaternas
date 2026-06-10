@@ -5,10 +5,10 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"recipe-web-server/internal/apperrors"
-	"recipe-web-server/internal/config"
-	"recipe-web-server/internal/database"
-	"recipe-web-server/internal/models"
+	"github.com/maltedickson/tomaternas/internal/apperrors"
+	"github.com/maltedickson/tomaternas/internal/config"
+	"github.com/maltedickson/tomaternas/internal/database"
+	"github.com/maltedickson/tomaternas/internal/models"
 )
 
 type UserService struct {

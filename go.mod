@@ -1,14 +1,14 @@
-module recipe-web-server
+module github.com/maltedickson/tomaternas
 
 go 1.25.6
 
 require (
+	github.com/disintegration/imaging v1.6.2
 	golang.org/x/crypto v0.48.0
 	modernc.org/sqlite v1.50.1
 )
 
 require (
-	github.com/disintegration/imaging v1.6.2 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect

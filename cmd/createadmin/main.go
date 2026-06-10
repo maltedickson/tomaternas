@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"recipe-web-server/internal/database"
-	"recipe-web-server/internal/models"
-	"recipe-web-server/internal/services"
+	"github.com/maltedickson/tomaternas/internal/database"
+	"github.com/maltedickson/tomaternas/internal/models"
+	"github.com/maltedickson/tomaternas/internal/services"
 )
 
 func main() {

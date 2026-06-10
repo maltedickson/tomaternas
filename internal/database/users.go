@@ -2,7 +2,7 @@ package database
 
 import (
 	"context"
-	"recipe-web-server/internal/models"
+	"github.com/maltedickson/tomaternas/internal/models"
 )
 
 func (db *DB) CreateUser(ctx context.Context, user *models.User) error {

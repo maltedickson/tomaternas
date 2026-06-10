@@ -2,7 +2,7 @@ package database
 
 import (
 	"context"
-	"recipe-web-server/internal/models"
+	"github.com/maltedickson/tomaternas/internal/models"
 )
 
 func (db *DB) CreateSession(ctx context.Context, s *models.Session) error {
