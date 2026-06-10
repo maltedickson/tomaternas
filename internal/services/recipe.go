@@ -134,8 +134,20 @@ func (s *RecipeService) GetAllRecipeOverviews(ctx context.Context) ([]models.Rec
 	return s.db.GetAllRecipeOverviews(ctx)
 }
 
-func (s *RecipeService) DeleteRecipeById(ctx context.Context, id int) error {
-	return s.db.DeleteRecipeById(ctx, id)
+// DeleteRecipeById deletes a recipe by ID. Returns ErrNotFound if the recipe
+// does not exist, or ErrForbidden if the user is not allowed to delete it.
+func (s *RecipeService) DeleteRecipeById(ctx context.Context, recipeID int, user models.User) error {
+	recipe, err := s.db.GetRecipeById(ctx, recipeID)
+	if err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) {
+			return err
+		}
+		return fmt.Errorf("deleting recipe %d: %w", recipeID, err)
+	}
+	if !CanManageRecipe(user, *recipe) {
+		return apperrors.ErrForbidden
+	}
+	return s.db.DeleteRecipeById(ctx, recipeID)
 }
 
 func CanManageRecipe(user models.User, recipe models.Recipe) bool {

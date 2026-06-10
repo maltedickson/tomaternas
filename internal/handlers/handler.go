@@ -203,41 +203,26 @@ func (h *Handler) DeleteRecipe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	recipe, err := h.recipeService.GetRecipeById(r.Context(), id)
-	if err != nil {
-		if errors.Is(err, apperrors.ErrNotFound) {
-			h.renderErrPageNotFound(w, r)
-			return
-		}
-		h.renderErrInternal(w, r, fmt.Errorf("getting recipe with ID %d: %w", id, err))
-		return
-	}
-
-	user := middleware.MustGetUser(r)
-
-	havePermission := services.CanManageRecipe(*user, *recipe)
-	if !havePermission {
-		h.renderErrForbidden(w, r)
-		return
-	}
-
 	fromURL, err := url.QueryUnescape(r.FormValue("from"))
-	if err != nil {
+	if err != nil || !isInternalURL(fromURL) {
 		h.renderErrBadRequest(w, r)
 		return
 	}
-
-	if err := h.recipeService.DeleteRecipeById(r.Context(), id); err != nil {
-		h.renderErrInternal(w, r, fmt.Errorf("deleting recipe with id %d: %w", id, err))
-		return
-	}
-
 	if fromURL == "" {
 		fromURL = "/"
 	}
 
-	if !isInternalURL(fromURL) {
-		fromURL = "/"
+	user := middleware.MustGetUser(r)
+	if err := h.recipeService.DeleteRecipeById(r.Context(), id, *user); err != nil {
+		if errors.Is(err, apperrors.ErrForbidden) {
+			h.renderErrForbidden(w, r)
+			return
+		}
+		if errors.Is(err, apperrors.ErrNotFound) {
+			h.renderErrPageNotFound(w, r)
+			return
+		}
+		h.renderErrInternal(w, r, err)
 	}
 
 	http.Redirect(w, r, fromURL, http.StatusSeeOther)
