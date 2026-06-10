@@ -78,7 +78,10 @@ func (db *DB) GetUserByUsername(ctx context.Context, username string) (*models.U
 		&user.CreatedAt,
 	)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, apperrors.ErrNotFound
+		}
+		return nil, fmt.Errorf("db get user with username %s: %w", username, err)
 	}
 	return &user, nil
 }
