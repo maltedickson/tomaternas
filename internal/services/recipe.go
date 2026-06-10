@@ -99,7 +99,7 @@ func (s *RecipeService) UpdateRecipe(ctx context.Context, user models.User, reci
 		}
 		return fmt.Errorf("getting recipe with id %d from database: %w", recipeID, err)
 	}
-	if existingRecipe.OwnerID != user.ID && user.Role != models.RoleAdmin {
+	if !CanManageRecipe(user, *existingRecipe) {
 		return apperrors.ErrForbidden
 	}
 	imageFileExt, err := validateRecipeInput(input, false)
