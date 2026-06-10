@@ -215,7 +215,7 @@ func (h *Handler) DeleteRecipe(w http.ResponseWriter, r *http.Request) {
 
 	user := middleware.MustGetUser(r)
 
-	havePermission := user.ID == recipe.OwnerID || user.Role == models.RoleAdmin
+	havePermission := services.CanManageRecipe(*user, *recipe)
 	if !havePermission {
 		h.renderErrForbidden(w, r)
 		return
