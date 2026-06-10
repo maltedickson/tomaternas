@@ -24,12 +24,12 @@ func (db *DB) CreateUser(ctx context.Context, user *models.User) error {
 		user.Role,
 	)
 	if err != nil {
-		return fmt.Errorf("db insert user: %w", err)
+		return fmt.Errorf("db inserting user: %w", err)
 	}
 
 	id, err := result.LastInsertId()
 	if err != nil {
-		return fmt.Errorf("db get last insert ID for inserted user: %w", err)
+		return fmt.Errorf("db getting ID for inserted user: %w", err)
 	}
 
 	user.ID = int(id)
@@ -56,7 +56,7 @@ func (db *DB) GetUserById(ctx context.Context, id int) (*models.User, error) {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, apperrors.ErrNotFound
 		}
-		return nil, fmt.Errorf("db get user %d: %w", id, err)
+		return nil, fmt.Errorf("db getting user %d: %w", id, err)
 	}
 	return &user, nil
 }
@@ -81,7 +81,7 @@ func (db *DB) GetUserByUsername(ctx context.Context, username string) (*models.U
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, apperrors.ErrNotFound
 		}
-		return nil, fmt.Errorf("db get user with username %s: %w", username, err)
+		return nil, fmt.Errorf("db getting user with username %s: %w", username, err)
 	}
 	return &user, nil
 }
@@ -94,7 +94,7 @@ func (db *DB) GetAllUsers(ctx context.Context) ([]*models.User, error) {
 
 	rows, err := db.QueryContext(ctx, query)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("db selecting users: %w", err)
 	}
 	defer rows.Close()
 
@@ -112,12 +112,16 @@ func (db *DB) GetAllUsers(ctx context.Context) ([]*models.User, error) {
 			&user.CreatedAt,
 		)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("db scanning user: %w", err)
 		}
 		users = append(users, &user)
 	}
 
-	return users, rows.Err()
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("db iterating users: %w", err)
+	}
+
+	return users, nil
 }
 
 func (db *DB) UpdateUsername(ctx context.Context, id int, username string) error {
@@ -127,14 +131,20 @@ func (db *DB) UpdateUsername(ctx context.Context, id int, username string) error
 		WHERE id = ?
 	`
 	_, err := db.ExecContext(ctx, query, username, id)
-	return err
+	if err != nil {
+		return fmt.Errorf("db updating username for user %d: %w", id, err)
+	}
+	return nil
 }
 
 func (db *DB) UpdateDisplayName(ctx context.Context, id int, displayName string) error {
 	var current string
 	err := db.QueryRowContext(ctx, "SELECT display_name FROM users WHERE id = ?", id).Scan(&current)
 	if err != nil {
-		return err
+		if errors.Is(err, sql.ErrNoRows) {
+			return apperrors.ErrNotFound
+		}
+		return fmt.Errorf("db getting display name for user %d: %w", id, err)
 	}
 	if current == displayName {
 		return nil
@@ -145,7 +155,10 @@ func (db *DB) UpdateDisplayName(ctx context.Context, id int, displayName string)
 		WHERE id = ?
 	`
 	_, err = db.ExecContext(ctx, query, displayName, id)
-	return err
+	if err != nil {
+		return fmt.Errorf("db updating display name for user %d: %w", id, err)
+	}
+	return nil
 }
 
 func (db *DB) UpdatePasswordHash(ctx context.Context, id int, passwordHash string) error {
@@ -155,7 +168,10 @@ func (db *DB) UpdatePasswordHash(ctx context.Context, id int, passwordHash strin
 		WHERE id = ?
 	`
 	_, err := db.ExecContext(ctx, query, passwordHash, id)
-	return err
+	if err != nil {
+		return fmt.Errorf("db updating password hash for user %d: %w", id, err)
+	}
+	return nil
 }
 
 func (db *DB) UpdateRole(ctx context.Context, id int, role string) error {
@@ -173,5 +189,8 @@ func (db *DB) UpdateRole(ctx context.Context, id int, role string) error {
 		WHERE id = ?
 	`
 	_, err = db.ExecContext(ctx, query, role, id)
-	return err
+	if err != nil {
+		return fmt.Errorf("db updating role for user %d: %w", id, err)
+	}
+	return nil
 }
