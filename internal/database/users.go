@@ -2,6 +2,8 @@ package database
 
 import (
 	"context"
+	"fmt"
+
 	"github.com/maltedickson/tomaternas/internal/models"
 )
 
@@ -19,12 +21,12 @@ func (db *DB) CreateUser(ctx context.Context, user *models.User) error {
 		user.Role,
 	)
 	if err != nil {
-		return err
+		return fmt.Errorf("db insert user: %w", err)
 	}
 
 	id, err := result.LastInsertId()
 	if err != nil {
-		return err
+		return fmt.Errorf("db get last insert ID for inserted user: %w", err)
 	}
 
 	user.ID = int(id)
