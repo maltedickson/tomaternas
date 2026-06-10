@@ -2,8 +2,11 @@ package database
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 
+	"github.com/maltedickson/tomaternas/internal/apperrors"
 	"github.com/maltedickson/tomaternas/internal/models"
 )
 
@@ -50,7 +53,10 @@ func (db *DB) GetUserById(ctx context.Context, id int) (*models.User, error) {
 		&user.CreatedAt,
 	)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, apperrors.ErrNotFound
+		}
+		return nil, fmt.Errorf("db get user %d: %w", id, err)
 	}
 	return &user, nil
 }
