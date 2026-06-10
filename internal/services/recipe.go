@@ -81,7 +81,7 @@ func (s *RecipeService) CreateRecipe(ctx context.Context, input RecipeInput) (in
 		return 0, fmt.Errorf("database error: %w", err)
 	}
 	if err := ProcessAndSaveRecipeImage(id, input.Image, imageFileExt); err != nil {
-		s.db.DeleteRecipeById(ctx, id)
+		s.db.DeleteRecipeByID(ctx, id)
 		return 0, fmt.Errorf("saving image: %w", err)
 	}
 	return id, nil
@@ -92,7 +92,7 @@ func (s *RecipeService) CreateRecipe(ctx context.Context, input RecipeInput) (in
 // Returns ErrNotFound, ErrForbidden, or a RecipeValidationError on failure.
 func (s *RecipeService) UpdateRecipe(ctx context.Context, user models.User, recipeID int, input RecipeInput) error {
 	normalizeRecipeInput(&input.Recipe)
-	existingRecipe, err := s.db.GetRecipeById(ctx, recipeID)
+	existingRecipe, err := s.db.GetRecipeByID(ctx, recipeID)
 	if err != nil {
 		if errors.Is(err, apperrors.ErrNotFound) {
 			return err
@@ -118,9 +118,9 @@ func (s *RecipeService) UpdateRecipe(ctx context.Context, user models.User, reci
 	return nil
 }
 
-// GetRecipeById returns the recipe with the specified ID. If no such recipe exists, GetRecipeById returns [ErrNotFound]. If some error occurs, GetRecipeById returns an error.
-func (s *RecipeService) GetRecipeById(ctx context.Context, id int) (*models.Recipe, error) {
-	recipe, err := s.db.GetRecipeById(ctx, id)
+// GetRecipeByID returns the recipe with the specified ID. If no such recipe exists, GetRecipeByID returns [ErrNotFound]. If some error occurs, GetRecipeByID returns an error.
+func (s *RecipeService) GetRecipeByID(ctx context.Context, id int) (*models.Recipe, error) {
+	recipe, err := s.db.GetRecipeByID(ctx, id)
 	if err != nil {
 		if errors.Is(err, apperrors.ErrNotFound) {
 			return nil, err
@@ -134,10 +134,10 @@ func (s *RecipeService) GetAllRecipeOverviews(ctx context.Context) ([]models.Rec
 	return s.db.GetAllRecipeOverviews(ctx)
 }
 
-// DeleteRecipeById deletes a recipe by ID. Returns ErrNotFound if the recipe
+// DeleteRecipeByID deletes a recipe by ID. Returns ErrNotFound if the recipe
 // does not exist, or ErrForbidden if the user is not allowed to delete it.
-func (s *RecipeService) DeleteRecipeById(ctx context.Context, recipeID int, user models.User) error {
-	recipe, err := s.db.GetRecipeById(ctx, recipeID)
+func (s *RecipeService) DeleteRecipeByID(ctx context.Context, recipeID int, user models.User) error {
+	recipe, err := s.db.GetRecipeByID(ctx, recipeID)
 	if err != nil {
 		if errors.Is(err, apperrors.ErrNotFound) {
 			return err
@@ -147,7 +147,7 @@ func (s *RecipeService) DeleteRecipeById(ctx context.Context, recipeID int, user
 	if !CanManageRecipe(user, *recipe) {
 		return apperrors.ErrForbidden
 	}
-	return s.db.DeleteRecipeById(ctx, recipeID)
+	return s.db.DeleteRecipeByID(ctx, recipeID)
 }
 
 func CanManageRecipe(user models.User, recipe models.Recipe) bool {

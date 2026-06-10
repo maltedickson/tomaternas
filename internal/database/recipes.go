@@ -108,9 +108,9 @@ func (db *DB) UpdateRecipe(ctx context.Context, recipe *models.Recipe) error {
 	return nil
 }
 
-// GetRecipeById fetches the recipe with the specified ID from the database.
-// If no such recipe exists, GetRecipeById returns apperrors.ErrNotFound.
-func (db *DB) GetRecipeById(ctx context.Context, id int) (*models.Recipe, error) {
+// GetRecipeByID fetches the recipe with the specified ID from the database.
+// If no such recipe exists, GetRecipeByID returns apperrors.ErrNotFound.
+func (db *DB) GetRecipeByID(ctx context.Context, id int) (*models.Recipe, error) {
 	query := `
 		SELECT id, title, description, ingredient_sections, instructions, servings, prep_time_seconds, prep_instructions, cook_time_seconds, meal_types, dietary_tags, other_tags, owner_id, created_at, updated_at
 		FROM recipes
@@ -232,7 +232,7 @@ func (db *DB) GetAllRecipeOverviews(ctx context.Context) ([]models.RecipeOvervie
 	return overviews, nil
 }
 
-func (db *DB) DeleteRecipeById(ctx context.Context, id int) error {
+func (db *DB) DeleteRecipeByID(ctx context.Context, id int) error {
 	query := `
 		DELETE FROM recipes
 		WHERE id = ?

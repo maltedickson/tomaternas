@@ -117,7 +117,7 @@ func (h *Handler) ViewRecipe(w http.ResponseWriter, r *http.Request) {
 		h.renderErrPageNotFound(w, r)
 		return
 	}
-	recipe, err := h.recipeService.GetRecipeById(r.Context(), id)
+	recipe, err := h.recipeService.GetRecipeByID(r.Context(), id)
 	if err != nil {
 		if errors.Is(err, apperrors.ErrNotFound) {
 			h.renderErrPageNotFound(w, r)
@@ -178,7 +178,7 @@ func (h *Handler) ViewEditRecipe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	recipe, err := h.recipeService.GetRecipeById(r.Context(), id)
+	recipe, err := h.recipeService.GetRecipeByID(r.Context(), id)
 	if err != nil {
 		if errors.Is(err, apperrors.ErrNotFound) {
 			h.renderErrPageNotFound(w, r)
@@ -213,7 +213,7 @@ func (h *Handler) DeleteRecipe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user := middleware.MustGetUser(r)
-	if err := h.recipeService.DeleteRecipeById(r.Context(), id, *user); err != nil {
+	if err := h.recipeService.DeleteRecipeByID(r.Context(), id, *user); err != nil {
 		if errors.Is(err, apperrors.ErrForbidden) {
 			h.renderErrForbidden(w, r)
 			return

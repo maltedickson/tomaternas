@@ -56,7 +56,7 @@ func (s *UserService) CreateUser(ctx context.Context, username, displayName, pas
 }
 
 func (s *UserService) GetUser(ctx context.Context, id int) (*models.User, error) {
-	user, err := s.db.GetUserById(ctx, id)
+	user, err := s.db.GetUserByID(ctx, id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, apperrors.ErrNotFound

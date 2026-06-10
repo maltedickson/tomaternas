@@ -51,7 +51,7 @@ func (db *DB) UpdateReview(ctx context.Context, review *models.Review) error {
 	return nil
 }
 
-func (db *DB) GetReviewById(ctx context.Context, id int) (*models.Review, error) {
+func (db *DB) GetReviewByID(ctx context.Context, id int) (*models.Review, error) {
 	query := `
 		SELECT id, recipe_id, owner_id, rating, comment, created_at, updated_at
 		FROM reviews
@@ -109,7 +109,7 @@ func (db *DB) GetReviewsForRecipe(ctx context.Context, recipeID int) ([]models.R
 	return reviews, nil
 }
 
-func (db *DB) DeleteReviewById(ctx context.Context, id int) error {
+func (db *DB) DeleteReviewByID(ctx context.Context, id int) error {
 	query := `
 		DELETE FROM reviews
 		WHERE id = ?

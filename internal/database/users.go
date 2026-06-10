@@ -36,7 +36,7 @@ func (db *DB) CreateUser(ctx context.Context, user *models.User) error {
 	return nil
 }
 
-func (db *DB) GetUserById(ctx context.Context, id int) (*models.User, error) {
+func (db *DB) GetUserByID(ctx context.Context, id int) (*models.User, error) {
 	query := `
 		SELECT *
 		FROM users

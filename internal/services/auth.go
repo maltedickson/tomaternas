@@ -91,7 +91,7 @@ func (s *AuthService) ValidateSession(ctx context.Context, token string) (*model
 		s.db.DeleteSession(ctx, token)
 		return nil, errors.New("session expired")
 	}
-	user, err := s.db.GetUserById(ctx, session.UserID)
+	user, err := s.db.GetUserByID(ctx, session.UserID)
 	if err != nil {
 		return nil, err
 	}
