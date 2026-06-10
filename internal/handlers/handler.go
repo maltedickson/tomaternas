@@ -138,7 +138,7 @@ func (h *Handler) ViewRecipe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, ok := middleware.GetUser(r)
-	canManage := ok && (user.ID == recipe.OwnerID || user.Role == models.RoleAdmin)
+	canManage := ok && services.CanManageRecipe(*user, *recipe)
 
 	tags := make([]string, 0)
 	for _, tag := range recipe.MealTypes {

@@ -4,15 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/maltedickson/tomaternas/internal/apperrors"
+	"github.com/maltedickson/tomaternas/internal/database"
+	"github.com/maltedickson/tomaternas/internal/models"
 	"html/template"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
-	"github.com/maltedickson/tomaternas/internal/apperrors"
-	"github.com/maltedickson/tomaternas/internal/database"
-	"github.com/maltedickson/tomaternas/internal/models"
 	"regexp"
 	"slices"
 	"strings"
@@ -136,6 +136,10 @@ func (s *RecipeService) GetAllRecipeOverviews(ctx context.Context) ([]models.Rec
 
 func (s *RecipeService) DeleteRecipeById(ctx context.Context, id int) error {
 	return s.db.DeleteRecipeById(ctx, id)
+}
+
+func CanManageRecipe(user models.User, recipe models.Recipe) bool {
+	return user.ID == recipe.OwnerID || user.Role == models.RoleAdmin
 }
 
 func ParseMarkup(markup string) template.HTML {
