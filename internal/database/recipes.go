@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
+
 	"github.com/maltedickson/tomaternas/internal/apperrors"
 	"github.com/maltedickson/tomaternas/internal/models"
 )
@@ -17,19 +19,19 @@ func (db *DB) CreateRecipe(ctx context.Context, recipe *models.Recipe) (int, err
 
 	ingredient_sections_string, err := json.Marshal(recipe.IngredientSections)
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("marshaling ingredient sections: %w", err)
 	}
 	mealTypesString, err := json.Marshal(recipe.MealTypes)
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("marshaling meal types: %w", err)
 	}
 	dietaryTagsString, err := json.Marshal(recipe.DietaryTags)
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("marshaling dietary tags: %w", err)
 	}
 	otherTagsString, err := json.Marshal(recipe.OtherTags)
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("marshaling other tags: %w", err)
 	}
 
 	result, err := db.ExecContext(
@@ -49,12 +51,12 @@ func (db *DB) CreateRecipe(ctx context.Context, recipe *models.Recipe) (int, err
 		recipe.OwnerID,
 	)
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("db inserting recipe: %w", err)
 	}
 
 	id, err := result.LastInsertId()
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("db getting ID for inserted recipe: %w", err)
 	}
 
 	return int(id), nil
@@ -69,19 +71,19 @@ func (db *DB) UpdateRecipe(ctx context.Context, recipe *models.Recipe) error {
 
 	ingredientSectionsString, err := json.Marshal(recipe.IngredientSections)
 	if err != nil {
-		return err
+		return fmt.Errorf("unmarshaling ingredient sections: %w", err)
 	}
 	mealTypesString, err := json.Marshal(recipe.MealTypes)
 	if err != nil {
-		return err
+		return fmt.Errorf("unmarshaling meal types: %w", err)
 	}
 	dietaryTagsString, err := json.Marshal(recipe.DietaryTags)
 	if err != nil {
-		return err
+		return fmt.Errorf("unmarshaling dietary tags: %w", err)
 	}
 	otherTagsString, err := json.Marshal(recipe.OtherTags)
 	if err != nil {
-		return err
+		return fmt.Errorf("unmarshaling other tags: %w", err)
 	}
 
 	_, err = db.ExecContext(
@@ -100,7 +102,10 @@ func (db *DB) UpdateRecipe(ctx context.Context, recipe *models.Recipe) error {
 		otherTagsString,
 		recipe.ID,
 	)
-	return err
+	if err != nil {
+		return fmt.Errorf("updating recipe %d: %w", recipe.ID, err)
+	}
+	return nil
 }
 
 // GetRecipeById fetches the recipe with the specified ID from the database.
@@ -140,27 +145,27 @@ func (db *DB) GetRecipeById(ctx context.Context, id int) (*models.Recipe, error)
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, apperrors.ErrNotFound
 		}
-		return nil, err
+		return nil, fmt.Errorf("db getting recipe %d: %w", id, err)
 	}
 
 	err = json.Unmarshal(ingredientSectionsString, &recipe.IngredientSections)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unmarshaling ingredient sections: %w", err)
 	}
 
 	err = json.Unmarshal(mealTypesString, &recipe.MealTypes)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unmarshaling meal types: %w", err)
 	}
 
 	err = json.Unmarshal(dietaryTagsString, &recipe.DietaryTags)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unmarshaling dietary tags: %w", err)
 	}
 
 	err = json.Unmarshal(otherTagsString, &recipe.OtherTags)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unmarshaling other tags: %w", err)
 	}
 
 	return &recipe, nil
@@ -175,7 +180,7 @@ func (db *DB) GetAllRecipeOverviews(ctx context.Context) ([]models.RecipeOvervie
 
 	rows, err := db.QueryContext(ctx, query)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("db selecting recipe overviews: %w", err)
 	}
 	defer rows.Close()
 
@@ -199,29 +204,29 @@ func (db *DB) GetAllRecipeOverviews(ctx context.Context) ([]models.RecipeOvervie
 		)
 
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("db scanning recipe overview: %w", err)
 		}
 
 		err = json.Unmarshal(mealTypesString, &ro.MealTypes)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("unmarshaling meal types: %w", err)
 		}
 
 		err = json.Unmarshal(dietaryTagsString, &ro.DietaryTags)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("unmarshaling dietary tags: %w", err)
 		}
 
 		err = json.Unmarshal(dietaryTagsString, &ro.DietaryTags)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("unmarshaling dietary tags: %w", err)
 		}
 
 		overviews = append(overviews, ro)
 	}
 
 	if err = rows.Err(); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("db iterating recipes: %w", err)
 	}
 
 	return overviews, nil
@@ -232,7 +237,9 @@ func (db *DB) DeleteRecipeById(ctx context.Context, id int) error {
 		DELETE FROM recipes
 		WHERE id = ?
 	`
-
 	_, err := db.ExecContext(ctx, query, id)
-	return err
+	if err != nil {
+		return fmt.Errorf("db deleting recipe %d: %w", id, err)
+	}
+	return nil
 }
