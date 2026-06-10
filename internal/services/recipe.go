@@ -81,7 +81,7 @@ func (s *RecipeService) CreateRecipe(ctx context.Context, input RecipeInput) (in
 		return 0, fmt.Errorf("database error: %w", err)
 	}
 	if err := ProcessAndSaveRecipeImage(id, input.Image, imageFileExt); err != nil {
-		s.DeleteRecipeById(ctx, id)
+		s.db.DeleteRecipeById(ctx, id)
 		return 0, fmt.Errorf("saving image: %w", err)
 	}
 	return id, nil
