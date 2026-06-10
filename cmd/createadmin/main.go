@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
+
 	"github.com/maltedickson/tomaternas/internal/database"
 	"github.com/maltedickson/tomaternas/internal/models"
 	"github.com/maltedickson/tomaternas/internal/services"
@@ -27,7 +29,7 @@ func main() {
 	}
 
 	userService := services.NewUserService(db)
-	user, err := userService.CreateUser("admin", "Administrator", adminPassword, models.RoleAdmin)
+	user, err := userService.CreateUser(context.Background(), "admin", "Administrator", adminPassword, models.RoleAdmin)
 	if err != nil {
 		log.Fatal(err)
 	}
