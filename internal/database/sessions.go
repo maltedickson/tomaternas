@@ -2,6 +2,8 @@ package database
 
 import (
 	"context"
+	"fmt"
+
 	"github.com/maltedickson/tomaternas/internal/models"
 )
 
@@ -12,7 +14,7 @@ func (db *DB) CreateSession(ctx context.Context, s *models.Session) error {
 	`
 	_, err := db.ExecContext(ctx, query, s.Token, s.UserID, s.CreatedAt, s.ExpiresAt)
 	if err != nil {
-		return err
+		return fmt.Errorf("db inserting session: %w", err)
 	}
 	return nil
 }
@@ -26,7 +28,7 @@ func (db *DB) GetSessionByToken(ctx context.Context, token string) (*models.Sess
 	var s models.Session
 	err := db.QueryRowContext(ctx, query, token).Scan(&s.Token, &s.UserID, &s.CreatedAt, &s.ExpiresAt)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("db getting session: %w", err)
 	}
 	return &s, nil
 }
@@ -37,7 +39,10 @@ func (db *DB) DeleteUserSessions(ctx context.Context, id int) error {
 		WHERE user_id = ?
 	`
 	_, err := db.ExecContext(ctx, query, id)
-	return err
+	if err != nil {
+		return fmt.Errorf("db deleting session for user %d: %w", id, err)
+	}
+	return nil
 }
 
 func (db *DB) DeleteSession(ctx context.Context, token string) error {
@@ -46,5 +51,8 @@ func (db *DB) DeleteSession(ctx context.Context, token string) error {
 		WHERE token = ?
 	`
 	_, err := db.ExecContext(ctx, query, token)
-	return err
+	if err != nil {
+		return fmt.Errorf("db deleting session: %w", err)
+	}
+	return nil
 }
