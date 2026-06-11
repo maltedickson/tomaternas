@@ -1,12 +1,17 @@
 @font-face {
-    font-family: Literata;
-    src: url("/static/fonts/literata/Literata-VariableFont_opsz,wght.ttf");
+    font-family: Outfit;
+    src: url("/static/fonts/Outfit-VariableFont_wght.ttf");
 }
 
 @font-face {
-    font-family: Literata;
+    font-family: Lora;
+    src: url("/static/fonts/Lora-VariableFont_wght.ttf");
+}
+
+@font-face {
+    font-family: Lora;
     font-style: italic;
-    src: url("/static/fonts/literata/Literata-Italic-VariableFont_opsz,wght.ttf");
+    src: url("/static/fonts/Lora-Italic-VariableFont_wght.ttf");
 }
 
 :root {
@@ -18,8 +23,8 @@
     --color-border: hsl(45 10% 85%);
     --color-focus-outline: hsl(45 10% 10%);
 
-    --font-sans: Inter, sans-serif;
-    --font-serif: Literata, serif;
+    --font-sans: Outfit, sans-serif;
+    --font-serif: Lora, serif;
 
     --h1-font-size: 2rem;
     --h1-line-height: 1.25;
@@ -41,7 +46,7 @@ body {
     font-family: sans-serif;
     line-height: 1.5;
 
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
 
     background-color: var(--color-background);
 }
@@ -186,6 +191,15 @@ img {
 
 .time-slider__input {
     width: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-serif);
 }
 
 h1 {
