@@ -36,9 +36,15 @@
     <img src="/uploads/recipes/{{.L.Recipe.ID}}_lg@2x.jpg?v={{.L.Recipe.UpdatedAt.Unix }}"
         alt="Bild på färdigt resultat" class="meta__photo">
     <div class="meta__content">
+        <div class="meta__owner">Av {{.L.RecipeOwner.DisplayName}}, {{proseDate .L.Recipe.CreatedAt}}
+            (ändrad
+            {{proseDate .L.Recipe.UpdatedAt}})</div>
         <h1 class="meta__title">{{.L.Recipe.Title}}</h1>
-        <div class="meta__owner">av {{.L.RecipeOwner.DisplayName}} {{.L.RecipeCreatedAtFormatted}} (ändrad
-            {{.L.RecipeUpdatedAtFormatted}})</div>
+        <div class="meta__tags">
+            {{range .L.RecipeTags}}
+            <div class="meta__tag">{{.}}</div>
+            {{end}}
+        </div>
         <div class="meta__iconwtext-container">
             <div class="meta__iconwtext">
                 {{icon "outline" "clock"}}
@@ -47,11 +53,6 @@
                 <span>(+ {{.L.RecipePrepTimeHours}} h)</span>
                 {{end}}
             </div>
-        </div>
-        <div class="meta__tags">
-            {{range .L.RecipeTags}}
-            <div class="meta__tag">{{.}}</div>
-            {{end}}
         </div>
 
         <div class="meta__description">
@@ -70,12 +71,10 @@
             <table class="ingredients">
                 <tbody>
                     {{range .Ingredients}}
-
                     <tr>
                         <td>{{.Name}}</td>
                         <td>{{.Amount}}</td>
                     </tr>
-
                     {{end}}
                 </tbody>
             </table>

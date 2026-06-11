@@ -8,9 +8,11 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+	"strings"
+	"time"
+
 	"github.com/maltedickson/tomaternas/internal/middleware"
 	"github.com/maltedickson/tomaternas/web"
-	"strings"
 )
 
 type Renderer struct {
@@ -78,6 +80,24 @@ func (r *Renderer) funcMap() template.FuncMap {
 		},
 		"formatDate": func(t any) string {
 			return fmt.Sprintf("%v", t)
+		},
+		"proseDate": func(t time.Time) string {
+			swedishMonths := map[time.Month]string{
+				time.January:   "jan",
+				time.February:  "feb",
+				time.March:     "mar",
+				time.April:     "apr",
+				time.May:       "maj",
+				time.June:      "jun",
+				time.July:      "jul",
+				time.August:    "aug",
+				time.September: "sep",
+				time.October:   "okt",
+				time.November:  "nov",
+				time.December:  "dec",
+			}
+
+			return fmt.Sprintf("%d %s %d", t.Day(), swedishMonths[t.Month()], t.Year())
 		},
 	}
 }
