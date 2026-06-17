@@ -1,5 +1,5 @@
 .hero {
-    margin-block: 4rem;
+    margin-block: var(--space-16);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -11,18 +11,17 @@
     grid-template-columns: repeat(2, 1fr);
     margin-inline: auto;
 
-    --gap: 0.5rem;
-    --padding: 0.5rem;
-    gap: var(--gap);
-    padding: var(--padding);
+    --col-gap: var(--padding-inline-page);
+    --row-gap: calc(var(--col-gap) * 1.5);
+    column-gap: var(--col-gap);
+    row-gap: var(--row-gap);
+    padding: var(--padding-inline-page);
 }
 
 .recipe-card {
     display: block;
     text-decoration: none;
     color: inherit;
-    /* border-radius: 1rem; */
-    /* overflow: hidden; */
     --radius: 1rem;
     display: flex;
     flex-direction: column;
@@ -32,47 +31,35 @@
     width: 100%;
     aspect-ratio: 1 / 1;
     object-fit: cover;
-    border-top-left-radius: var(--radius);
-    border-top-right-radius: var(--radius);
+    border-radius: var(--radius);
 }
 
 .recipe-card__content {
-    --padding: 0.75rem;
-    --padding-top: 0.5rem;
-    background-color: white;
-    padding: var(--padding-top) var(--padding) var(--padding) var(--padding);
-    border: 2px solid var(--color-border);
-    border-top: 0;
-    border-bottom-left-radius: var(--radius);
-    border-bottom-right-radius: var(--radius);
     flex-grow: 1;
 }
 
 .recipe-card__meta {
     display: flex;
     align-items: flex-start;
-    column-gap: 0.75rem;
+    column-gap: var(--space-4);
     justify-content: space-between;
+    margin-top: var(--space-2);
 }
 
 .recipe-card__meta-left {
     display: flex;
-    column-gap: 0.75rem;
+    column-gap: var(--space-4);
     flex-wrap: wrap;
 }
 
 .recipe-card__time {
     display: flex;
     align-items: center;
-    column-gap: 0.25em;
+    column-gap: var(--space-1);
 }
 
 .recipe-card__meta-text {
-    font-size: 0.875rem;
-}
-
-.recipe-card__rating i {
-    color: hsl(0 0% 60%);
+    font-size: var(--text-sm);
 }
 
 .recipe-card__leaf {
@@ -80,29 +67,24 @@
 }
 
 .recipe-card__title {
-    margin-top: 0.25rem;
-    /* font-size: 1.125rem; */
-    font-weight: 600;
     hyphens: auto;
-}
-
-@media (min-width: 375px) {
-    .recipe-card__content {
-        --padding: 1rem;
-    }
+    margin-top: var(--space-1);
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    font-weight: 600;
 }
 
 @media (min-width: 480px) {
     .recipe-grid {
         --min-col-width: 12.75rem;
         grid-template-columns: repeat(auto-fill, minmax(var(--min-col-width), 1fr));
-        --padding: 1.5rem;
-        --gap: 1.5rem;
+        --col-gap: var(--space-6);
     }
 }
 
 @media (min-width: 768px) {
     .recipe-grid {
         --min-col-width: 14rem;
+        --col-gap: var(--space-8);
     }
 }

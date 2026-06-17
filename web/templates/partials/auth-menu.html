@@ -2,20 +2,20 @@
 
 {{if .G.User}}
 
-<div class="auth-menu" id="auth-menu">
+<div data-dropdown>
 
-    <button id="auth-menu-profile-button">
+    <button data-dropdown-trigger class="btn btn--secondary">
         {{ icon "outline" "user" }}
         <span>{{.G.User.DisplayName }}</span>
     </button>
 
-    <div class="auth-menu__dropdown" id="auth-menu-dropdown">
+    <div data-dropdown-menu>
         <a href="/settings" role="menuitem">
             {{ icon "outline" "settings" }}
             Inställningar
         </a>
         <form action="/logout" method="POST">
-            <button type="submit" role="menuitem" class="nobutton">
+            <button type="submit" role="menuitem">
                 {{icon "outline" "logout"}}
                 Logga ut
             </button>
@@ -24,11 +24,9 @@
 
 </div>
 
-<script src="/static/js/auth-menu.js" defer></script>
-
 {{else}}
 
-<a href="/login?return={{.G.Path}}" class="button">Logga in</a>
+<a href="/login?return={{.G.Path}}" class="btn btn--secondary">Logga in</a>
 
 {{end}}
 

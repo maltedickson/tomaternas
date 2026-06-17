@@ -11,30 +11,28 @@
 
 {{define "content"}}
 
-<h1>Logga in</h1>
+<div class="login">
+    <h1 class="login__title">Logga in</h1>
 
-<form action="/login" method="POST">
-    {{if .L.Error}}
-    <div class="error">
-        {{.L.Error}}
-    </div>
-    {{end}}
+    <form action="/login" method="POST">
+        {{if .L.Error}}
+        <div class="form-error">
+            {{.L.Error}}
+        </div>
+        {{end}}
 
-    {{if .L.ReturnPath}}
-    <input type="hidden" name="return" value="{{.L.ReturnPath}}">
-    {{end}}
+        {{if .L.ReturnPath}}
+        <input type="hidden" name="return" value="{{.L.ReturnPath}}">
+        {{end}}
 
-    <div>
-        <label for="username">Användarnamn</label>
-        <input type="text" name="username" id="username" required>
-    </div>
+        <label class="login__label" for="username">Användarnamn</label>
+        <input type="text" name="username" id="username" required class="login__input input">
 
-    <div>
-        <label for="password">Lösenord</label>
-        <input type="password" name="password" id="password" required>
-    </div>
+        <label class="login__label" for="password">Lösenord</label>
+        <input type="password" name="password" id="password" required class="login__input input">
 
-    <button type="submit">Logga in</button>
-</form>
+        <button type="submit" class="login__submit btn btn--primary">Logga in</button>
+    </form>
+</div>
 
 {{end}}

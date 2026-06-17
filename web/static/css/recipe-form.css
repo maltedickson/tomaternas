@@ -26,3 +26,109 @@
     flex-wrap: wrap;
     margin-top: 2rem;
 }
+
+h2 {
+    margin-top: var(--space-12);
+    margin-bottom: var(--space-4);
+}
+
+h3 {
+    margin-top: var(--space-4);
+    margin-bottom: var(--space-2);
+}
+
+.tags-editor {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: var(--space-8);
+}
+
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    row-gap: var(--space-2);
+    column-gap: var(--space-4);
+}
+
+.chip {
+    display: flex;
+    align-items: center;
+    column-gap: var(--space-1);
+}
+
+.ingredient-sections {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+}
+
+.ingredients-section-heading {
+    display: flex;
+    align-items: center;
+    background-color: var(--clr-bg-surface);
+    border: 1px solid var(--clr-line-strong);
+    border-bottom-color: var(--clr-line);
+    border-top-left-radius: var(--radius-sm);
+    border-top-right-radius: var(--radius-sm);
+}
+
+.ingredients-section-heading__input {
+    border: none;
+    background-color: transparent;
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
+    width: 100%;
+    padding: var(--space-2);
+}
+
+.ingredient-list {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--clr-line-strong);
+    border-top: none;
+    border-bottom-left-radius: var(--radius-sm);
+    border-bottom-right-radius: var(--radius-sm);
+    background-color: var(--clr-bg-surface);
+}
+
+.ingredient {
+    display: grid;
+    grid-template-columns: 2fr 1fr auto;
+    align-items: center;
+    font-size: var(--text-sm);
+}
+
+.ingredient:not(:first-child) {
+    border-top: 1px solid var(--clr-line);
+}
+
+.ingredient input {
+    padding: var(--space-2) var(--space-2);
+    width: 100%;
+}
+
+.ingredient input:focus {
+    outline: 1px solid var(--clr-primary);
+    z-index: 1;
+}
+
+.btn-remove {
+    padding: var(--space-2) var(--space-2);
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+}
+
+.btn-remove .icon {
+    --size: 1rem;
+}
+
+.btn-remove:hover {
+    background-color: var(--clr-bg-dim);
+}
+
+.btn-remove:focus-visible {
+    outline: 2px solid black;
+    z-index: 1;
+}

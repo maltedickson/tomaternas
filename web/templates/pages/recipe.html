@@ -7,42 +7,48 @@
 
 {{define "content"}}
 
-{{if .L.CanManage}}
-<div class="recipe-actions">
-    <a href="/recipes/{{.L.Recipe.ID}}/edit" class="button">
-        {{icon "outline" "edit"}}
-        Redigera
-    </a>
-    <form action="/recipes/{{.L.Recipe.ID}}/delete" method="POST" id="form-delete-recipe">
-        <button type="submit">
-            {{icon "outline" "trash"}}
-            Radera
-        </button>
-    </form>
-</div>
-<script>
-    const recipeDeleteForm = document.getElementById("form-delete-recipe");
-    recipeDeleteForm.addEventListener("submit", function (e) {
-        const isConfirmed = confirm("Är du säker på att du vill radera receptet permanent?");
-
-        if (!isConfirmed) {
-            e.preventDefault();
-        }
-    });
-</script>
-{{end}}
-
 <div class="meta">
     <img src="/uploads/recipes/{{.L.Recipe.ID}}_lg@2x.jpg?v={{.L.Recipe.UpdatedAt.Unix }}"
         alt="Bild på färdigt resultat" class="meta__photo">
     <div class="meta__content">
-        <div class="meta__owner">Av {{.L.RecipeOwner.DisplayName}}, {{proseDate .L.Recipe.CreatedAt}}
-            (ändrad
-            {{proseDate .L.Recipe.UpdatedAt}})</div>
+        <div class="meta__management">
+            <div class="meta__owner">Av {{.L.RecipeOwner.DisplayName}} &nbsp;&bull;&nbsp; {{proseDate
+                .L.Recipe.CreatedAt}}
+                &nbsp;&bull;&nbsp; ändrad
+                {{proseDate .L.Recipe.UpdatedAt}}</div>
+            {{if .L.CanManage}}
+            <div data-dropdown class="meta__actions">
+                <button data-dropdown-trigger type="button" class="btn btn--subtle btn--sq">{{icon "outline"
+                    "dots-vertical" "icon--sm"}}</button>
+                <div data-dropdown-menu>
+                    <a href="/recipes/{{.L.Recipe.ID}}/edit" role="menuitem">
+                        {{icon "outline" "edit"}}
+                        Redigera
+                    </a>
+                    <form action="/recipes/{{.L.Recipe.ID}}/delete" method="POST" id="form-delete-recipe">
+                        <button type="submit" role="menuitem">
+                            {{icon "outline" "trash"}}
+                            Radera
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <script>
+                const recipeDeleteForm = document.getElementById("form-delete-recipe");
+                recipeDeleteForm.addEventListener("submit", function (e) {
+                    const isConfirmed = confirm("Är du säker på att du vill radera receptet permanent?");
+
+                    if (!isConfirmed) {
+                        e.preventDefault();
+                    }
+                });
+            </script>
+            {{end}}
+        </div>
         <h1 class="meta__title">{{.L.Recipe.Title}}</h1>
-        <div class="meta__tags">
+        <div class="pills">
             {{range .L.RecipeTags}}
-            <div class="meta__tag">{{.}}</div>
+            <div class="pill pill--neutral">{{.}}</div>
             {{end}}
         </div>
         <div class="meta__iconwtext-container">
@@ -65,19 +71,18 @@
 <div class="content">
     <div class="content__wrapper">
         <div class="content__ingredients">
-            <h2>Ingredienser ({{ .L.Recipe.Servings }})</h2>
+            <h2>Ingredienser</h2>
+            <div class="servings">({{ .L.Recipe.Servings }})</div>
             {{range .L.Recipe.IngredientSections}}
             {{if .Heading}} <h3>{{.Heading}}</h3> {{end}}
-            <table class="ingredients">
-                <tbody>
-                    {{range .Ingredients}}
-                    <tr>
-                        <td>{{.Name}}</td>
-                        <td>{{.Amount}}</td>
-                    </tr>
-                    {{end}}
-                </tbody>
-            </table>
+            <div>
+                {{range .Ingredients}}
+                <div class="ingredient">
+                    <div>{{.Name}}</div>
+                    <div>{{.Amount}}</div>
+                </div>
+                {{end}}
+            </div>
             {{end}}
         </div>
         <div class="content__instructions">
