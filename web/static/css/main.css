@@ -99,6 +99,7 @@ img {
 body {
     font-family: sans-serif;
     line-height: 1.5;
+    font-weight: 450;
 
     font-family: var(--font-sans);
 
