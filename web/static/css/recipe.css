@@ -76,15 +76,11 @@
     --size: 1.5rem;
 }
 
-.meta__description {
-    hyphens: auto;
-}
-
 .meta__description> :last-child {
     margin-bottom: 0;
 }
 
-@media (min-width: 480px) {
+@media (min-width: 375px) {
     .meta__title {
         hyphens: manual;
     }
@@ -140,10 +136,6 @@
 
 .ingredient:not(:first-child) {
     border-top: 1px solid var(--clr-line);
-}
-
-.content__instructions {
-    hyphens: auto;
 }
 
 .content__instructions p {
