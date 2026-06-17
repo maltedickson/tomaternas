@@ -2,16 +2,16 @@ package main
 
 import (
 	"fmt"
-	"io/fs"
-	"log"
-	"net/http"
-	"os"
 	"github.com/maltedickson/tomaternas/internal/database"
 	"github.com/maltedickson/tomaternas/internal/handlers"
 	"github.com/maltedickson/tomaternas/internal/middleware"
 	"github.com/maltedickson/tomaternas/internal/services"
 	"github.com/maltedickson/tomaternas/internal/templates"
 	"github.com/maltedickson/tomaternas/web"
+	"io/fs"
+	"log"
+	"net/http"
+	"os"
 )
 
 func main() {
@@ -47,8 +47,9 @@ func main() {
 	authService := services.NewAuthService(db)
 	userService := services.NewUserService(db)
 	recipeService := services.NewRecipeService(db)
+	reviewService := services.NewReviewService(db)
 
-	handler := handlers.NewHandler(authService, userService, recipeService, renderer)
+	handler := handlers.NewHandler(authService, userService, recipeService, reviewService, renderer)
 
 	mux.HandleFunc("GET /{$}", handler.ViewHome)
 	mux.HandleFunc("GET /recipes", handler.ViewRecipes)

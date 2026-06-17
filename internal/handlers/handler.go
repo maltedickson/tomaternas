@@ -25,6 +25,7 @@ type Handler struct {
 	userService   *services.UserService
 	authService   *services.AuthService
 	recipeService *services.RecipeService
+	reviewService *services.ReviewService
 	renderer      *templates.Renderer
 }
 
@@ -32,12 +33,14 @@ func NewHandler(
 	authService *services.AuthService,
 	userService *services.UserService,
 	recipeService *services.RecipeService,
+	reviewService *services.ReviewService,
 	renderer *templates.Renderer,
 ) *Handler {
 	return &Handler{
 		userService:   userService,
 		authService:   authService,
 		recipeService: recipeService,
+		reviewService: reviewService,
 		renderer:      renderer,
 	}
 }
@@ -137,8 +140,8 @@ func (h *Handler) ViewRecipe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, ok := middleware.GetUser(r)
-	canManage := ok && services.CanManageRecipe(*user, *recipe)
+	user, isLoggedIn := middleware.GetUser(r)
+	canManage := isLoggedIn && services.CanManageRecipe(*user, *recipe)
 
 	tags := make([]string, 0)
 	for _, tag := range recipe.MealTypes {
@@ -154,6 +157,21 @@ func (h *Handler) ViewRecipe(w http.ResponseWriter, r *http.Request) {
 		tags = append(tags, tag)
 	}
 
+	allReviews, err := h.reviewService.GetReviewsForRecipe(r.Context(), id)
+	if err != nil {
+		h.renderErrInternal(w, r, err)
+		return
+	}
+	var userReview *models.Review
+	otherReviews := make([]models.Review, 0, len(allReviews))
+	for i := range allReviews {
+		if isLoggedIn && allReviews[i].OwnerID == user.ID {
+			userReview = &allReviews[i]
+		} else {
+			otherReviews = append(otherReviews, allReviews[i])
+		}
+	}
+
 	data := map[string]any{
 		"Recipe":                       recipe,
 		"RecipeTags":                   tags,
@@ -166,6 +184,8 @@ func (h *Handler) ViewRecipe(w http.ResponseWriter, r *http.Request) {
 		"RecipeUpdatedAtFormatted":     services.FormatDate(recipe.UpdatedAt),
 		"RecipeOwner":                  recipeOwner,
 		"CanManage":                    canManage,
+		"UserReview":                   userReview,
+		"Reviews":                      otherReviews,
 	}
 	h.renderer.Render(w, r, "recipe", data)
 }

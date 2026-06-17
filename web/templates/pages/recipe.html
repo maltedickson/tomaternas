@@ -97,4 +97,38 @@
     </div>
 </div>
 
+<div class="wrapper mt-16">
+
+    <h2>Omdömen</h2>
+
+    {{if .G.User}}
+    <form action="/recipes/{{.L.Recipe.ID}}/reviews{{if .L.UserReview}}/edit{{end}}" method="POST">
+        <h3>{{if .L.UserReview}}Ändra ditt omdöme{{else}}Skriv ett omdöme{{end}}</h3>
+        <div class="star-selection">
+            <label for="rating-1">{{icon "filled" "star"}}</label>
+            <input type="radio" name="rating" value="1" id="rating-1">
+            <label for="rating-2">{{icon "filled" "star"}}</label>
+            <input type="radio" name="rating" value="2" id="rating-2">
+            <label for="rating-3">{{icon "filled" "star"}}</label>
+            <input type="radio" name="rating" value="3" id="rating-3">
+            <label for="rating-4">{{icon "filled" "star"}}</label>
+            <input type="radio" name="rating" value="4" id="rating-4">
+            <label for="rating-5">{{icon "filled" "star"}}</label>
+            <input type="radio" name="rating" value="5" id="rating-5">
+        </div>
+        <label for="review-form-comment">Kommentar (valfritt)</label>
+        <textarea name="comment" id="review-form-comment" rows="3" placeholder="Varför tyckte du så?"
+            class="input"></textarea>
+    </form>
+    {{end}}
+
+    <div class="reviews">
+        {{range .L.Reviews}}
+        <div class="review">
+        </div>
+        {{end}}
+    </div>
+
+</div>
+
 {{end}}
