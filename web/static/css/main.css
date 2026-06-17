@@ -443,6 +443,11 @@ textarea.input {
     margin-inline: auto;
 }
 
+@media (min-width: 375px) {
+    :root {
+        --padding-inline-page: var(--space-3);
+    }
+}
 
 @media (min-width: 480px) {
     :root {

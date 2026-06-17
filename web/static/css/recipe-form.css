@@ -39,8 +39,9 @@ h3 {
 
 .tags-editor {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
     column-gap: var(--space-8);
+    row-gap: var(--space-4);
 }
 
 .chips {
