@@ -64,6 +64,10 @@
 .meta__iconwtext-container {
     margin-top: var(--space-4);
     margin-bottom: var(--space-6);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: var(--space-4);
 }
 
 .meta__iconwtext {

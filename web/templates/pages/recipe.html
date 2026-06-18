@@ -100,6 +100,16 @@
             {{end}}
         </div>
         <div class="meta__iconwtext-container">
+            <a href="#reviews">
+                <div class="meta__iconwtext">
+                    <div class="meta__stars">
+                        {{template "stars" .L.AvgRating}}
+                    </div>
+                    {{if gt .L.AvgRating 0.0}}
+                    <span>{{roundToDecimals .L.AvgRating 1}}</span>
+                    {{end}}
+                </div>
+            </a>
             <div class="meta__iconwtext">
                 {{icon "outline" "clock"}}
                 <span>{{.L.RecipeCookTimeMinutes}} min</span>

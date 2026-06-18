@@ -4,12 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/maltedickson/tomaternas/internal/apperrors"
-	"github.com/maltedickson/tomaternas/internal/config"
-	"github.com/maltedickson/tomaternas/internal/middleware"
-	"github.com/maltedickson/tomaternas/internal/models"
-	"github.com/maltedickson/tomaternas/internal/services"
-	"github.com/maltedickson/tomaternas/internal/templates"
 	"log"
 	"net/http"
 	"net/url"
@@ -17,6 +11,13 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/maltedickson/tomaternas/internal/apperrors"
+	"github.com/maltedickson/tomaternas/internal/config"
+	"github.com/maltedickson/tomaternas/internal/middleware"
+	"github.com/maltedickson/tomaternas/internal/models"
+	"github.com/maltedickson/tomaternas/internal/services"
+	"github.com/maltedickson/tomaternas/internal/templates"
 )
 
 var errBadRequest = errors.New("bad request")
@@ -157,13 +158,6 @@ func (h *Handler) ViewRecipe(w http.ResponseWriter, r *http.Request) {
 		tags = append(tags, tag)
 	}
 
-	type ReviewData struct {
-		Name    string
-		Date    time.Time
-		Rating  int
-		Comment string
-	}
-
 	reviewItems, err := h.reviewService.GetRecipeReviewItems(r.Context(), id)
 	if err != nil {
 		h.renderErrInternal(w, r, err)
@@ -171,12 +165,17 @@ func (h *Handler) ViewRecipe(w http.ResponseWriter, r *http.Request) {
 	}
 	var userReviewItem *models.RecipeReviewItem
 	otherReviewItems := make([]models.RecipeReviewItem, 0, len(reviewItems))
+	avgRating := 0.0
 	for i := range reviewItems {
+		avgRating += float64(reviewItems[i].Rating)
 		if isLoggedIn && reviewItems[i].UserDisplayName == user.DisplayName {
 			userReviewItem = &reviewItems[i]
 		} else {
 			otherReviewItems = append(otherReviewItems, reviewItems[i])
 		}
+	}
+	if len(reviewItems) > 0 {
+		avgRating /= float64(len(reviewItems))
 	}
 
 	data := map[string]any{
@@ -191,6 +190,7 @@ func (h *Handler) ViewRecipe(w http.ResponseWriter, r *http.Request) {
 		"RecipeUpdatedAtFormatted":     services.FormatDate(recipe.UpdatedAt),
 		"RecipeOwner":                  recipeOwner,
 		"CanManage":                    canManage,
+		"AvgRating":                    avgRating,
 		"UserReviewItem":               userReviewItem,
 		"ReviewItems":                  otherReviewItems,
 	}

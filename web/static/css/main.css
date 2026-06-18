@@ -434,19 +434,19 @@ textarea.input {
 
 .rating-display {
     display: flex;
-    column-gap: 0.2em;
+    column-gap: 0.1em;
 }
 
 .rating-display__star {
-    color: var(--clr-icon-muted);
+    color: var(--clr-primary);
 }
 
 .rating-display__star .icon {
     --size: 1em;
 }
 
-.rating-display__star--filled {
-    color: var(--clr-primary);
+.rating-display--no-ratings .rating-display__star {
+    color: var(--clr-icon-muted);
 }
 
 .mt-1 {

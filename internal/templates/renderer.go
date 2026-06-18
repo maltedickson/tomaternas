@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"io/fs"
 	"log"
+	"math"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -72,6 +73,23 @@ func (r *Renderer) loadTemplates() error {
 
 func (r *Renderer) funcMap() template.FuncMap {
 	return template.FuncMap{
+		"toFloat": func(v any) float64 {
+			switch val := v.(type) {
+			case int:
+				return float64(val)
+			case float64:
+				return val
+			default:
+				return 0.0
+			}
+		},
+		"roundToDecimals": func(f float64, count int) float64 {
+			exp := math.Pow10(count)
+			return math.Round(f*exp) / exp
+		},
+		"roundToHalf": func(f float64) float64 {
+			return math.Round(f*2) / 2
+		},
 		"add": func(a, b int) int {
 			return a + b
 		},

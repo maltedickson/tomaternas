@@ -1,21 +1,72 @@
 {{define "stars"}}
 
+{{ $rating := . | toFloat | roundToHalf }}
+
+{{if gt $rating 0.0}}
 <div class="rating-display">
-    <div class="rating-display__star {{if ge . 1}}rating-display__star--filled{{end}}">
-        {{icon "filled" "star"}}
+    <div class="rating-display__star">
+        {{ if ge $rating 1.0 }}
+        {{ icon "filled" "star" }}
+        {{ else if ge $rating 0.5 }}
+        {{ icon "filled" "star-half" }}
+        {{ else }}
+        {{ icon "outline" "star" }}
+        {{ end }}
     </div>
-    <div class="rating-display__star {{if ge . 2}}rating-display__star--filled{{end}}">
+    <div class="rating-display__star">
+        {{if ge $rating 2.0}}
         {{icon "filled" "star"}}
+        {{else}}
+        {{if ge $rating 1.5}}
+        {{icon "filled" "star-half"}}
+        {{else}}
+        {{icon "outline" "star"}}
+        {{end}}
+        {{end}}
     </div>
-    <div class="rating-display__star {{if ge . 3}}rating-display__star--filled{{end}}">
+    <div class="rating-display__star">
+        {{if ge $rating 3.0}}
         {{icon "filled" "star"}}
+        {{else}}
+        {{if ge $rating 2.5}}
+        {{icon "filled" "star-half"}}
+        {{else}}
+        {{icon "outline" "star"}}
+        {{end}}
+        {{end}}
     </div>
-    <div class="rating-display__star {{if ge . 4}}rating-display__star--filled{{end}}">
+    <div class="rating-display__star">
+        {{if ge $rating 4.0}}
         {{icon "filled" "star"}}
+        {{else}}
+        {{if ge $rating 3.5}}
+        {{icon "filled" "star-half"}}
+        {{else}}
+        {{icon "outline" "star"}}
+        {{end}}
+        {{end}}
     </div>
-    <div class="rating-display__star {{if ge . 5}}rating-display__star--filled{{end}}">
+    <div class="rating-display__star">
+        {{if ge $rating 5.0}}
         {{icon "filled" "star"}}
+        {{else}}
+        {{if ge $rating 4.5}}
+        {{icon "filled" "star-half"}}
+        {{else}}
+        {{icon "outline" "star"}}
+        {{end}}
+        {{end}}
     </div>
 </div>
+{{else}}
+<div class="rating-display rating-display--no-ratings">
+    <div class="rating-display__star">{{icon "filled" "star"}}</div>
+    <div class="rating-display__star">{{icon "filled" "star"}}</div>
+    <div class="rating-display__star">{{icon "filled" "star"}}</div>
+    <div class="rating-display__star">{{icon "filled" "star"}}</div>
+    <div class="rating-display__star">{{icon "filled" "star"}}</div>
+</div>
+{{end}}
+
 
 {{end}}
