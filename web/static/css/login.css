@@ -14,8 +14,3 @@
     margin-top: var(--space-6);
     margin-bottom: var(--space-1);
 }
-
-.login__submit {
-    margin-top: var(--space-8);
-    margin-left: auto;
-}

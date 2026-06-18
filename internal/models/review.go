@@ -11,3 +11,10 @@ type Review struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
+
+type RecipeReviewItem struct {
+	Rating          int
+	Comment         string
+	UpdatedAt       time.Time
+	UserDisplayName string
+}

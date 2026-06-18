@@ -7,12 +7,11 @@ dropdowns.forEach(dropdown => {
     const trigger = dropdown.querySelector("[data-dropdown-trigger]");
     const menu = dropdown.querySelector("[data-dropdown-menu]");
 
-    trigger.addEventListener("click", function(e) {
-        e.stopPropagation();
-        menu.classList.toggle(classOpen);
-    })
     document.addEventListener("click", function(e) {
-        if (!dropdown.contains(e.target)) {
+        if (trigger.contains(e.target)) {
+            e.stopPropagation();
+            menu.classList.toggle(classOpen);
+        } else {
             menu.classList.remove(classOpen);
         }
     })

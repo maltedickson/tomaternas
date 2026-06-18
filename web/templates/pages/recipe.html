@@ -3,6 +3,54 @@
 {{define "head"}}
 <link rel="stylesheet" href="/static/css/recipe.css">
 <title>{{.L.Recipe.Title}}</title>
+<script src="/static/js/recipe.js" defer></script>
+{{end}}
+
+{{define "reviewForm"}}
+<form action="/recipes/{{.L.Recipe.ID}}/reviews{{if .L.UserReviewItem}}/edit{{end}}" method="POST" class="review-form">
+    <h3>{{if .L.UserReviewItem}}Ändra ditt omdöme{{else}}Skriv ett omdöme{{end}}</h3>
+    <div class="star-selection">
+        <div class="star-selection__stars">
+            <input type="radio" name="rating" value="1" id="rating-1" {{if and .L.UserReviewItem (eq
+                .L.UserReviewItem.Rating 1)}}checked{{end}} required class="star-selection__input">
+            <label for="rating-1" class="star-selection__label">{{icon "filled" "star"}}</label>
+
+            <input type="radio" name="rating" value="2" id="rating-2" {{if and .L.UserReviewItem (eq
+                .L.UserReviewItem.Rating 2)}}checked{{end}} class="star-selection__input">
+            <label for="rating-2" class="star-selection__label">{{icon "filled" "star"}}</label>
+
+            <input type="radio" name="rating" value="3" id="rating-3" {{if and .L.UserReviewItem (eq
+                .L.UserReviewItem.Rating 3)}}checked{{end}} class="star-selection__input">
+            <label for="rating-3" class="star-selection__label">{{icon "filled" "star"}}</label>
+
+            <input type="radio" name="rating" value="4" id="rating-4" {{if and .L.UserReviewItem (eq
+                .L.UserReviewItem.Rating 4)}}checked{{end}} class="star-selection__input">
+            <label for="rating-4" class="star-selection__label">{{icon "filled" "star"}}</label>
+
+            <input type="radio" name="rating" value="5" id="rating-5" {{if and .L.UserReviewItem (eq
+                .L.UserReviewItem.Rating 5)}}checked{{end}} class="star-selection__input">
+            <label for="rating-5" class="star-selection__label">{{icon "filled" "star"}}</label>
+        </div>
+        <div class="star-selection__descriptions">
+            <div data-rating="1" class="star-selection__description">1. Äter ej</div>
+            <div data-rating="2" class="star-selection__description">2. Äter om bjuden</div>
+            <div data-rating="3" class="star-selection__description">3. Gillar tillräckligt för att laga</div>
+            <div data-rating="4" class="star-selection__description">4. Ser fram emot</div>
+            <div data-rating="5" class="star-selection__description">5. Utsökt</div>
+        </div>
+    </div>
+
+    <label for="review-form-comment" class="review-form__comment-label">Kommentar (valfritt)</label>
+    <textarea name="comment" id="review-form-comment" rows="3" placeholder="Varför tyckte du så?" class="input">{{if
+        .L.UserReviewItem}}{{.L.UserReviewItem.Comment}}{{end}}</textarea>
+
+    <div class="form-buttons">
+        {{if .L.UserReviewItem}}
+        <button type="button" onclick="cancelReviewEdit()" class="btn btn--secondary">Avbryt</button>
+        {{end}}
+        <button type="submit" class="btn btn--primary">Spara</button>
+    </div>
+</form>
 {{end}}
 
 {{define "content"}}
@@ -99,32 +147,72 @@
 
 <div class="wrapper mt-16">
 
-    <h2>Omdömen</h2>
+    <h2 id="reviews" class="reviews-heading">Omdömen</h2>
 
     {{if .G.User}}
-    <form action="/recipes/{{.L.Recipe.ID}}/reviews{{if .L.UserReview}}/edit{{end}}" method="POST">
-        <h3>{{if .L.UserReview}}Ändra ditt omdöme{{else}}Skriv ett omdöme{{end}}</h3>
-        <div class="star-selection">
-            <label for="rating-1">{{icon "filled" "star"}}</label>
-            <input type="radio" name="rating" value="1" id="rating-1">
-            <label for="rating-2">{{icon "filled" "star"}}</label>
-            <input type="radio" name="rating" value="2" id="rating-2">
-            <label for="rating-3">{{icon "filled" "star"}}</label>
-            <input type="radio" name="rating" value="3" id="rating-3">
-            <label for="rating-4">{{icon "filled" "star"}}</label>
-            <input type="radio" name="rating" value="4" id="rating-4">
-            <label for="rating-5">{{icon "filled" "star"}}</label>
-            <input type="radio" name="rating" value="5" id="rating-5">
-        </div>
-        <label for="review-form-comment">Kommentar (valfritt)</label>
-        <textarea name="comment" id="review-form-comment" rows="3" placeholder="Varför tyckte du så?"
-            class="input"></textarea>
-    </form>
+    {{if .L.UserReviewItem}}
+    <dialog id="dialog-edit-review" class="modal">
+        {{template "reviewForm" .}}
+    </dialog>
+    {{else}}
+    <div class="create-review-form-container">
+        {{template "reviewForm" .}}
+    </div>
+    {{end}}
+    {{end}}
+
+    {{if .L.UserReviewItem}}
+    <dialog id="delete-review-dialog" class="modal">
+        <form method="POST" action="/recipes/{{.L.Recipe.ID}}/reviews/delete">
+            <h3>Ta bort omdöme?</h3>
+            <p>Är du säker på att du vill ta bort ditt omdöme?</p>
+            <div class="form-buttons">
+                <button type="button" command="close" commandfor="delete-review-dialog"
+                    class="btn btn--secondary">Avbryt</button>
+                <button type="submit" class="btn btn--primary">Ja, ta bort omdöme</button>
+            </div>
+        </form>
+    </dialog>
     {{end}}
 
     <div class="reviews">
-        {{range .L.Reviews}}
+        {{if .L.UserReviewItem}}
+        <div class="review review--yours">
+            <div data-dropdown class="review__kebab">
+                <button data-dropdown-trigger class="btn btn--subtle btn--sq">
+                    {{icon "outline" "dots-vertical"}}
+                </button>
+                <div data-dropdown-menu>
+                    <button role="menuitem" onclick="showReviewEditForm()">
+                        {{icon "outline" "edit"}}
+                        Ändra
+                    </button>
+                    <button role="menuitem" command="show-modal" commandfor="delete-review-dialog">
+                        {{icon "outline" "trash"}}
+                        Ta bort
+                    </button>
+                </div>
+            </div>
+            <div class="review__meta">
+                <div class="review__name">{{.L.UserReviewItem.UserDisplayName}}</div>
+                <div class="review__date">{{proseDate .L.UserReviewItem.UpdatedAt}}</div>
+            </div>
+            <div class="stars-container">{{template "stars" .L.UserReviewItem.Rating}}</div>
+            {{if .L.UserReviewItem.Comment}}
+            <p>{{.L.UserReviewItem.Comment}}</p>
+            {{end}}
+        </div>
+        {{end}}
+        {{range .L.ReviewItems}}
         <div class="review">
+            <div class="review__meta">
+                <div class="review__name">{{.UserDisplayName}}</div>
+                <div class="review__date">{{proseDate .UpdatedAt}}</div>
+            </div>
+            <div class="stars-container">{{template "stars" .Rating}}</div>
+            {{if .Comment}}
+            <p>{{.Comment}}</p>
+            {{end}}
         </div>
         {{end}}
     </div>

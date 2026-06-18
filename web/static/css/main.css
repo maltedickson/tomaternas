@@ -32,7 +32,9 @@
 
     --clr-text: hsl(20 25% 16%);
     --clr-text-muted: hsl(20 15% 30%);
-    --clr-text-on-brand: hsl(0 0% 100%);
+    --clr-text-on-primary: hsl(0 0% 100%);
+
+    --clr-icon-muted: hsl(20 10% 75%);
 
     --clr-line: hsl(28 22% 84%);
     --clr-line-strong: hsl(26 18% 70%);
@@ -314,7 +316,7 @@ textarea.input {
 
 .btn--primary {
     background-color: var(--clr-primary);
-    color: var(--clr-text-on-brand);
+    color: var(--clr-text-on-primary);
     border-color: var(--clr-primary);
     font-weight: 600;
 }
@@ -371,13 +373,31 @@ textarea.input {
     border-color: var(--clr-line);
 }
 
+.form-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    justify-content: flex-end;
+    margin-top: var(--space-8);
+}
+
+.modal {
+    width: fit-content;
+    background-color: var(--clr-bg-surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--clr-line-strong);
+    padding: var(--space-6);
+    max-width: calc(100% - 2 * var(--space-2));
+    margin: auto;
+}
+
 :where([data-dropdown]) {
     position: relative;
 }
 
 [data-dropdown-menu] {
     position: absolute;
-    top: calc(100% + var(--space-2));
+    top: calc(100% + var(--space-1));
     right: 0;
     background-color: var(--clr-bg-surface);
     border-radius: var(--radius-sm);
@@ -405,12 +425,29 @@ textarea.input {
     width: 100%;
     border-radius: var(--radius-sm);
     cursor: pointer;
+    text-wrap: nowrap;
 }
 
 [data-dropdown-menu] [role="menuitem"]:hover {
     background-color: var(--clr-bg-dim);
 }
 
+.rating-display {
+    display: flex;
+    column-gap: 0.2em;
+}
+
+.rating-display__star {
+    color: var(--clr-icon-muted);
+}
+
+.rating-display__star .icon {
+    --size: 1em;
+}
+
+.rating-display__star--filled {
+    color: var(--clr-primary);
+}
 
 .mt-1 {
     margin-top: var(--space-1);
@@ -438,6 +475,22 @@ textarea.input {
 
 .mt-16 {
     margin-top: var(--space-16);
+}
+
+.fs-xs {
+    font-size: var(--text-xs);
+}
+
+.fs-sm {
+    font-size: var(--text-sm);
+}
+
+.fs-lg {
+    font-size: var(--text-lg);
+}
+
+.fs-xl {
+    font-size: var(--text-xl);
 }
 
 .mx-auto {

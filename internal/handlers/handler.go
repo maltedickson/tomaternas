@@ -157,18 +157,25 @@ func (h *Handler) ViewRecipe(w http.ResponseWriter, r *http.Request) {
 		tags = append(tags, tag)
 	}
 
-	allReviews, err := h.reviewService.GetReviewsForRecipe(r.Context(), id)
+	type ReviewData struct {
+		Name    string
+		Date    time.Time
+		Rating  int
+		Comment string
+	}
+
+	reviewItems, err := h.reviewService.GetRecipeReviewItems(r.Context(), id)
 	if err != nil {
 		h.renderErrInternal(w, r, err)
 		return
 	}
-	var userReview *models.Review
-	otherReviews := make([]models.Review, 0, len(allReviews))
-	for i := range allReviews {
-		if isLoggedIn && allReviews[i].OwnerID == user.ID {
-			userReview = &allReviews[i]
+	var userReviewItem *models.RecipeReviewItem
+	otherReviewItems := make([]models.RecipeReviewItem, 0, len(reviewItems))
+	for i := range reviewItems {
+		if isLoggedIn && reviewItems[i].UserDisplayName == user.DisplayName {
+			userReviewItem = &reviewItems[i]
 		} else {
-			otherReviews = append(otherReviews, allReviews[i])
+			otherReviewItems = append(otherReviewItems, reviewItems[i])
 		}
 	}
 
@@ -184,8 +191,8 @@ func (h *Handler) ViewRecipe(w http.ResponseWriter, r *http.Request) {
 		"RecipeUpdatedAtFormatted":     services.FormatDate(recipe.UpdatedAt),
 		"RecipeOwner":                  recipeOwner,
 		"CanManage":                    canManage,
-		"UserReview":                   userReview,
-		"Reviews":                      otherReviews,
+		"UserReviewItem":               userReviewItem,
+		"ReviewItems":                  otherReviewItems,
 	}
 	h.renderer.Render(w, r, "recipe", data)
 }
@@ -288,6 +295,109 @@ func (h *Handler) UpdateRecipe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, fmt.Sprintf("/recipes/%d", id), http.StatusSeeOther)
+}
+
+func (h *Handler) CreateReview(w http.ResponseWriter, r *http.Request) {
+	user := middleware.MustGetUser(r)
+	recipeID, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		h.renderErrPageNotFound(w, r)
+		return
+	}
+	rating, err := strconv.Atoi(r.FormValue("rating"))
+	if err != nil {
+		h.renderErrBadRequest(w, r)
+		return
+	}
+	comment := r.FormValue("comment")
+
+	if _, err := h.reviewService.CreateReview(
+		r.Context(),
+		rating,
+		comment,
+		recipeID,
+		user.ID,
+	); err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) {
+			h.renderErrPageNotFound(w, r)
+			return
+		}
+		if errors.Is(err, apperrors.ErrAlreadyExists) {
+			h.renderErrConflict(w, r, "Du har redan betygsatt detta recept.")
+			return
+		}
+		var vErr services.ReviewValidationError
+		if errors.As(err, &vErr) {
+			h.renderErrBadRequest(w, r)
+			return
+		}
+		h.renderErrInternal(w, r, err)
+		return
+	}
+	http.Redirect(w, r, fmt.Sprintf("/recipes/%d#reviews", recipeID), http.StatusSeeOther)
+}
+
+func (h *Handler) UpdateReview(w http.ResponseWriter, r *http.Request) {
+	user := middleware.MustGetUser(r)
+
+	recipeID, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		h.renderErrBadRequest(w, r)
+		return
+	}
+	rating, err := strconv.Atoi(r.FormValue("rating"))
+	if err != nil {
+		h.renderErrBadRequest(w, r)
+		return
+	}
+	comment := r.FormValue("comment")
+
+	if err := h.reviewService.UpdateReview(
+		r.Context(),
+		recipeID,
+		user.ID,
+		rating,
+		comment,
+	); err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) {
+			h.renderErrPageNotFound(w, r)
+			return
+		}
+		var vErr services.ReviewValidationError
+		if errors.As(err, &vErr) {
+			h.renderErrBadRequest(w, r)
+			return
+		}
+		h.renderErrInternal(w, r, err)
+		return
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/recipes/%d#reviews", recipeID), http.StatusSeeOther)
+}
+
+func (h *Handler) DeleteReview(w http.ResponseWriter, r *http.Request) {
+	user := middleware.MustGetUser(r)
+
+	recipeID, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		h.renderErrBadRequest(w, r)
+		return
+	}
+
+	if err := h.reviewService.DeleteReview(
+		r.Context(),
+		recipeID,
+		user.ID,
+	); err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) {
+			h.renderErrPageNotFound(w, r)
+			return
+		}
+		h.renderErrInternal(w, r, err)
+		return
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/recipes/%d#reviews", recipeID), http.StatusSeeOther)
 }
 
 func (h *Handler) ViewLogin(w http.ResponseWriter, r *http.Request) {
@@ -552,6 +662,10 @@ func (h *Handler) renderErrBadRequest(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) renderErrForbidden(w http.ResponseWriter, r *http.Request) {
 	h.renderer.RenderErr(w, r, http.StatusForbidden, "Du saknar behörighet.")
+}
+
+func (h *Handler) renderErrConflict(w http.ResponseWriter, r *http.Request, message string) {
+	h.renderer.RenderErr(w, r, http.StatusConflict, message)
 }
 
 func (h *Handler) renderErrInternal(w http.ResponseWriter, r *http.Request, err error) {

@@ -1,0 +1,21 @@
+{{define "stars"}}
+
+<div class="rating-display">
+    <div class="rating-display__star {{if ge . 1}}rating-display__star--filled{{end}}">
+        {{icon "filled" "star"}}
+    </div>
+    <div class="rating-display__star {{if ge . 2}}rating-display__star--filled{{end}}">
+        {{icon "filled" "star"}}
+    </div>
+    <div class="rating-display__star {{if ge . 3}}rating-display__star--filled{{end}}">
+        {{icon "filled" "star"}}
+    </div>
+    <div class="rating-display__star {{if ge . 4}}rating-display__star--filled{{end}}">
+        {{icon "filled" "star"}}
+    </div>
+    <div class="rating-display__star {{if ge . 5}}rating-display__star--filled{{end}}">
+        {{icon "filled" "star"}}
+    </div>
+</div>
+
+{{end}}
