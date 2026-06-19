@@ -59,6 +59,7 @@ func (h *Handler) ViewHome(w http.ResponseWriter, r *http.Request) {
 		PrepTimeHours   int
 		CookTimeMinutes int
 		IsGreen         bool
+		AvgRating       float64
 		UpdatedAt       time.Time
 	}
 
@@ -71,6 +72,7 @@ func (h *Handler) ViewHome(w http.ResponseWriter, r *http.Request) {
 			PrepTimeHours:   val.PrepTimeSeconds / 3600,
 			CookTimeMinutes: val.CookTimeSeconds / 60,
 			IsGreen:         val.IsVegetarian(),
+			AvgRating:       val.AvgRating,
 			UpdatedAt:       val.UpdatedAt,
 		}
 	}

@@ -54,6 +54,7 @@ type RecipeOverview struct {
 	OwnerID         int
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
+	AvgRating       float64
 }
 
 func (recipeOverview RecipeOverview) IsVegetarian() bool {

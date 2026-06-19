@@ -173,9 +173,26 @@ func (db *DB) GetRecipeByID(ctx context.Context, id int) (*models.Recipe, error)
 
 func (db *DB) GetAllRecipeOverviews(ctx context.Context) ([]models.RecipeOverview, error) {
 	query := `
-		SELECT id, title, prep_time_seconds, cook_time_seconds, meal_types, dietary_tags, other_tags, owner_id, created_at, updated_at
-		FROM recipes
-		ORDER BY created_at DESC
+		SELECT
+			r.id,
+			r.title,
+			r.prep_time_seconds,
+			r.cook_time_seconds,
+			r.meal_types,
+			r.dietary_tags,
+			r.other_tags,
+			r.owner_id,
+			r.created_at,
+			r.updated_at, 
+			COALESCE(AVG(reviews.rating), 0.0) AS average_rating
+		FROM
+			recipes r
+		LEFT JOIN
+			reviews ON r.id = reviews.recipe_id
+		GROUP BY
+			r.id
+		ORDER BY
+			r.created_at DESC
 	`
 
 	rows, err := db.QueryContext(ctx, query)
@@ -201,6 +218,7 @@ func (db *DB) GetAllRecipeOverviews(ctx context.Context) ([]models.RecipeOvervie
 			&ro.OwnerID,
 			&ro.CreatedAt,
 			&ro.UpdatedAt,
+			&ro.AvgRating,
 		)
 
 		if err != nil {

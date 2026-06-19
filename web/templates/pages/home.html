@@ -21,22 +21,23 @@
             alt="{{.Title}}" class="recipe-card__img">
         <div class="recipe-card__content">
             <div class="recipe-card__meta">
-                <span class="recipe-card__meta-left">
-                    <!-- <div class="recipe-card__rating"> -->
-                    <!--     <i class="ri-star-fill"></i> -->
-                    <!--     <span class="recipe-card__meta-text">4,1</span> -->
-                    <!-- </div> -->
+                <div class="recipe-card__meta-left">
                     <div class="recipe-card__time">
                         {{icon "outline" "clock"}}
                         <span class="recipe-card__meta-text">{{.CookTimeMinutes}}m{{if .PrepTimeHours}}
                             (+{{.PrepTimeHours}}h){{end}}</span>
                     </div>
-                </span>
+                </div>
+                <div class="recipe-card__stars-container">
+                    {{template "stars" .AvgRating}}
+                </div>
+            </div>
+            <div class="recipe-card__title">
+                {{.Title}}
                 {{if .IsGreen}}
-                <span class="recipe-card__leaf">{{icon "filled" "leaf"}}</span>
+                {{icon "filled" "leaf" "recipe-card__leaf"}}
                 {{end}}
             </div>
-            <div class="recipe-card__title">{{.Title}}</div>
         </div>
     </a>
     {{end}}
