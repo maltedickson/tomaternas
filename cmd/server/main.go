@@ -70,6 +70,8 @@ func main() {
 	mux.HandleFunc("POST /logout", handler.Logout)
 
 	mux.HandleFunc("GET /settings", middleware.RequireAuth(handler.ViewSettings))
+	mux.HandleFunc("POST /settings/display-name", middleware.RequireAuth(handler.SettingsUpdateDisplayName))
+	mux.HandleFunc("POST /settings/password", middleware.RequireAuth(handler.SettingsUpdatePassword))
 
 	adminMux := http.NewServeMux()
 

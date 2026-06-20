@@ -1,0 +1,8 @@
+h3 {
+    margin-top: var(--space-8);
+    margin-bottom: var(--space-4);
+}
+
+button[type="submit"] {
+    margin-top: var(--space-4);
+}

@@ -40,7 +40,7 @@
         </div>
     </div>
 
-    <label for="review-form-comment" class="review-form__comment-label">Kommentar (valfritt)</label>
+    <label for="review-form-comment" class="label">Kommentar (valfritt)</label>
     <textarea name="comment" id="review-form-comment" rows="3" placeholder="Varför tyckte du så?" class="input">{{if
         .L.UserReviewItem}}{{.L.UserReviewItem.Comment}}{{end}}</textarea>
 
@@ -55,178 +55,176 @@
 
 {{define "content"}}
 
-<div class="meta">
-    <img src="/uploads/recipes/{{.L.Recipe.ID}}_lg@2x.jpg?v={{.L.Recipe.UpdatedAt.Unix }}"
-        alt="Bild på färdigt resultat" class="meta__photo">
-    <div class="meta__content">
-        <div class="meta__management">
-            <div class="meta__owner">Av {{.L.RecipeOwner.DisplayName}} &nbsp;&bull;&nbsp; {{proseDate
-                .L.Recipe.CreatedAt}}
-                &nbsp;&bull;&nbsp; ändrad
-                {{proseDate .L.Recipe.UpdatedAt}}</div>
-            {{if .L.CanManage}}
-            <div data-dropdown class="meta__actions">
-                <button data-dropdown-trigger type="button" class="btn btn--subtle btn--sq">{{icon "outline"
-                    "dots-vertical" "icon--sm"}}</button>
-                <div data-dropdown-menu>
-                    <a href="/recipes/{{.L.Recipe.ID}}/edit" role="menuitem">
-                        {{icon "outline" "edit"}}
-                        Redigera
-                    </a>
-                    <form action="/recipes/{{.L.Recipe.ID}}/delete" method="POST" id="form-delete-recipe">
-                        <button type="submit" role="menuitem">
-                            {{icon "outline" "trash"}}
-                            Radera
-                        </button>
-                    </form>
-                </div>
-            </div>
-            <script>
-                const recipeDeleteForm = document.getElementById("form-delete-recipe");
-                recipeDeleteForm.addEventListener("submit", function (e) {
-                    const isConfirmed = confirm("Är du säker på att du vill radera receptet permanent?");
+<div class="wrapper grid">
 
-                    if (!isConfirmed) {
-                        e.preventDefault();
-                    }
-                });
-            </script>
-            {{end}}
+    <div class="grid grid--tight-rows">
+        <div class="lg:span-3">
+            <img src="/uploads/recipes/{{.L.Recipe.ID}}_lg@2x.jpg?v={{.L.Recipe.UpdatedAt.Unix }}"
+                alt="Bild på färdigt resultat" class="recipe-photo">
         </div>
-        <h1 class="meta__title">{{.L.Recipe.Title}}</h1>
-        <div class="pills">
-            {{range .L.RecipeTags}}
-            <div class="pill pill--neutral">{{.}}</div>
-            {{end}}
-        </div>
-        <div class="meta__iconwtext-container">
-            <a href="#reviews">
-                <div class="meta__iconwtext">
-                    <div class="meta__stars">
-                        {{template "stars" .L.AvgRating}}
+        <div class="lg:span-3">
+            <div class="meta__management">
+                <div class="meta__owner">Av {{.L.RecipeOwner.DisplayName}} &nbsp;&bull;&nbsp; {{proseDate
+                    .L.Recipe.CreatedAt}}
+                    &nbsp;&bull;&nbsp; ändrad
+                    {{proseDate .L.Recipe.UpdatedAt}}</div>
+                {{if .L.CanManage}}
+                <div data-dropdown class="meta__actions">
+                    <button data-dropdown-trigger type="button" class="btn btn--subtle btn--sq">{{icon "outline"
+                        "dots-vertical" "icon--sm"}}</button>
+                    <div data-dropdown-menu>
+                        <a href="/recipes/{{.L.Recipe.ID}}/edit" role="menuitem">
+                            {{icon "outline" "edit"}}
+                            Redigera
+                        </a>
+                        <form action="/recipes/{{.L.Recipe.ID}}/delete" method="POST" id="form-delete-recipe">
+                            <button type="submit" role="menuitem">
+                                {{icon "outline" "trash"}}
+                                Radera
+                            </button>
+                        </form>
                     </div>
-                    {{if gt .L.AvgRating 0.0}}
-                    <span>{{roundToDecimals .L.AvgRating 1}}</span>
+                </div>
+                <script>
+                    const recipeDeleteForm = document.getElementById("form-delete-recipe");
+                    recipeDeleteForm.addEventListener("submit", function (e) {
+                        const isConfirmed = confirm("Är du säker på att du vill radera receptet permanent?");
+
+                        if (!isConfirmed) {
+                            e.preventDefault();
+                        }
+                    });
+                </script>
+                {{end}}
+            </div>
+            <h1 class="recipe-title">{{.L.Recipe.Title}}</h1>
+            <div class="pills">
+                {{range .L.RecipeTags}}
+                <div class="pill pill--neutral">{{.}}</div>
+                {{end}}
+            </div>
+            <div class="meta__iconwtext-container">
+                <a href="#reviews">
+                    <div class="meta__iconwtext">
+                        <div class="meta__stars">
+                            {{template "stars" .L.AvgRating}}
+                        </div>
+                        {{if gt .L.AvgRating 0.0}}
+                        <span>{{roundToDecimals .L.AvgRating 1}}</span>
+                        {{end}}
+                    </div>
+                </a>
+                <div class="meta__iconwtext">
+                    {{icon "outline" "clock"}}
+                    <span>{{.L.RecipeCookTimeMinutes}} min</span>
+                    {{if .L.RecipePrepTimeHours}}
+                    <span>(+ {{.L.RecipePrepTimeHours}} h)</span>
                     {{end}}
                 </div>
-            </a>
-            <div class="meta__iconwtext">
-                {{icon "outline" "clock"}}
-                <span>{{.L.RecipeCookTimeMinutes}} min</span>
-                {{if .L.RecipePrepTimeHours}}
-                <span>(+ {{.L.RecipePrepTimeHours}} h)</span>
-                {{end}}
+            </div>
+
+            <div class="recipe-description">
+                {{.L.RecipeDescriptionParsed}}
             </div>
         </div>
-
-        <div class="meta__description">
-            {{.L.RecipeDescriptionParsed}}
-        </div>
     </div>
-</div>
 
-
-<div class="content">
-    <div class="content__wrapper">
-        <div class="content__ingredients">
-            <h2>Ingredienser</h2>
-            <div class="servings">({{ .L.Recipe.Servings }})</div>
-            {{range .L.Recipe.IngredientSections}}
-            {{if .Heading}} <h3>{{.Heading}}</h3> {{end}}
-            <div>
-                {{range .Ingredients}}
-                <div class="ingredient">
-                    <div>{{.Name}}</div>
-                    <div>{{.Amount}}</div>
-                </div>
-                {{end}}
+    <div class="lg:span-2 ingredients">
+        <h2>Ingredienser</h2>
+        <div class="servings">({{ .L.Recipe.Servings }})</div>
+        {{range .L.Recipe.IngredientSections}}
+        {{if .Heading}} <h3>{{.Heading}}</h3> {{end}}
+        <div>
+            {{range .Ingredients}}
+            <div class="ingredient">
+                <div>{{.Name}}</div>
+                <div>{{.Amount}}</div>
             </div>
             {{end}}
         </div>
-        <div class="content__instructions">
-            {{if .L.RecipePrepInstructionsParsed}}
-            <h2>Förberedelser (ca {{.L.RecipePrepTimeHours}} timmar innan)</h2>
-            {{.L.RecipePrepInstructionsParsed}}
-            {{end}}
-
-            <h2>Instruktioner</h2>
-            {{.L.RecipeInstructionsParsed}}
-        </div>
+        {{end}}
     </div>
-</div>
+    <div class="lg:span-4 recipe-instructions">
+        {{if .L.RecipePrepInstructionsParsed}}
+        <h2>Förberedelser (ca {{.L.RecipePrepTimeHours}} timmar innan)</h2>
+        {{.L.RecipePrepInstructionsParsed}}
+        {{end}}
 
-<div class="wrapper mt-16">
-
-    <h2 id="reviews" class="reviews-heading">Omdömen</h2>
-
-    {{if .G.User}}
-    {{if .L.UserReviewItem}}
-    <dialog id="dialog-edit-review" class="modal">
-        {{template "reviewForm" .}}
-    </dialog>
-    {{else}}
-    <div class="create-review-form-container">
-        {{template "reviewForm" .}}
+        <h2>Instruktioner</h2>
+        {{.L.RecipeInstructionsParsed}}
     </div>
-    {{end}}
-    {{end}}
 
-    {{if .L.UserReviewItem}}
-    <dialog id="delete-review-dialog" class="modal">
-        <form method="POST" action="/recipes/{{.L.Recipe.ID}}/reviews/delete">
-            <h3>Ta bort omdöme?</h3>
-            <p>Är du säker på att du vill ta bort ditt omdöme?</p>
-            <div class="form-buttons">
-                <button type="button" command="close" commandfor="delete-review-dialog"
-                    class="btn btn--secondary">Avbryt</button>
-                <button type="submit" class="btn btn--primary">Ja, ta bort omdöme</button>
-            </div>
-        </form>
-    </dialog>
-    {{end}}
+    <div>
+        <h2 id="reviews" class="reviews-heading">Omdömen</h2>
 
-    <div class="reviews">
+        {{if .G.User}}
         {{if .L.UserReviewItem}}
-        <div class="review review--yours">
-            <div data-dropdown class="review__kebab">
-                <button data-dropdown-trigger class="btn btn--subtle btn--sq">
-                    {{icon "outline" "dots-vertical"}}
-                </button>
-                <div data-dropdown-menu>
-                    <button role="menuitem" onclick="showReviewEditForm()">
-                        {{icon "outline" "edit"}}
-                        Ändra
-                    </button>
-                    <button role="menuitem" command="show-modal" commandfor="delete-review-dialog">
-                        {{icon "outline" "trash"}}
-                        Ta bort
-                    </button>
-                </div>
-            </div>
-            <div class="review__meta">
-                <div class="review__name">{{.L.UserReviewItem.UserDisplayName}}</div>
-                <div class="review__date">{{proseDate .L.UserReviewItem.UpdatedAt}}</div>
-            </div>
-            <div class="stars-container">{{template "stars" .L.UserReviewItem.Rating}}</div>
-            {{if .L.UserReviewItem.Comment}}
-            <p>{{.L.UserReviewItem.Comment}}</p>
-            {{end}}
+        <dialog id="dialog-edit-review" class="modal">
+            {{template "reviewForm" .}}
+        </dialog>
+        {{else}}
+        <div class="create-review-form-container">
+            {{template "reviewForm" .}}
         </div>
         {{end}}
-        {{range .L.ReviewItems}}
-        <div class="review">
-            <div class="review__meta">
-                <div class="review__name">{{.UserDisplayName}}</div>
-                <div class="review__date">{{proseDate .UpdatedAt}}</div>
-            </div>
-            <div class="stars-container">{{template "stars" .Rating}}</div>
-            {{if .Comment}}
-            <p>{{.Comment}}</p>
-            {{end}}
-        </div>
         {{end}}
-    </div>
 
+        {{if .L.UserReviewItem}}
+        <dialog id="delete-review-dialog" class="modal">
+            <form method="POST" action="/recipes/{{.L.Recipe.ID}}/reviews/delete">
+                <h3>Ta bort omdöme?</h3>
+                <p>Är du säker på att du vill ta bort ditt omdöme?</p>
+                <div class="form-buttons">
+                    <button type="button" command="close" commandfor="delete-review-dialog"
+                        class="btn btn--secondary">Avbryt</button>
+                    <button type="submit" class="btn btn--primary">Ja, ta bort omdöme</button>
+                </div>
+            </form>
+        </dialog>
+        {{end}}
+
+        <div class="grid grid--tight-rows">
+            {{if .L.UserReviewItem}}
+            <div class="review review--yours md:span-3 lg:span-2">
+                <div data-dropdown class="review__kebab">
+                    <button data-dropdown-trigger class="btn btn--subtle btn--sq">
+                        {{icon "outline" "dots-vertical"}}
+                    </button>
+                    <div data-dropdown-menu>
+                        <button role="menuitem" onclick="showReviewEditForm()">
+                            {{icon "outline" "edit"}}
+                            Ändra
+                        </button>
+                        <button role="menuitem" command="show-modal" commandfor="delete-review-dialog">
+                            {{icon "outline" "trash"}}
+                            Ta bort
+                        </button>
+                    </div>
+                </div>
+                <div class="review__meta">
+                    <div class="review__name">{{.L.UserReviewItem.UserDisplayName}}</div>
+                    <div class="review__date">{{proseDate .L.UserReviewItem.UpdatedAt}}</div>
+                </div>
+                <div class="stars-container">{{template "stars" .L.UserReviewItem.Rating}}</div>
+                {{if .L.UserReviewItem.Comment}}
+                <p>{{.L.UserReviewItem.Comment}}</p>
+                {{end}}
+            </div>
+            {{end}}
+            {{range .L.ReviewItems}}
+            <div class="review md:span-3 lg:span-2">
+                <div class="review__meta">
+                    <div class="review__name">{{.UserDisplayName}}</div>
+                    <div class="review__date">{{proseDate .UpdatedAt}}</div>
+                </div>
+                <div class="stars-container">{{template "stars" .Rating}}</div>
+                {{if .Comment}}
+                <p>{{.Comment}}</p>
+                {{end}}
+            </div>
+            {{end}}
+        </div>
+    </div>
 </div>
 
 {{end}}

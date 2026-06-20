@@ -1,17 +1,70 @@
 {{template "base" .}}
 
 {{define "head"}}
+<script src="/static/js/settings.js" defer></script>
+<link rel="stylesheet" href="/static/css/settings.css">
 <title>Inställningar</title>
 {{end}}
 
 {{define "content"}}
 
-<h1>Inställningar</h1>
+<div class="wrapper grid">
 
-<h2>Kontoinställningar</h2>
+    <h1>Inställningar</h1>
 
-<p>
-    Kommer snart...
-</p>
+    <div class="md:span-4">
+        <h2>Kontoinställningar</h2>
+
+        <p>
+            Användarnamn: {{.G.User.Username}}
+        </p>
+
+        <p>
+            Kontakta Malte om du vill ändra ditt användarnamn.
+        </p>
+
+        <h3>Visningsnamn</h3>
+
+        <form method="POST" action="/settings/display-name">
+            <input type="text" name="display-name" value="{{.G.User.DisplayName}}" required class="input">
+            <button type="submit" id="btn-submit-display-name" class="btn btn--primary">Spara</button>
+        </form>
+
+        <h3 id="password">Lösenord</h3>
+
+        <form method="POST" action="/settings/password">
+            <label for="input-current-password" class="label">Nuvarande lösenord</label>
+            <input type="password" name="current-password" id="input-confirm-old-password" required class="input">
+
+            {{if .L.PasswordErrors.IncorrectPassword}}
+            <p class="form-error">Fel lösenord.</p>
+            {{end}}
+
+            <label for="input-new-password" class="label">Nytt lösenord</label>
+            <input type="password" name="new-password" id="input-new-password" required class="input">
+
+            {{if .L.PasswordErrors.ValidationError.PasswordTooShort}}
+            <p class="form-error">
+                Lösenordet måste vara minst {{.L.MinPasswordLength}} tecken.
+            </p>
+            {{end}}
+
+
+            <label for="input-confirm-new-password" class="label">
+                Bekräfta nytt lösenord
+            </label>
+            <input type="password" name="confirm-new-password" id="input-confirm-new-password" required class="input">
+
+            {{if .L.PasswordErrors.ConfirmDoesNotMatch}}
+            <p class="form-error">
+                Lösenorden måste matcha.
+            </p>
+            {{end}}
+
+            <button type="submit" class="btn btn--primary">Byt lösenord</button>
+        </form>
+    </div>
+
+</div>
 
 {{end}}

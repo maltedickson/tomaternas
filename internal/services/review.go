@@ -52,7 +52,7 @@ func (s *ReviewService) CreateReview(ctx context.Context, rating int, comment st
 	if slices.ContainsFunc(existingReviews, func(existingReview models.Review) bool {
 		return existingReview.OwnerID == userID
 	}) {
-		return 0, apperrors.ErrAlreadyExists
+		return 0, apperrors.ErrConflict
 	}
 
 	comment = normalizeComment(comment)

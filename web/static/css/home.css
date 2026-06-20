@@ -22,7 +22,6 @@
     display: block;
     text-decoration: none;
     color: inherit;
-    --radius: 1rem;
     display: flex;
     flex-direction: column;
 }

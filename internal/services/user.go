@@ -5,10 +5,13 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
+
 	"github.com/maltedickson/tomaternas/internal/apperrors"
 	"github.com/maltedickson/tomaternas/internal/config"
 	"github.com/maltedickson/tomaternas/internal/database"
 	"github.com/maltedickson/tomaternas/internal/models"
+	"github.com/maltedickson/tomaternas/internal/passwords"
 )
 
 type UserService struct {
@@ -39,7 +42,7 @@ func (s *UserService) CreateUser(ctx context.Context, username, displayName, pas
 		return nil, errors.New("username already exists")
 	}
 
-	passwordHash := generateFromPassword(password, defaultParams)
+	passwordHash := passwords.Hash(password, passwords.DefaultParams)
 
 	user := &models.User{
 		Username:     username,
@@ -78,21 +81,103 @@ func (s *UserService) UpdateUsername(ctx context.Context, id int, newUsername st
 	return s.db.UpdateUsername(ctx, id, newUsername)
 }
 
-func (s *UserService) UpdateDisplayName(ctx context.Context, id int, displayName string) error {
-	return s.db.UpdateDisplayName(ctx, id, displayName)
+type DisplayNameValidationErr struct {
+	DisplayNameNotBetween1And64Chars bool
 }
 
-func (s *UserService) UpdatePassword(ctx context.Context, id int, password, confirmPassword string) error {
+func (vErr DisplayNameValidationErr) Error() string {
+	return "display name validation failed"
+}
+
+// UpdateDisplayName returns ErrConflict if the display name is already taken,
+// or a DisplayNameValidationErr on validation failure.
+func (s *UserService) UpdateDisplayName(
+	ctx context.Context,
+	id int,
+	displayName string,
+) error {
+	displayName = strings.TrimSpace(displayName)
+	var validationErr DisplayNameValidationErr
+	if len(displayName) < 1 || len(displayName) > 32 {
+		validationErr.DisplayNameNotBetween1And64Chars = true
+	}
+	if validationErr != (DisplayNameValidationErr{}) {
+		return validationErr
+	}
+	if err := s.db.UpdateDisplayName(ctx, id, displayName); err != nil {
+		return err
+	}
+	return nil
+}
+
+type PasswordValidationErr struct {
+	PasswordTooShort bool
+}
+
+func (vErr PasswordValidationErr) Error() string {
+	return "password validation failed"
+}
+
+// UpdatePassword returns ErrInvalidCredentials if the supplied current password
+// is incorrect, and a PasswordValidationErr on validation failure.
+func (s *UserService) UpdatePassword(
+	ctx context.Context,
+	id int,
+	currentPassword,
+	newPassword string,
+) error {
+	if err := validateNewPassword(newPassword); err != nil {
+		var vErr PasswordValidationErr
+		if errors.As(err, &vErr) {
+			return err
+		}
+		return fmt.Errorf("validating new password: %w", err)
+	}
+
+	user, err := s.db.GetUserByID(ctx, id)
+	if err != nil {
+		return err
+	}
+	isCurrentPasswordCorrect, err := passwords.ComparePasswordAndHash(
+		currentPassword,
+		user.PasswordHash,
+	)
+	if err != nil {
+		return err
+	}
+	if !isCurrentPasswordCorrect {
+		return apperrors.ErrInvalidCredentials
+	}
+
+	newHash := passwords.Hash(newPassword, passwords.DefaultParams)
+	if err := s.db.UpdatePasswordHash(ctx, id, newHash); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *UserService) AdminUpdatePassword(ctx context.Context, id int, password, confirmPassword string) error {
 	if password != confirmPassword {
 		return errors.New("confirm_not_match")
 	}
 	if len(password) < config.MinPasswordLength {
 		return errors.New("password_too_short")
 	}
-	hash := generateFromPassword(password, defaultParams)
+	hash := passwords.Hash(password, passwords.DefaultParams)
 	return s.db.UpdatePasswordHash(ctx, id, hash)
 }
 
 func (s *UserService) UpdateRole(ctx context.Context, id int, role string) error {
 	return s.db.UpdateRole(ctx, id, role)
+}
+
+func validateNewPassword(password string) error {
+	var vErr PasswordValidationErr
+	if len(password) < config.MinPasswordLength {
+		vErr.PasswordTooShort = true
+	}
+	if vErr != (PasswordValidationErr{}) {
+		return vErr
+	}
+	return nil
 }

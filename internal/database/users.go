@@ -8,6 +8,8 @@ import (
 
 	"github.com/maltedickson/tomaternas/internal/apperrors"
 	"github.com/maltedickson/tomaternas/internal/models"
+	"modernc.org/sqlite"
+	sqlite3 "modernc.org/sqlite/lib"
 )
 
 func (db *DB) CreateUser(ctx context.Context, user *models.User) error {
@@ -137,25 +139,18 @@ func (db *DB) UpdateUsername(ctx context.Context, id int, username string) error
 	return nil
 }
 
+// UpdateDisplayName returns ErrConflict if the display name is already taken.
 func (db *DB) UpdateDisplayName(ctx context.Context, id int, displayName string) error {
-	var current string
-	err := db.QueryRowContext(ctx, "SELECT display_name FROM users WHERE id = ?", id).Scan(&current)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return apperrors.ErrNotFound
-		}
-		return fmt.Errorf("db getting display name for user %d: %w", id, err)
-	}
-	if current == displayName {
-		return nil
-	}
 	query := `
 		UPDATE users
 		SET display_name = ?, updated_at = CURRENT_TIMESTAMP
 		WHERE id = ?
 	`
-	_, err = db.ExecContext(ctx, query, displayName, id)
-	if err != nil {
+	if _, err := db.ExecContext(ctx, query, displayName, id); err != nil {
+		var sqliteErr *sqlite.Error
+		if errors.As(err, &sqliteErr) && sqliteErr.Code() == sqlite3.SQLITE_CONSTRAINT_UNIQUE {
+			return apperrors.ErrConflict
+		}
 		return fmt.Errorf("db updating display name for user %d: %w", id, err)
 	}
 	return nil

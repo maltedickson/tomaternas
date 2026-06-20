@@ -61,11 +61,13 @@
 
 
     --radius-sm: 8px;
-    --radius: 16px;
+    --radius: 8px;
     --radius-full: 10000px;
 
     --padding-inline-page: var(--space-2);
     --wrapper-width: 64rem;
+    --grid-col-gap: var(--space-8);
+    --grid-row-gap: var(--space-16);
 
     --icon-stroke-width: 1.5;
 }
@@ -168,6 +170,14 @@ textarea.input {
     resize: vertical;
 }
 
+.label {
+    margin-bottom: var(--space-1);
+}
+
+*+.label {
+    margin-top: var(--space-6);
+}
+
 
 .link {
     color: var(--clr-primary);
@@ -178,7 +188,21 @@ textarea.input {
     padding-inline: var(--padding-inline-page);
     box-sizing: content-box;
     margin-inline: auto;
-    max-width: var(--wrapper-width);
+    max-width: 42rem;
+}
+
+.grid {
+    display: grid;
+    column-gap: var(--grid-col-gap);
+    row-gap: var(--grid-row-gap);
+}
+
+.grid--tight-rows {
+    --grid-row-gap: var(--grid-col-gap);
+}
+
+:where(.grid > *) {
+    grid-column: span 6;
 }
 
 .top-bar {
@@ -306,6 +330,10 @@ textarea.input {
     transform: translateY(1px);
 }
 
+.btn:disabled {
+    opacity: 50%;
+    pointer-events: none;
+}
 
 .btn--sq {
     width: fit-content;
@@ -512,5 +540,39 @@ textarea.input {
 @media (min-width: 768px) {
     :root {
         --padding-inline-page: var(--space-8);
+    }
+
+    .grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+
+    .md\:span-2 {
+        grid-column: span 2;
+    }
+
+    .md\:span-3 {
+        grid-column: span 3;
+    }
+
+    .md\:span-4 {
+        grid-column: span 4;
+    }
+}
+
+@media (min-width: 1024px) {
+    .wrapper {
+        max-width: var(--wrapper-width);
+    }
+
+    .lg\:span-2 {
+        grid-column: span 2;
+    }
+
+    .lg\:span-3 {
+        grid-column: span 3;
+    }
+
+    .lg\:span-4 {
+        grid-column: span 4;
     }
 }

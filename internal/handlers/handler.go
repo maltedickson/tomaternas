@@ -324,7 +324,7 @@ func (h *Handler) CreateReview(w http.ResponseWriter, r *http.Request) {
 			h.renderErrPageNotFound(w, r)
 			return
 		}
-		if errors.Is(err, apperrors.ErrAlreadyExists) {
+		if errors.Is(err, apperrors.ErrConflict) {
 			h.renderErrConflict(w, r, "Du har redan betygsatt detta recept.")
 			return
 		}
@@ -497,6 +497,70 @@ func (h *Handler) ViewSettings(w http.ResponseWriter, r *http.Request) {
 	h.renderer.Render(w, r, "settings", data)
 }
 
+func (h *Handler) SettingsUpdateDisplayName(w http.ResponseWriter, r *http.Request) {
+	user := middleware.MustGetUser(r)
+	newDisplayName := r.FormValue("display-name")
+	if err := h.userService.UpdateDisplayName(r.Context(), user.ID, newDisplayName); err != nil {
+		if errors.Is(err, apperrors.ErrConflict) {
+			h.renderErrBadRequest(w, r)
+			return
+		}
+		h.renderErrInternal(w, r, err)
+		return
+	}
+	http.Redirect(w, r, "/settings", http.StatusSeeOther)
+}
+
+func (h *Handler) SettingsUpdatePassword(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	type PasswordErrors struct {
+		IncorrectPassword   bool
+		ConfirmDoesNotMatch bool
+		ValidationError     services.PasswordValidationErr
+	}
+
+	var errs PasswordErrors
+
+	newPassword := r.FormValue("new-password")
+	confirmNewPassword := r.FormValue("confirm-new-password")
+
+	if newPassword != confirmNewPassword {
+		errs.ConfirmDoesNotMatch = true
+	}
+
+	user := middleware.MustGetUser(r)
+	currentPassword := r.FormValue("current-password")
+
+	if err := h.userService.UpdatePassword(
+		r.Context(),
+		user.ID,
+		currentPassword,
+		newPassword,
+	); err != nil {
+		var vErr services.PasswordValidationErr
+		if errors.As(err, &vErr) {
+			errs.ValidationError = vErr
+		} else if errors.Is(err, apperrors.ErrInvalidCredentials) {
+			errs.IncorrectPassword = true
+		} else {
+			h.renderErrInternal(w, r, err)
+			return
+		}
+	}
+
+	if errs != (PasswordErrors{}) {
+		h.renderer.Render(w, r, "settings", map[string]any{
+			"PasswordErrors":    errs,
+			"MinPasswordLength": config.MinPasswordLength,
+		})
+		return
+	}
+
+	http.Redirect(w, r, "/settings#password", http.StatusSeeOther)
+}
+
 func (h *Handler) ViewAdminDashboard(w http.ResponseWriter, r *http.Request) {
 	data := map[string]any{}
 	h.renderer.Render(w, r, "admin-dashboard", data)
@@ -626,7 +690,7 @@ func (h *Handler) UpdatePassword(w http.ResponseWriter, r *http.Request) {
 	}
 	password := r.FormValue("password")
 	confirmPassword := r.FormValue("confirm-password")
-	err = h.userService.UpdatePassword(r.Context(), id, password, confirmPassword)
+	err = h.userService.AdminUpdatePassword(r.Context(), id, password, confirmPassword)
 	if err != nil {
 		http.Redirect(w, r, fmt.Sprintf("/admin/users/%d/edit?error=%s", id, url.QueryEscape(err.Error())), http.StatusSeeOther)
 		return
