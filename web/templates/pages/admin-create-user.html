@@ -6,46 +6,36 @@
 
 {{define "content"}}
 
-<h1>Skapa användare</h1>
+<div class="wrapper grid">
+    <h1>Skapa användare</h1>
 
-<form action="/admin/users" method="POST">
-    {{if .L.Error}}
-    <div class="error">
-        {{.L.Error}}
-    </div>
-    {{end}}
+    <form action="/admin/users" method="POST" class="lg:span-4">
+        {{if .L.Error}}
+        <p class="form-error">
+            {{.L.Error}}
+        </p>
+        {{end}}
 
-    <div>
-        <label for="username">Användarnamn</label>
-        <input type="text" name="username" id="username" required>
-    </div>
+        <label for="username" class="label">Användarnamn</label>
+        <input type="text" name="username" id="username" required class="input">
 
-    <div>
-        <label for="display-name">Visningsnamn</label>
-        <input type="text" name="display-name" id="display-name">
-    </div>
+        <label for="display-name" class="label">Visningsnamn</label>
+        <input type="text" name="display-name" id="display-name" class="input">
 
-    <div>
-        <label for="password">Lösenord</label>
-        <input type="password" name="password" id="password" required>
-    </div>
+        <label for="password" class="label">Lösenord</label>
+        <input type="password" name="password" id="password" required class="input">
 
-    <div>
-        <label for="confirm-password">Bekräfta lösenord</label>
-        <input type="password" name="confirm-password" id="confirm-password" required>
-    </div>
+        <label for="confirm-password" class="label">Bekräfta lösenord</label>
+        <input type="password" name="confirm-password" id="confirm-password" required class="input">
 
-    <div>
-        <label for="role">Roll</label>
-        <select name="role" id="role">
+        <label for="role" class="label">Roll</label>
+        <select name="role" id="role" class="input">
             <option value="user">Användare</option>
             <option value="admin">Admin</option>
         </select>
-    </div>
 
-    <div>
-        <button type="submit">Skapa användare</button>
-    </div>
-</form>
+        <button type="submit" class="btn btn--primary mt-8">Skapa användare</button>
+    </form>
+</div>
 
 {{end}}
