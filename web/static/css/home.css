@@ -69,7 +69,7 @@
 .recipe-card__leaf {
     color: hsl(140 50% 35%);
     display: inline-block;
-    vertical-align: center;
+    vertical-align: -0.17em;
     --size: 1em;
 }
 
