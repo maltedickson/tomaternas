@@ -522,6 +522,7 @@ func (h *Handler) SettingsUpdatePassword(
 	}
 
 	var errs PasswordErrors
+	var vErr services.PasswordValidationErr
 
 	newPassword := r.FormValue("new-password")
 	confirmNewPassword := r.FormValue("confirm-new-password")
@@ -539,7 +540,6 @@ func (h *Handler) SettingsUpdatePassword(
 		currentPassword,
 		newPassword,
 	); err != nil {
-		var vErr services.PasswordValidationErr
 		if errors.As(err, &vErr) {
 			errs.ValidationError = vErr
 		} else if errors.Is(err, apperrors.ErrInvalidCredentials) {
@@ -552,8 +552,8 @@ func (h *Handler) SettingsUpdatePassword(
 
 	if errs != (PasswordErrors{}) {
 		h.renderer.Render(w, r, "settings", map[string]any{
-			"PasswordErrors":    errs,
-			"MinPasswordLength": config.MinPasswordLength,
+			"PasswordErrors":           errs,
+			"PasswordValidationErrors": vErr,
 		})
 		return
 	}

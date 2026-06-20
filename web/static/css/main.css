@@ -244,6 +244,10 @@ textarea.input {
     border-radius: 4px;
 }
 
+.form-error--hidden {
+    display: none;
+}
+
 .time-slider {
     position: relative;
     display: flex;

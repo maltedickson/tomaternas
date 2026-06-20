@@ -43,23 +43,21 @@
             <label for="input-new-password" class="label">Nytt lösenord</label>
             <input type="password" name="new-password" id="input-new-password" required class="input">
 
-            {{if .L.PasswordErrors.ValidationError.PasswordTooShort}}
-            <p class="form-error">
-                Lösenordet måste vara minst {{.L.MinPasswordLength}} tecken.
+            <p data-msg-pass-too-short
+                class="form-error{{if not .L.PasswordValidationErrors.PasswordTooShort}} form-error--hidden{{end}}">
+                Lösenordet måste vara minst 15 tecken.
             </p>
-            {{end}}
-
 
             <label for="input-confirm-new-password" class="label">
                 Bekräfta nytt lösenord
             </label>
             <input type="password" name="confirm-new-password" id="input-confirm-new-password" required class="input">
 
-            {{if .L.PasswordErrors.ConfirmDoesNotMatch}}
-            <p class="form-error">
+
+            <p data-msg-confirm-password-does-not-match
+                class="form-error{{if not .L.PasswordErrors.ConfirmDoesNotMatch}} form-error--hidden{{end}}">
                 Lösenorden måste matcha.
             </p>
-            {{end}}
 
             <button type="submit" class="btn btn--primary">Byt lösenord</button>
         </form>
