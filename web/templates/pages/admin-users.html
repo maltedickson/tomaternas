@@ -6,36 +6,40 @@
 
 {{define "content"}}
 
-<h1>Alla användare</h1>
+<div class="wrapper">
 
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Användarnamn</th>
-            <th>Visningsnamn</th>
-            <th>Roll</th>
-            <th>Ändrad</th>
-            <th>Skapad</th>
-        </tr>
-    </thead>
-    <tbody>
-        {{range .L.Users}}
-        <tr>
-            <td>{{.ID}}</td>
-            <td>{{.Username}}</td>
-            <td>{{.DisplayName}}</td>
-            <td>{{.Role}}</td>
-            <td>{{.UpdatedAt}}</td>
-            <td>{{.CreatedAt}}</td>
-            <td><a href="/admin/users/{{.ID}}/edit">Hantera</a></td>
-        </tr>
-        {{end}}
-    </tbody>
-</table>
+    <h1>Alla användare</h1>
 
-<p>
-    <a href="/admin/users/new">Skapa ny användare</a>
-</p>
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Användarnamn</th>
+                    <th>Visningsnamn</th>
+                    <th>Roll</th>
+                    <th>Ändrad</th>
+                    <th>Skapad</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range .L.Users}}
+                <tr>
+                    <td>{{.ID}}</td>
+                    <td>{{.Username}}</td>
+                    <td>{{.DisplayName}}</td>
+                    <td>{{.Role}}</td>
+                    <td>{{.UpdatedAt}}</td>
+                    <td>{{.CreatedAt}}</td>
+                    <td><a href="/admin/users/{{.ID}}/edit" class="link">Hantera</a></td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+
+    <a href="/admin/users/new" class="btn btn--primary mt-8">Skapa ny användare</a>
+
+</div>
 
 {{end}}
