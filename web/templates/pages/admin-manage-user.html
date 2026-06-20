@@ -7,95 +7,113 @@
 
 {{define "content"}}
 
-<p>
-    <a href="/admin/users">Tillbaka till alla användare</a>
-</p>
+<div class="wrapper grid">
 
-<h1>Hantera användare <q>{{ .L.ManagedUser.Username}}</q></h1>
+    <div>
+        <p>
+            <a href="/admin/users" class="link">Tillbaka till alla användare</a>
+        </p>
 
-<table class="overview">
-    <tr>
-        <td>ID</td>
-        <td>{{ .L.ManagedUser.ID}}</td>
-    </tr>
+        <h1>Hantera användare <q>{{ .L.ManagedUser.Username}}</q></h1>
 
-    <tr>
-        <td>Skapad</td>
-        <td>
-            <time datetime="{{ .L.ManagedUser.CreatedAt.UTC.Format " 2006-01-02T15:04:05Z" }}">
-                {{ .L.ManagedUser.CreatedAt.UTC.Format "2006-01-02 15:04:05" }} (UTC)
-            </time>
-        </td>
-    </tr>
+        <div class="table-container mt-4 lg:span-4">
+            <table class="overview">
+                <tr>
+                    <td>ID</td>
+                    <td>{{ .L.ManagedUser.ID}}</td>
+                </tr>
 
-    <tr>
-        <td>Uppdaterad senast</td>
-        <td>
-            <time datetime="{{ .L.ManagedUser.UpdatedAt.UTC.Format " 2006-01-02T15:04:05Z" }}">
-                {{ .L.ManagedUser.UpdatedAt.UTC.Format "2006-01-02 15:04:05" }} (UTC)
-            </time>
-        </td>
-    </tr>
-</table>
+                <tr>
+                    <td>Skapad</td>
+                    <td>
+                        <time datetime="{{ .L.ManagedUser.CreatedAt.UTC.Format " 2006-01-02T15:04:05Z" }}">
+                            {{ .L.ManagedUser.CreatedAt.UTC.Format "2006-01-02 15:04:05" }} (UTC)
+                        </time>
+                    </td>
+                </tr>
 
-<h2>Användarnamn</h2>
+                <tr>
+                    <td>Uppdaterad senast</td>
+                    <td>
+                        <time datetime="{{ .L.ManagedUser.UpdatedAt.UTC.Format " 2006-01-02T15:04:05Z" }}">
+                            {{ .L.ManagedUser.UpdatedAt.UTC.Format "2006-01-02 15:04:05" }} (UTC)
+                        </time>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
 
-<p>Nuvarande värde: {{ .L.ManagedUser.Username}}</p>
+    <section class="lg:span-3">
+        <h2>Användarnamn</h2>
 
-<form action="/admin/users/{{.L.ManagedUser.ID}}/username" method="POST">
-    <label for="username">Nytt användarnamn</label>
-    <input type="text" name="username" id="username" autocomplete="off" required>
-    <button type="submit">Uppdatera</button>
-</form>
+        <p>Nuvarande värde: {{ .L.ManagedUser.Username}}</p>
 
-<h2>Visningsnamn</h2>
+        <form action="/admin/users/{{.L.ManagedUser.ID}}/username" method="POST">
+            <label for="username" class="label">Nytt användarnamn</label>
+            <input type="text" name="username" id="username" autocomplete="off" required class="input">
+            <button type="submit" class="btn btn--primary">Uppdatera</button>
+        </form>
+    </section>
 
-<p>Nuvarande värde: {{ .L.ManagedUser.DisplayName}}</p>
+    <section class="lg:span-3">
+        <h2>Visningsnamn</h2>
 
-<form action="/admin/users/{{.L.ManagedUser.ID}}/display-name" method="POST">
-    <label for="display-name">Nytt visningsnamn</label>
-    <input type="text" name="display-name" id="display-name" autocomplete="off" required>
-    <button type="submit">Uppdatera</button>
-</form>
+        <p>Nuvarande värde: {{ .L.ManagedUser.DisplayName}}</p>
 
-<h2>Lösenord</h2>
+        <form action="/admin/users/{{.L.ManagedUser.ID}}/display-name" method="POST">
+            <label for="display-name" class="label">Nytt visningsnamn</label>
+            <input type="text" name="display-name" id="display-name" autocomplete="off" required class="input">
+            <button type="submit" class="btn btn--primary">Uppdatera</button>
+        </form>
+    </section>
 
-<p>
-    Nuvarande lösenordshash:
-    <code>{{ .L.ManagedUser.PasswordHash}}</code>
-</p>
+    <section class="lg:span-3">
+        <h2>Lösenord</h2>
 
-<form action="/admin/users/{{.L.ManagedUser.ID}}/password" method="POST">
-    <label for="password">Nytt lösenord</label>
-    <input type="password" name="password" id="password" autocomplete="off" minlength="15" required>
+        <p>
+            Nuvarande lösenordshash:
+            <code>{{ .L.ManagedUser.PasswordHash}}</code>
+        </p>
 
-    <label for="confirm-password">Bekräfta nytt lösenord</label>
-    <input type="password" name="confirm-password" id="confirm-password" autocomplete="off" minlength="15" required>
+        <form action="/admin/users/{{.L.ManagedUser.ID}}/password" method="POST">
+            <label for="password" class="label">Nytt lösenord</label>
+            <input type="password" name="password" id="password" autocomplete="off" minlength="15" required
+                class="input">
 
-    <button type="submit">Uppdatera</button>
-</form>
+            <label for="confirm-password" class="label">Bekräfta nytt lösenord</label>
+            <input type="password" name="confirm-password" id="confirm-password" autocomplete="off" minlength="15"
+                required class="input">
 
-<h2>Roll</h2>
+            <button type="submit" class="btn btn--primary">Uppdatera</button>
+        </form>
+    </section>
 
-<p>
-    Nuvarande roll: {{ .L.ManagedUser.Role}}
-</p>
+    <section class="lg:span-3">
+        <h2>Roll</h2>
 
-<form action="/admin/users/{{.L.ManagedUser.ID}}/role" method="POST">
-    <label for="password">Ny roll</label>
+        <p>
+            Nuvarande roll: {{ .L.ManagedUser.Role}}
+        </p>
 
-    <fieldset>
-        <label>
-            <input type="radio" name="role" value="user">
-            Användare
-        </label>
-        <label>
-            <input type="radio" name="role" value="admin">
-            Admin
-        </label>
-    </fieldset>
+        <form action="/admin/users/{{.L.ManagedUser.ID}}/role" method="POST">
+            <label for="password" class="label">Ny roll</label>
 
-    <button type="submit">Uppdatera</button>
-</form>
+            <fieldset>
+                <label>
+                    <input type="radio" name="role" value="user">
+                    Användare
+                </label>
+                <label>
+                    <input type="radio" name="role" value="admin">
+                    Admin
+                </label>
+            </fieldset>
+
+            <button type="submit" class="btn btn--primary">Uppdatera</button>
+        </form>
+    </section>
+
+</div>
 
 {{end}}
