@@ -110,7 +110,7 @@
                             {{template "stars" .L.AvgRating}}
                         </div>
                         {{if gt .L.AvgRating 0.0}}
-                        <span>{{roundToDecimals .L.AvgRating 1}}</span>
+                        <span>{{printWith1Decimal .L.AvgRating}}</span>
                         {{end}}
                     </div>
                 </a>

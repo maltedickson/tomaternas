@@ -87,6 +87,9 @@ func (r *Renderer) funcMap() template.FuncMap {
 			exp := math.Pow10(count)
 			return math.Round(f*exp) / exp
 		},
+		"printWith1Decimal": func(f float64) string {
+			return fmt.Sprintf("%.1f", f)
+		},
 		"roundToHalf": func(f float64) float64 {
 			return math.Round(f*2) / 2
 		},
