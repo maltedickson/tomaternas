@@ -26,7 +26,10 @@
             {{end}}
 
             {{if .G.User}}
-            <a href="/recipes/new" class="btn btn--subtle">Nytt recept</a>
+            <a href="/recipes/new" class="btn btn--subtle">
+                {{icon "outline" "plus"}}
+                Nytt recept
+            </a>
             {{end}}
 
             {{template "auth-menu" .}}
