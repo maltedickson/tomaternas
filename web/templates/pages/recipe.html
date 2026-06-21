@@ -63,40 +63,10 @@
                 alt="Bild på färdigt resultat" class="recipe-photo">
         </div>
         <div class="lg:span-3">
-            <div class="meta__management">
-                <div class="meta__owner">Av {{.L.RecipeOwner.DisplayName}} &nbsp;&bull;&nbsp; {{proseDate
-                    .L.Recipe.CreatedAt}}
-                    &nbsp;&bull;&nbsp; ändrad
-                    {{proseDate .L.Recipe.UpdatedAt}}</div>
-                {{if .L.CanManage}}
-                <div data-dropdown class="meta__actions">
-                    <button data-dropdown-trigger type="button" class="btn btn--subtle btn--sq">{{icon "outline"
-                        "dots-vertical" "icon--sm"}}</button>
-                    <div data-dropdown-menu>
-                        <a href="/recipes/{{.L.Recipe.ID}}/edit" role="menuitem">
-                            {{icon "outline" "edit"}}
-                            Redigera
-                        </a>
-                        <form action="/recipes/{{.L.Recipe.ID}}/delete" method="POST" id="form-delete-recipe">
-                            <button type="submit" role="menuitem">
-                                {{icon "outline" "trash"}}
-                                Radera
-                            </button>
-                        </form>
-                    </div>
-                </div>
-                <script>
-                    const recipeDeleteForm = document.getElementById("form-delete-recipe");
-                    recipeDeleteForm.addEventListener("submit", function (e) {
-                        const isConfirmed = confirm("Är du säker på att du vill radera receptet permanent?");
-
-                        if (!isConfirmed) {
-                            e.preventDefault();
-                        }
-                    });
-                </script>
-                {{end}}
-            </div>
+            <div class="meta__owner">Av {{.L.RecipeOwner.DisplayName}} &nbsp;&bull;&nbsp; {{proseDate
+                .L.Recipe.CreatedAt}}
+                &nbsp;&bull;&nbsp; ändrad
+                {{proseDate .L.Recipe.UpdatedAt}}</div>
             <h1 class="recipe-title">{{.L.Recipe.Title}}</h1>
             <div class="pills">
                 {{range .L.RecipeTags}}
@@ -126,6 +96,29 @@
             <div class="recipe-description">
                 {{.L.RecipeDescriptionParsed}}
             </div>
+
+            {{if .L.CanManage}}
+            <div class="recipe-actions">
+                <a href="/recipes/{{.L.Recipe.ID}}/edit" class="btn btn--primary">{{icon "outline" "edit"}}</a>
+                <button type="button" command="show-modal" commandfor="modal-delete-recipe"
+                    class="btn btn--primary">{{icon "outline"
+                    "trash"}}</button>
+            </div>
+
+            <dialog id="modal-delete-recipe" class="modal">
+                <form method="POST" action="/recipes/{{.L.Recipe.ID}}/delete">
+                    <h3>Radera recept?</h3>
+                    <p>
+                        Är du säker på att du vill radera receptet permanent för alla användare?
+                    </p>
+                    <div class="form-buttons">
+                        <button type="button" command="close" commandfor="modal-delete-recipe"
+                            class="btn btn--secondary">Avbryt</button>
+                        <button type="submit" class="btn btn--primary">Ja, radera</button>
+                    </div>
+                </form>
+            </dialog>
+            {{end}}
         </div>
     </div>
 

@@ -321,6 +321,7 @@ textarea.input {
     width: fit-content;
     display: flex;
     align-items: center;
+    justify-content: center;
     column-gap: var(--space-1);
     padding: var(--space-2) var(--space-4);
     border-radius: var(--radius-sm);
@@ -388,7 +389,6 @@ textarea.input {
 
 .btn--full-width {
     width: 100%;
-    justify-content: center;
 }
 
 .table-container {

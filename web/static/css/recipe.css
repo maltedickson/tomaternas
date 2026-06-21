@@ -12,11 +12,6 @@
     max-width: var(--max-photo-width);
 }
 
-.meta__management {
-    position: relative;
-    max-width: var(--max-photo-width);
-}
-
 .meta__actions {
     position: absolute;
     right: 0;
@@ -56,6 +51,23 @@
 
 .recipe-description> :last-child {
     margin-bottom: 0;
+}
+
+.recipe-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+}
+
+.recipe-actions .btn {
+    width: 3rem;
+    height: 3rem;
+    padding: 0;
+}
+
+.recipe-actions .btn .icon {
+    --size: 1.5rem;
 }
 
 .ingredients h3 {
