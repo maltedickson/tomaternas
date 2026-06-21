@@ -39,6 +39,26 @@ if (window.recipeContext.isEditMode) {
     }
 }
 
+const checkboxVegan = document.querySelector("[value=Vegansk]");
+const checkboxVegetarian = document.querySelector("[value=Vegetarisk]");
+const checkboxMilkFree = document.querySelector("[value=Mjölkfri]");
+
+function updateDietaryTagsBasedOnVeganState() {
+    if (checkboxVegan.checked) {
+        checkboxVegetarian.checked = true;
+        checkboxMilkFree.checked = true;
+        checkboxVegetarian.disabled = true;
+        checkboxMilkFree.disabled = true;
+    } else {
+        checkboxVegetarian.checked = false;
+        checkboxMilkFree.checked = false;
+        checkboxVegetarian.disabled = false;
+        checkboxMilkFree.disabled = false;
+    }
+}
+updateDietaryTagsBasedOnVeganState();
+checkboxVegan.addEventListener("input", updateDietaryTagsBasedOnVeganState);
+
 setupFormSubmitHandler();
 setupPhotoUploadListener();
 setupPrepTimeListener();
@@ -185,6 +205,9 @@ function setupFormSubmitHandler() {
             inputServings.disabled = false;
             inputServings.value = selectedServings.getAttribute("data-servings");
         }
+
+        checkboxVegetarian.disabled = false;
+        checkboxMilkFree.disabled = false;
     });
 }
 

@@ -49,6 +49,10 @@ h3 {
     column-gap: var(--space-1);
 }
 
+.chip:has(input:disabled) {
+    color: var(--clr-text-disabled);
+}
+
 .servings-default-options {
     display: grid;
     grid-template-columns: repeat(3, 1fr);

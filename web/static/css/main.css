@@ -32,6 +32,7 @@
 
     --clr-text: hsl(20 25% 16%);
     --clr-text-muted: hsl(20 15% 30%);
+    --clr-text-disabled: hsl(20 5% 45%);
     --clr-text-on-primary: hsl(0 0% 100%);
 
     --clr-icon-muted: hsl(20 10% 75%);
