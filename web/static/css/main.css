@@ -515,6 +515,10 @@ textarea.input {
     color: var(--clr-icon-muted);
 }
 
+.mt-0 {
+    margin-top: 0;
+}
+
 .mt-1 {
     margin-top: var(--space-1);
 }

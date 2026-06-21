@@ -19,7 +19,7 @@
 
     <form action="{{if .L.IsEdit}}/recipes/{{.L.Recipe.ID}}{{else}}/recipes{{end}}" method="POST"
         enctype="multipart/form-data" data-new-recipe-form class="lg:span-4">
-        <h2>Receptets namn</h2>
+        <h2 class="mt-0">Receptets namn</h2>
 
         <input type="text" name="title" class="input" placeholder="Vad vill du kalla receptet?" required>
         {{if .L.Errors.TitleEmpty}}
