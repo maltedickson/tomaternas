@@ -14,234 +14,243 @@
 
 {{define "content"}}
 
-<div class="wrapper">
+<div class="wrapper grid">
     <h1>{{if .L.IsEdit}}Redigera recept{{else}}Skapa nytt recept{{end}}</h1>
 
-    <div class="card page">
+    <form action="{{if .L.IsEdit}}/recipes/{{.L.Recipe.ID}}{{else}}/recipes{{end}}" method="POST"
+        enctype="multipart/form-data" data-new-recipe-form class="lg:span-4">
+        <h2>Receptets namn</h2>
 
-        <form action="{{if .L.IsEdit}}/recipes/{{.L.Recipe.ID}}{{else}}/recipes{{end}}" method="POST"
-            enctype="multipart/form-data" data-new-recipe-form>
-            <h2>Receptets namn</h2>
+        <input type="text" name="title" class="input" placeholder="Vad vill du kalla receptet?" required>
+        {{if .L.Errors.TitleEmpty}}
+        <p class="form-error">Titel krävs.</p>
+        {{end}}
 
-            <input type="text" name="title" class="input" placeholder="Vad vill du kalla receptet?" required>
-            {{if .L.Errors.TitleEmpty}}
-            <p class="form-error">Titel krävs.</p>
-            {{end}}
-
-            <div class="photo-upload">
-                <h2>Foto</h2>
-                <div>
-                    {{if .L.IsEdit}}
-                    <img alt="Foto på resultat" class="photo" data-image
-                        src="/uploads/recipes/{{.L.Recipe.ID}}_lg@2x.jpg?v={{.L.Recipe.UpdatedAt.Unix}}">
-                    {{else}}
-                    <img alt="Foto på resultat" class="photo photo--hidden" data-image>
-                    {{end}}
-                    <div class="photo-upload__controls">
-                        <input type="file" name="image" accept="image/png, image/jpeg, image/*" data-input-image {{if
-                            not .L.IsEdit}}required{{end}}>
-                        <button type="button" data-button-image-remove class="btn-img-remove btn btn--secondary">
-                            {{if .L.IsEdit}}
-                            Återställ
-                            {{else}}
-                            Ta bort
-                            {{end}}
-                        </button>
-                    </div>
+        <div class="photo-upload">
+            <h2>Foto</h2>
+            <div>
+                {{if .L.IsEdit}}
+                <img alt="Foto på resultat" class="photo" data-image
+                    src="/uploads/recipes/{{.L.Recipe.ID}}_lg@2x.jpg?v={{.L.Recipe.UpdatedAt.Unix}}">
+                {{else}}
+                <img alt="Foto på resultat" class="photo photo--hidden" data-image>
+                {{end}}
+                <div class="photo-upload__controls">
+                    <input type="file" name="image" accept="image/png, image/jpeg, image/*" data-input-image {{if not
+                        .L.IsEdit}}required{{end}}>
+                    <button type="button" data-button-image-remove class="btn-img-remove btn btn--secondary">
+                        {{if .L.IsEdit}}
+                        Återställ
+                        {{else}}
+                        Ta bort
+                        {{end}}
+                    </button>
                 </div>
             </div>
-            {{if .L.Errors.ImageMissing}}
-            <p class="form-error">Bild krävs.</p>
-            {{end}}
-            {{if .L.Errors.ImageContentTypeNotJpegOrPng}}
-            <p class="form-error">Bara JPEG, JPG och PNG är tillåtna.</p>
-            {{end}}
+        </div>
+        {{if .L.Errors.ImageMissing}}
+        <p class="form-error">Bild krävs.</p>
+        {{end}}
+        {{if .L.Errors.ImageContentTypeNotJpegOrPng}}
+        <p class="form-error">Bara JPEG, JPG och PNG är tillåtna.</p>
+        {{end}}
 
-            <h2 for="time-slider">Tillagningstid</h2>
-            <div class="time-slider">
-                <div class="time-slider__ticks" id="slider-ticks" aria-hidden="true">
-                    Tid:
-                    <div style="--m: 15;">15m</div>
-                    <div style="--m: 30;">30m</div>
-                    <div style="--m: 45;">45m</div>
-                    <div style="--m: 60;">1h</div>
-                    <div style="--m: 90;">1h30</div>
-                    <div style="--m: 120;">2h+</div>
-                </div>
-                <input class="time-slider__input" type="range" id="time-slider" name="cook-time" min="0" max="7200"
-                    step="300" value="0">
+        <h2 for="time-slider">Tillagningstid</h2>
+        <div class="time-slider">
+            <div class="time-slider__ticks" id="slider-ticks" aria-hidden="true">
+                Tid:
+                <div style="--m: 15;">15m</div>
+                <div style="--m: 30;">30m</div>
+                <div style="--m: 45;">45m</div>
+                <div style="--m: 60;">1h</div>
+                <div style="--m: 90;">1h30</div>
+                <div style="--m: 120;">2h+</div>
             </div>
-            {{if .L.Errors.CookTimeNotPositive}}
-            <p class="form-error">Tillagningstiden måste vara större än noll.</p>
-            {{end}}
+            <input class="time-slider__input" type="range" id="time-slider" name="cook-time" min="0" max="7200"
+                step="300" value="0">
+        </div>
+        {{if .L.Errors.CookTimeNotPositive}}
+        <p class="form-error">Tillagningstiden måste vara större än noll.</p>
+        {{end}}
 
-            <h2 for="">Förberedelsetid</h2>
-            <p>Ange antal timmar.</p>
-            <input type="number" value="0" min="0" name="prep-time" class="input">
-            {{if .L.Errors.PrepTimeNegative}}
-            <p class="form-error">Förberedelsetiden måste vara större än eller lika med noll.</p>
-            {{end}}
+        <h2 for="">Förberedelsetid</h2>
+        <p>Ange antal timmar.</p>
+        <input type="number" value="0" min="0" name="prep-time" class="input">
+        {{if .L.Errors.PrepTimeNegative}}
+        <p class="form-error">Förberedelsetiden måste vara större än eller lika med noll.</p>
+        {{end}}
 
-            <div id="prep-instructions-container" hidden>
-                <p>Beskriv förberedelsen.</p>
-                <textarea name="prep-instructions" rows="3"
-                    placeholder="Vad ska göras? Till exempel &quot;Tina räkorna.&quot;"></textarea>
-                {{if .L.Errors.PrepTimePositiveAndPrepInstructionsEmpty}}
-                <p class="form-error">Beskrivning av förberedelsen som utgör förberedelsetiden måste anges.</p>
+        <div id="prep-instructions-container" hidden>
+            <p>Beskriv förberedelsen.</p>
+            <textarea name="prep-instructions" rows="3"
+                placeholder="Vad ska göras? Till exempel &quot;Tina räkorna.&quot;"></textarea>
+            {{if .L.Errors.PrepTimePositiveAndPrepInstructionsEmpty}}
+            <p class="form-error">Beskrivning av förberedelsen som utgör förberedelsetiden måste anges.</p>
+            {{end}}
+        </div>
+
+        <h2>Taggar</h2>
+        <div class="tags-editor">
+            <div>
+                <h3>Måltidstyp</h3>
+                <div class="chips">
+                    <label class="chip"><input type="checkbox" name="meal-types[]" value="Frukost">Frukost</label>
+                    <label class="chip"><input type="checkbox" name="meal-types[]" value="Förrätt">Förrätt</label>
+                    <label class="chip"> <input type="checkbox" name="meal-types[]" value="Huvudrätt">Huvudrätt</label>
+                    <label class="chip"> <input type="checkbox" name="meal-types[]" value="Tillbehör">Tillbehör</label>
+                    <label class="chip"> <input type="checkbox" name="meal-types[]"
+                            value="Fika/efterrätt">Fika/efterrätt</label>
+                    <label class="chip"> <input type="checkbox" name="meal-types[]" value="Dryck">Dryck</label>
+                </div>
+                {{if .L.Errors.MealTypesHaveInvalidValues}}
+                <p class="form-error">Tillse att bara ange korrekta måltidstyper.</p>
+                {{end}}
+                {{if .L.Errors.MealTypesHaveDuplicates}}
+                <p class="form-error">En måltidstyp får enbart inkluderas en gång (kopior är ej tillåtna).</p>
+                {{end}}
+                {{if .L.Errors.MealTypesEmpty}}
+                <p class="form-error">Minst en måltidstyp behöver fyllas i.</p>
                 {{end}}
             </div>
+            <div>
+                <h3>Specialkost</h3>
+                <div class="chips">
+                    <label class="chip"> <input type="checkbox" name="diets[]" value="Vegansk">Vegansk</label>
+                    <label class="chip"> <input type="checkbox" name="diets[]" value="Vegetarisk">Vegetarisk</label>
+                    <label class="chip"> <input type="checkbox" name="diets[]" value="Glutenfri">Glutenfri</label>
+                    <label class="chip"> <input type="checkbox" name="diets[]" value="Mjölkfri">Mjölkfri</label>
+                </div>
+                {{if .L.Errors.DietaryTagsHaveInvalidValues}}
+                <p class="form-error">Tillse att bara ange korrekta specialkoster.</p>
+                {{end}}
+                {{if .L.Errors.DietaryTagsHaveDuplicates}}
+                <p class="form-error">En specialkost får enbart inkluderas en gång (kopior är ej tillåtna).</p>
+                {{end}}
+                {{if .L.Errors.DietaryTagsContainVeganButNotVegetarian}}
+                <p class="form-error">Ett veganskt recept måste även vara vegetariskt.</p>
+                {{end}}
+                {{if .L.Errors.DietaryTagsContainVeganButNotMilkFree}}
+                <p class="form-error">Ett veganskt recept måste även vara mjölkfritt.</p>
+                {{end}}
+            </div>
+            <div>
+                <h3>Övrigt</h3>
+                <div class="chips">
+                    <label class="chip"> <input type="checkbox" name="tags[]" value="Festlig">Festlig</label>
+                    <label class="chip"> <input type="checkbox" name="tags[]" value="Matlåda">Matlåda</label>
+                    <label class="chip"> <input type="checkbox" name="tags[]" value="Storkok">Storkok</label>
+                </div>
+                {{if .L.Errors.OtherTagsHaveInvalidValues}}
+                <p class="form-error">Tillse att bara ange korrekta etiketter.</p>
+                {{end}}
+                {{if .L.Errors.OtherTagsHaveDuplicates}}
+                <p class="form-error">En etikett får enbart inkluderas en gång (kopior är ej tillåtna).</p>
+                {{end}}
+            </div>
+        </div>
 
-            <h2>Taggar</h2>
-            <div class="tags-editor">
-                <div>
-                    <h3>Måltidstyp</h3>
-                    <div class="chips">
-                        <label class="chip"><input type="checkbox" name="meal-types[]" value="Frukost">Frukost</label>
-                        <label class="chip"><input type="checkbox" name="meal-types[]" value="Förrätt">Förrätt</label>
-                        <label class="chip"> <input type="checkbox" name="meal-types[]"
-                                value="Huvudrätt">Huvudrätt</label>
-                        <label class="chip"> <input type="checkbox" name="meal-types[]"
-                                value="Tillbehör">Tillbehör</label>
-                        <label class="chip"> <input type="checkbox" name="meal-types[]"
-                                value="Fika/efterrätt">Fika/efterrätt</label>
-                        <label class="chip"> <input type="checkbox" name="meal-types[]" value="Dryck">Dryck</label>
-                    </div>
-                    {{if .L.Errors.MealTypesHaveInvalidValues}}
-                    <p class="form-error">Tillse att bara ange korrekta måltidstyper.</p>
-                    {{end}}
-                    {{if .L.Errors.MealTypesHaveDuplicates}}
-                    <p class="form-error">En måltidstyp får enbart inkluderas en gång (kopior är ej tillåtna).</p>
-                    {{end}}
-                    {{if .L.Errors.MealTypesEmpty}}
-                    <p class="form-error">Minst en måltidstyp behöver fyllas i.</p>
-                    {{end}}
-                </div>
-                <div>
-                    <h3>Specialkost</h3>
-                    <div class="chips">
-                        <label class="chip"> <input type="checkbox" name="diets[]" value="Vegansk">Vegansk</label>
-                        <label class="chip"> <input type="checkbox" name="diets[]" value="Vegetarisk">Vegetarisk</label>
-                        <label class="chip"> <input type="checkbox" name="diets[]" value="Glutenfri">Glutenfri</label>
-                        <label class="chip"> <input type="checkbox" name="diets[]" value="Mjölkfri">Mjölkfri</label>
-                    </div>
-                    {{if .L.Errors.DietaryTagsHaveInvalidValues}}
-                    <p class="form-error">Tillse att bara ange korrekta specialkoster.</p>
-                    {{end}}
-                    {{if .L.Errors.DietaryTagsHaveDuplicates}}
-                    <p class="form-error">En specialkost får enbart inkluderas en gång (kopior är ej tillåtna).</p>
-                    {{end}}
-                    {{if .L.Errors.DietaryTagsContainVeganButNotVegetarian}}
-                    <p class="form-error">Ett veganskt recept måste även vara vegetariskt.</p>
-                    {{end}}
-                    {{if .L.Errors.DietaryTagsContainVeganButNotMilkFree}}
-                    <p class="form-error">Ett veganskt recept måste även vara mjölkfritt.</p>
-                    {{end}}
-                </div>
-                <div>
-                    <h3>Övrigt</h3>
-                    <div class="chips">
-                        <label class="chip"> <input type="checkbox" name="tags[]" value="Festlig">Festlig</label>
-                        <label class="chip"> <input type="checkbox" name="tags[]" value="Matlåda">Matlåda</label>
-                        <label class="chip"> <input type="checkbox" name="tags[]" value="Storkok">Storkok</label>
-                    </div>
-                    {{if .L.Errors.OtherTagsHaveInvalidValues}}
-                    <p class="form-error">Tillse att bara ange korrekta etiketter.</p>
-                    {{end}}
-                    {{if .L.Errors.OtherTagsHaveDuplicates}}
-                    <p class="form-error">En etikett får enbart inkluderas en gång (kopior är ej tillåtna).</p>
-                    {{end}}
-                </div>
+
+        <h2>Beskrivning</h2>
+        <textarea name="description" rows="5"
+            placeholder="Valfri beskrivning av receptet. Berätta gärna varifrån det kommer!" class="input"></textarea>
+
+
+        <h2>Antal portioner</h2>
+        <p>Hur många portioner är mängderna i ingredienslistan anpassade för?</p>
+
+        <div class="servings">
+            <div class="servings-default-options">
+                <button type="button" data-servings="1 port" class="btn btn--secondary">1</button>
+                <button type="button" data-servings="2 port" class="btn btn--secondary">2</button>
+                <button type="button" data-servings="3 port" class="btn btn--secondary">3</button>
+                <button type="button" data-servings="4 port" class="btn btn--secondary">4</button>
+                <button type="button" data-servings="6 port" class="btn btn--secondary">6</button>
+                <button type="button" data-servings="8 port" class="btn btn--secondary">8</button>
+            </div>
+            <div class="servings-custom">
+                <button type="button" data-servings="custom" class="btn btn--secondary">Annat</button>
+                <input type="text" name="servings" placeholder="Antal + enhet, t.ex. 15 port" disabled class="input">
             </div>
 
-
-            <h2>Beskrivning</h2>
-            <textarea name="description" rows="5"
-                placeholder="Valfri beskrivning av receptet. Berätta gärna varifrån det kommer!"
-                class="input"></textarea>
-
-
-            <h2>Antal portioner</h2>
-            <p>Hur många portioner är mängderna i ingredienslistan anpassade för?</p>
-            <input type="text" name="servings" placeholder="T.ex. 4 port" required class="input">
             {{if .L.Errors.ServingsEmpty}}
             <p class="form-error">Antalet portioner (eller motsvarande storhet) krävs.</p>
             {{end}}
+        </div>
 
-            <h2>Ingredienser</h2>
 
-            <input type="hidden" name="ingredients" data-ingredients-input>
+        <h2>Ingredienser</h2>
 
-            <section>
-                <template id="tmpl-ingredients-section">
-                    <div data-section class="ingredient-section">
-                        <div class="ingredients-section-heading">
-                            <input type="text" id="" placeholder="Sektionsnamn" data-section-heading-input
-                                class="ingredients-section-heading__input">
-                            <button type="button" data-action="remove-section" class="btn-remove">
-                                {{icon "outline" "trash"}}
-                            </button>
-                        </div>
-                        <div data-ingredients-container class="ingredient-list"></div>
-                        <button type="button" data-action="new-ingredient" class="btn btn--subtle mt-1 mx-auto">
-                            {{icon "outline" "plus"}}
-                            Ny ingrediens
-                        </button>
-                    </div>
-                </template>
-                <template id="tmpl-ingredient">
-                    <div data-ingredient class="ingredient">
-                        <input type="text" class="ingredient__name" placeholder="Ingrediens" data-ingredient-input
-                            required>
-                        <input type="text" class="ingredient__amount" placeholder="Mängd" data-amount-input>
-                        <button type="button" class="btn-remove">
+        <input type="hidden" name="ingredients" data-ingredients-input>
+
+        <section>
+            <template id="tmpl-ingredients-section">
+                <div data-section class="ingredient-section">
+                    <div class="ingredients-section-heading">
+                        <input type="text" id="" placeholder="Sektionsnamn" data-section-heading-input
+                            class="ingredients-section-heading__input">
+                        <button type="button" data-action="remove-section" class="btn-remove">
                             {{icon "outline" "trash"}}
                         </button>
                     </div>
-                </template>
-                <div id="ingredients-sections-container" class="ingredient-sections"></div>
-                <button onclick="addSection()" type="button" class="btn btn--secondary mt-8">
-                    {{icon "outline" "plus"}}
-                    Ny sektion
-                </button>
-            </section>
-            {{if .L.Errors.NonFirstIngredientSectionHeadingEmpty}}
-            <p class="form-error">Alla förutom den första ingredienssektionen kräver rubrik.</p>
-            {{end}}
-            {{if .L.Errors.IngredientNameEmpty}}
-            <p class="form-error">Alla ingredienser kräver ett namn.</p>
-            {{end}}
-            {{if .L.Errors.IngredientSectionEmpty}}
-            <p class="form-error">Alla ingredienssektioner måste ha minst en ingrediens.</p>
-            {{end}}
-            {{if .L.Errors.IngredientSectionsEmpty}}
-            <p class="form-error">Minst en ingrediens krävs.</p>
-            {{end}}
+                    <div data-ingredients-container class="ingredient-list"></div>
+                    <button type="button" data-action="new-ingredient" class="btn btn--subtle mt-1 mx-auto">
+                        {{icon "outline" "plus"}}
+                        Ny ingrediens
+                    </button>
+                </div>
+            </template>
+            <template id="tmpl-ingredient">
+                <div data-ingredient class="ingredient">
+                    <input type="text" class="ingredient__name" placeholder="Ingrediens" data-ingredient-input required>
+                    <input type="text" class="ingredient__amount" placeholder="Mängd" data-amount-input>
+                    <button type="button" class="btn-remove">
+                        {{icon "outline" "trash"}}
+                    </button>
+                </div>
+            </template>
+            <div id="ingredients-sections-container" class="ingredient-sections"></div>
+            <button onclick="addSection()" type="button" class="btn btn--secondary mt-8">
+                {{icon "outline" "plus"}}
+                Ny sektion
+            </button>
+        </section>
+        {{if .L.Errors.NonFirstIngredientSectionHeadingEmpty}}
+        <p class="form-error">Alla förutom den första ingredienssektionen kräver rubrik.</p>
+        {{end}}
+        {{if .L.Errors.IngredientNameEmpty}}
+        <p class="form-error">Alla ingredienser kräver ett namn.</p>
+        {{end}}
+        {{if .L.Errors.IngredientSectionEmpty}}
+        <p class="form-error">Alla ingredienssektioner måste ha minst en ingrediens.</p>
+        {{end}}
+        {{if .L.Errors.IngredientSectionsEmpty}}
+        <p class="form-error">Minst en ingrediens krävs.</p>
+        {{end}}
 
-            <section>
-                <h2>Instruktioner</h2>
-                <textarea type="text" name="instructions" id="input-instructions" rows="10" required
-                    class="input"></textarea>
-            </section>
-            {{if .L.Errors.InstructionsEmpty}}
-            <p class="form-error">Instruktioner krävs.</p>
-            {{end}}
+        <section>
+            <h2>Instruktioner</h2>
+            <textarea type="text" name="instructions" id="input-instructions" rows="10" required
+                class="input"></textarea>
+        </section>
+        {{if .L.Errors.InstructionsEmpty}}
+        <p class="form-error">Instruktioner krävs.</p>
+        {{end}}
 
-            <div class="form-buttons">
+        <div class="form-buttons">
+            {{if .L.IsEdit}}
+            <a href="/recipes/{{.L.Recipe.ID}}" class="btn btn--secondary">Avbryt</a>
+            {{end}}
+            <button type="submit" class="btn btn--primary">
                 {{if .L.IsEdit}}
-                <a href="/recipes/{{.L.Recipe.ID}}" class="btn btn--secondary">Avbryt</a>
+                Spara
+                {{else}}
+                Ladda upp
                 {{end}}
-                <button type="submit" class="btn btn--primary">
-                    {{if .L.IsEdit}}
-                    Spara
-                    {{else}}
-                    Ladda upp
-                    {{end}}
-                </button>
-            </div>
+            </button>
+        </div>
 
-        </form>
+    </form>
 
-    </div>
 </div>
 
 {{end}}

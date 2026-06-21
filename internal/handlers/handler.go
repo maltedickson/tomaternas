@@ -286,7 +286,9 @@ func (h *Handler) UpdateRecipe(w http.ResponseWriter, r *http.Request) {
 		}
 		var validationErr services.RecipeValidationError
 		if errors.As(err, &validationErr) {
+			parsed.Recipe.ID = id
 			h.renderer.Render(w, r, "recipe-form", map[string]any{
+				"IsEdit": true,
 				"Errors": validationErr,
 				"Recipe": &parsed.Recipe,
 			})

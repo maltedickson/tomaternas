@@ -4,6 +4,31 @@ const inputElement = document.querySelector("[data-input-image]");
 const imgEl = document.querySelector("[data-image]");
 const btnRemove = document.querySelector("[data-button-image-remove]")
 
+const inputServings = document.querySelector("[name=servings]");
+
+const btnsServings = Array.from(document.querySelectorAll("[data-servings]"));
+const btnsPredefinedServings = btnsServings.filter((btn) => btn.getAttribute("data-servings") != "custom");
+const btnCustomServings = document.querySelector("[data-servings=custom]")
+function selectServingsButton(btn, focusInputIfCustom = true) {
+    btnsServings.forEach(otherBtn => {
+        otherBtn.classList.remove("selected");
+    });
+    inputServings.disabled = true;
+
+    btn.classList.add("selected");
+    if (btn.getAttribute("data-servings") === "custom") {
+        inputServings.disabled = false;
+        if (focusInputIfCustom) {
+            inputServings.focus();
+        }
+    }
+}
+btnsServings.forEach(btn => {
+    btn.addEventListener("click", function() {
+        selectServingsButton(btn);
+    });
+})
+
 if (window.recipeContext.isEditMode) {
     populateFormWithRecipe(window.recipeContext.serverData);
 } else {
@@ -121,21 +146,30 @@ function populateFormWithRecipe(recipe) {
     document.querySelector("[name='prep-time']").value = recipe.PrepTimeSeconds / 3600;
     document.querySelector("[name='prep-instructions']").value = recipe.PrepInstructions;
     document.querySelector("[name=description]").value = recipe.Description;
-    document.querySelector("[name=servings]").value = recipe.Servings;
+    populateServings(recipe.Servings);
     recipe.IngredientSections.forEach(section => {
         addSection(true, section);
     });
     document.querySelector("[name=instructions]").value = recipe.Instructions;
 }
 
+function populateServings(servings) {
+    const selected = btnsPredefinedServings.find(btn => btn.getAttribute("data-servings") === servings);
+    if (selected != undefined) {
+        selectServingsButton(selected);
+    } else {
+        selectServingsButton(btnCustomServings, false);
+        inputServings.value = servings;
+    }
+}
+
 function populateNewForm() {
     addSection(true);
+    selectServingsButton(btnsPredefinedServings.find(btn => btn.getAttribute("data-servings").startsWith("4")));
 }
 
 function setupFormSubmitHandler() {
-    document.querySelector("[data-new-recipe-form]").addEventListener("submit", (e) => {
-        // TODO: add client side check to make sure form data is valid
-
+    document.querySelector("[data-new-recipe-form]").addEventListener("submit", () => {
         const sections = Array.from(document.querySelectorAll("[data-section]")).map(section => ({
             heading: section.querySelector("[data-section-heading-input]").value.trim(),
             ingredients: Array.from(section.querySelectorAll("[data-ingredient]")).map(ingredient => ({
@@ -145,6 +179,12 @@ function setupFormSubmitHandler() {
         }));
         const ingredientsInput = document.querySelector("[data-ingredients-input]");
         ingredientsInput.value = JSON.stringify(sections);
+
+        const selectedServings = btnsPredefinedServings.find(btn => btn.classList.contains("selected"));
+        if (selectedServings != undefined) {
+            inputServings.disabled = false;
+            inputServings.value = selectedServings.getAttribute("data-servings");
+        }
     });
 }
 

@@ -49,6 +49,34 @@ h3 {
     column-gap: var(--space-1);
 }
 
+.servings-default-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2);
+}
+
+.servings-default-options>.btn {
+    width: 100%;
+    justify-content: center;
+}
+
+.servings .btn.selected {
+    border-color: var(--clr-primary);
+    color: var(--clr-primary);
+}
+
+.servings-custom {
+    margin-top: var(--space-2);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+
+    .input {
+        flex-basis: 12rem;
+        flex-grow: 1;
+    }
+}
+
 .ingredient-sections {
     display: flex;
     flex-direction: column;
@@ -128,4 +156,11 @@ h3 {
 .btn-remove:focus-visible {
     outline: 2px solid black;
     z-index: 1;
+}
+
+@media (min-width: 375px) {
+
+    .servings-default-options {
+        grid-template-columns: repeat(6, 1fr);
+    }
 }

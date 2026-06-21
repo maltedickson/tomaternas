@@ -1,5 +1,4 @@
 const dropdowns = document.querySelectorAll("[data-dropdown]");
-console.debug(dropdowns);
 
 const classOpen = "open";
 

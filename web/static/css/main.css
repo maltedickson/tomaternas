@@ -171,6 +171,10 @@ p+* {
     border-color: var(--clr-primary);
 }
 
+.input:disabled {
+    opacity: 50%;
+}
+
 textarea.input {
     resize: vertical;
 }
