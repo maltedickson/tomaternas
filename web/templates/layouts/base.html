@@ -17,10 +17,16 @@
     {{ iconsSprite }}
 
     <div class="top-bar">
-        <a href="/" class="top-bar__logo logo-link">tomaternas</a>
+        <div class="top-bar__left">
+            <a href="/" class="top-bar__logo logo-link">tomaternas</a>
+        </div>
         <div class="top-bar__right">
             {{block "top-right" .}}
-
+            {{template "auth-menu" .}}
+            {{end}}
+        </div>
+        <div class="top-bar__overflow">
+            {{block "top-right-overflow" .}}
             {{if and .G.User (eq .G.User.Role "admin")}}
             <a href="/admin/dashboard" class="btn btn--subtle">Adminpanel</a>
             {{end}}
@@ -31,9 +37,6 @@
                 Nytt recept
             </a>
             {{end}}
-
-            {{template "auth-menu" .}}
-
             {{end}}
         </div>
     </div>
